@@ -17,7 +17,7 @@ https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed rem
 class CodeCommentPatSession implements AuthenticationSession {
   readonly account = {
     id: CodeCommentAuthenticationProvider.id,
-    label: "CodeComment",
+    label: "Readable",
   };
 
   readonly id = CodeCommentAuthenticationProvider.id;
@@ -32,21 +32,21 @@ export class CodeCommentAuthenticationProvider
 {
   static id = "CodeCommentPAT";
 
-  private static secretKey = "CodeCommentPAT";
+  private static secretKey = "c7b5ff27-8b06-4d7b-a6d7-a509355a6115";
 
   private quickPickItems: QuickPickItem[] = [
     {
-      label: "GitHub",
-      detail: "Log in with GitHub",
+      label: "$(mark-github)  GitHub",
+      detail: "Log in with GitHub.",
       picked: true,
     },
     {
-      label: "Account",
+      label: "$(mail)  Email",
       detail: "Log in with Email",
       picked: false,
     },
     {
-      label: "Register",
+      label: "$(person-add)  Register",
       detail:
         "Create an account. Note: if you sign in with GitHub, an account is created automatically",
       picked: false,
@@ -149,6 +149,8 @@ export class CodeCommentAuthenticationProvider
       session
     );
 
+    window.showInformationMessage("Successfully logged into Readable!");
+
     console.log("successfully logged into Code Comment");
 
     return new CodeCommentPatSession(session);
@@ -176,10 +178,10 @@ export class CodeCommentAuthenticationProvider
   }
 
   async loginWithProvider(providerName: string): Promise<string> {
-    if (providerName === "GitHub") {
+    if (providerName === "$(mark-github)  GitHub") {
       return this.githubLogin();
     }
-    if (providerName === "Account") {
+    if (providerName === "$(email)  Email") {
       return this.accountLogin();
     } else {
       throw new Error("Invalid provider name");

@@ -1,7 +1,7 @@
 {
-  "name": "commentai",
-  "displayName": "CommentAi",
-  "description": "AI Powered Automatic Code Commenting",
+  "name": "readable",
+  "displayName": "Readable",
+  "description": "Instantly generate comprehensize + readable comments with Ai.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.60.0"
@@ -17,27 +17,27 @@
     "commands": [
       {
         "command": "commentai.helloWorld",
-        "title": "CodeCommentAI: Hello World"
+        "title": "Readable: Hello World"
       },
       {
         "command": "commentai.generateComment",
-        "title": "CodeCommentAI: Generate Comment"
+        "title": "Readable: Generate Comment"
       },
       {
         "command": "commentai.commentFile",
-        "title": "CodeCommentAI: Generate comments for entire file."
+        "title": "Readable: Generate comments for entire file."
       },
       {
         "command": "commentai.enableCodeLens",
-        "title": "CodeCommentAI: Enable Comment Suggestions"
+        "title": "Readable: Enable Comment Suggestions"
       },
       {
         "command": "commentai.disableCodeLens",
-        "title": "CodeCommentAI: Disable Comment Suggestions"
+        "title": "Readable: Disable Comment Suggestions"
       },
       {
         "command": "commentai.login",
-        "title": "CodeCommentAI: Login"
+        "title": "Readable: Login"
       }
     ],
     "configuration": {

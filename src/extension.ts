@@ -20,7 +20,7 @@ import { GithubProvider } from "./authentication/GithubAuthProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "commentai" is now active!');
@@ -33,12 +33,22 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
       CodeCommentAuthenticationProvider.id,
-      "CodeComment.ai",
+      "Readable-Auth",
       new CodeCommentAuthenticationProvider(context.secrets)
     )
   );
 
   vscode.languages.registerCodeLensProvider("*", codeLensProvider);
+  try {
+    const session = await vscode.authentication.getSession(
+      CodeCommentAuthenticationProvider.id,
+      [],
+      { createIfNone: true }
+    );
+    console.log(session);
+  } catch (err) {
+    vscode.window.showErrorMessage("Error logging in with Readable");
+  }
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -52,11 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
     ),
 
     vscode.commands.registerCommand("commentai.helloWorld", async () => {
-      const { data } = await axios.get(
-        "https://jsonplaceholder.typicode.com/todos/1"
-      );
-      console.log(data);
-      // HelloWorldPanel.createOrShow(context.extensionUri);
+      HelloWorldPanel.createOrShow(context.extensionUri);
     }),
 
     vscode.commands.registerCommand("commentai.login", async () => {
