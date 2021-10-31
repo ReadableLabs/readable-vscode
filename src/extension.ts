@@ -47,7 +47,9 @@ export async function activate(context: vscode.ExtensionContext) {
     );
     console.log(session);
   } catch (err) {
-    vscode.window.showErrorMessage("Error logging in with Readable");
+    vscode.window.showErrorMessage(
+      "Error logging in with Readable. To log in, press ctrl + shift + p and type 'Readable: Login'"
+    );
   }
 
   context.subscriptions.push(

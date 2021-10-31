@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { DETAILED_DESCRIPTION } from "../generation/consts";
 import {
   ACCOUNT_DETAIL,
   ACCOUNT_LABEL,
@@ -26,6 +27,22 @@ export class StatusBarProvider {
       label: ACCOUNT_LABEL,
       detail: ACCOUNT_DETAIL,
     },
+    {
+      label: "$(alert)  Report a Bug",
+      detail: "Open the GitHub repository to report an issue",
+    },
+  ];
+
+  public commentItems: vscode.QuickPickItem[] = [
+    {
+      label: "$(file-code)  Recursively comment entire file",
+      detail: "Generate comments for each function in file",
+      picked: true,
+    },
+    {
+      label: "$(container)  Summary of File",
+      detail: "Generate a comment with a summary of what the file does",
+    },
   ];
 
   public myStatusBar: vscode.StatusBarItem;
@@ -50,6 +67,9 @@ export class StatusBarProvider {
 
   public async showMenu() {
     let selection = await vscode.window.showQuickPick(this.quickPickItems); // then just map through the menus and
+    if (selection === undefined) return;
+    if (selection.label === COMMENT_LABEL) {
+    }
   }
 
   public async showCommentMenu() {}
