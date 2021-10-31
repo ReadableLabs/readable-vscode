@@ -38,6 +38,10 @@
       {
         "command": "commentai.login",
         "title": "Readable: Login"
+      },
+      {
+        "command": "commentai.statusBarClicked",
+        "title": "Readable: Show Menu"
       }
     ],
     "configuration": {

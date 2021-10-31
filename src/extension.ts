@@ -146,22 +146,25 @@ export async function activate(context: vscode.ExtensionContext) {
         },
         async (process, token) => {
           let p = new Promise<void>(async (resolve, reject) => {
-            let userCode = getTextRange(range);
-            let language = getLanguageId();
-            if (userCode === "" || language === "") return;
-            let selection = vscode.window.showQuickPick(
-              commentProvider.quickPickItems
-            );
-            let generatedComment = await commentProvider.generateComment(
-              userCode,
-              language,
-              kind
-            );
-            await insertComment(
-              new vscode.Position(range.start.line, range.start.character),
-              generatedComment
-            );
-            resolve();
+            try {
+              let userCode = getTextRange(range);
+              let language = getLanguageId();
+              if (userCode === "" || language === "") {
+                reject("No language");
+              }
+              let generatedComment = await commentProvider.generateComment(
+                userCode,
+                language,
+                kind
+              );
+              await insertComment(
+                new vscode.Position(range.start.line, range.start.character),
+                generatedComment
+              );
+              resolve();
+            } catch (err) {
+              reject("Error Generating comment");
+            }
           });
           return p;
         }

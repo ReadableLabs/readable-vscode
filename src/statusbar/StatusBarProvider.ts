@@ -40,7 +40,7 @@ export class StatusBarProvider {
       picked: true,
     },
     {
-      label: "$(container)  Summary of File",
+      label: "$(checklist)  Summary of File",
       detail: "Generate a comment with a summary of what the file does",
     },
   ];
@@ -65,10 +65,15 @@ export class StatusBarProvider {
     // index file
   }
 
-  public async showMenu() {
+  public async showMenu(): Promise<string | undefined> {
     let selection = await vscode.window.showQuickPick(this.quickPickItems); // then just map through the menus and
     if (selection === undefined) return;
     if (selection.label === COMMENT_LABEL) {
+      let commentSelection = await vscode.window.showQuickPick(
+        this.commentItems
+      );
+      if (!commentSelection) return undefined;
+      return commentSelection.label;
     }
   }
 

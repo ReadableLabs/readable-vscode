@@ -35,19 +35,23 @@ export class CommentProvider {
     language: string,
     kind: number
   ): Promise<string> {
-    const { data } = await axios.post(COMPLETION_URL, {
-      code: text,
-      language: language,
-      kind: kind,
-    });
-    if (data.message) {
-      vscode.window.showErrorMessage(data.message);
-      return "err";
-    } else {
-      // if (showFeedback()) {
-      //   showFeedbackMessage(data.comment_id);
-      // }
-      return data.code;
+    try {
+      const { data } = await axios.post(COMPLETION_URL, {
+        code: text,
+        language: language,
+        kind: kind,
+      });
+      if (data.status !== 200) {
+        // vscode.window.showErrorMessage(data.message);
+        throw new Error("Error: Failed Generating comment");
+      } else {
+        // if (showFeedback()) {
+        //   showFeedbackMessage(data.comment_id);
+        // }
+        return data.code;
+      }
+    } catch (err: any) {
+      throw new Error(err.toString());
     }
   }
 }
