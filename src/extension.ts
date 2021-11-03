@@ -3,7 +3,7 @@
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
 import axios from "axios";
-import { CodeLensProvider } from "./CodeLensProvider";
+import { CodeLensProvider } from "./codelens/CodeLensProvider";
 import {
   getLanguageId,
   getTextRange,
@@ -63,35 +63,20 @@ export async function activate(context: vscode.ExtensionContext) {
       disableCodeLensCommand
     ),
 
-    vscode.commands.registerCommand("commentai.parseFile", async () => {
-      // get something which gets triggered when the document changes and check the language then with the imports
-      console.log("we're not using antlr over here buddy");
-    }),
-
     vscode.commands.registerCommand("commentai.helloWorld", async () => {
       HelloWorldPanel.createOrShow(context.extensionUri);
     }),
 
     vscode.commands.registerCommand("commentai.login", async () => {
-      // const session = await githubProvider.lib();
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
         [],
         { createIfNone: true }
       );
       console.log(session);
-      // const session = await vscode.authentication.getSession(
-      //   CodeCommentAuthenticationProvider.id,
-      //   [],
-      //   { createIfNone: true }
-      // );
-      // console.log(session);
     })
   );
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
   let generate = vscode.commands.registerCommand(
     "commentai.generateComment",
     async () => {
@@ -117,7 +102,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 editor.selection.start.line,
                 editor.selection.start.character
               ),
-              generatedComment
+              generatedComment,
+              editor
             );
           });
           return p;
@@ -152,6 +138,8 @@ export async function activate(context: vscode.ExtensionContext) {
         async (process, token) => {
           let p = new Promise<void>(async (resolve, reject) => {
             try {
+              const editor = vscode.window.activeTextEditor;
+              if (!editor) return;
               let userCode = getTextRange(range);
               let language = getLanguageId();
               if (userCode === "" || language === "") {
@@ -164,7 +152,8 @@ export async function activate(context: vscode.ExtensionContext) {
               );
               await insertComment(
                 new vscode.Position(range.start.line, range.start.character),
-                generatedComment
+                generatedComment,
+                editor
               );
               resolve();
             } catch (err) {

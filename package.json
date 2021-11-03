@@ -36,10 +36,6 @@
         "title": "Readable: Disable Comment Suggestions"
       },
       {
-        "command": "commentai.parseFile",
-        "title": "Readable: Parse File"
-      },
-      {
         "command": "commentai.login",
         "title": "Readable: Login"
       },

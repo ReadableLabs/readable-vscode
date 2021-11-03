@@ -29,12 +29,11 @@ const formatComment = (comment: string, indent: number) => {
 const insertComment = (
   start: vscode.Position,
   comment: string,
+  textEditor: vscode.TextEditor,
   language?: any
 ) => {
   // todo: refactor to use a position rather than start number so you can get the indentation
   let currentLine = getLine(start.line);
-  let textEditor = vscode.window.activeTextEditor;
-  if (textEditor === null || textEditor === undefined) return;
   let formattedText = formatComment(comment, start.character);
   textEditor.insertSnippet(
     new vscode.SnippetString(`${formattedText}\n`),

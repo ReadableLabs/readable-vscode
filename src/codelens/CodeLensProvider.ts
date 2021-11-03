@@ -1,11 +1,9 @@
 import * as vscode from "vscode";
-import { getLenses } from "./codelens/codeLensTools";
-import { getSymbols } from "./symbols";
+import { getLenses } from "./codeLensTools";
+import { getSymbols } from "../symbols";
 
 export class CodeLensProvider implements vscode.CodeLensProvider {
   private codeLenses: vscode.CodeLens[] = [];
-
-  private regex: RegExp;
 
   private _onDidChangeCodeLenses: vscode.EventEmitter<void> =
     new vscode.EventEmitter<void>();
@@ -14,10 +12,6 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
     this._onDidChangeCodeLenses.event;
 
   constructor() {
-    this.regex = /(def)/g;
-
-    setInterval(async () => {});
-
     vscode.workspace.onDidChangeConfiguration((_) => {
       this._onDidChangeCodeLenses.fire();
     });
@@ -31,15 +25,9 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
     if (
       vscode.workspace.getConfiguration("commentai").get("enableCodeLens", true)
     ) {
-      this.codeLenses = [];
-      let lenses: vscode.CodeLens[] = [];
-      let currentEditor = vscode.window.activeTextEditor;
-      if (!currentEditor) return;
-      let editorUri = currentEditor.document.uri;
-      if (editorUri === undefined || editorUri === null) return;
       let symbols = await getSymbols();
-      lenses = await getLenses(symbols);
-      console.log(symbols);
+      let lenses = await getLenses(symbols);
+
       return lenses;
     }
     return [];
