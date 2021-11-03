@@ -63,6 +63,11 @@ export async function activate(context: vscode.ExtensionContext) {
       disableCodeLensCommand
     ),
 
+    vscode.commands.registerCommand("commentai.parseFile", async () => {
+      // get something which gets triggered when the document changes and check the language then with the imports
+      console.log("we're not using antlr over here buddy");
+    }),
+
     vscode.commands.registerCommand("commentai.helloWorld", async () => {
       HelloWorldPanel.createOrShow(context.extensionUri);
     }),
