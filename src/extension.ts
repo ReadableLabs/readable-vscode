@@ -13,7 +13,6 @@ import { getSymbols } from "./symbols";
 import { CommentProvider } from "./generation/CommentProvider";
 import { GENERATING_NOTIFICATION_TEXT } from "./globals/consts";
 import { StatusBarProvider } from "./statusbar/StatusBarProvider";
-import { HelloWorldPanel } from "./HelloWorldPanel";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import { disableCodeLensCommand, enableCodeLensCommand } from "./commands";
 import { GithubProvider } from "./authentication/GithubAuthProvider";
@@ -62,10 +61,6 @@ export async function activate(context: vscode.ExtensionContext) {
       "commentai.disableCodeLens",
       disableCodeLensCommand
     ),
-
-    vscode.commands.registerCommand("commentai.helloWorld", async () => {
-      HelloWorldPanel.createOrShow(context.extensionUri);
-    }),
 
     vscode.commands.registerCommand("commentai.login", async () => {
       const session = await vscode.authentication.getSession(

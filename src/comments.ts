@@ -13,8 +13,7 @@ const generateCommentFromSymbol = async (
   let generatedComment = await generateComment(
     userText,
     textEditor.document.languageId,
-    kind,
-    true
+    kind
   );
   return generatedComment;
 };
@@ -22,22 +21,17 @@ const generateCommentFromSymbol = async (
 const generateComment = async (
   text: string,
   language: string,
-  kind: number,
-  showFeedback: boolean = false
+  kind: number
 ) => {
   const { data } = await axios.post(COMPLETION_URL, {
     code: text,
     language: language,
     kind: kind,
   });
-  if (data.message) {
-    vscode.window.showErrorMessage(data.message);
-    return "err";
+  if (data.status !== 200) {
+    vscode.window.showErrorMessage("Error: error generating comment");
+    throw new Error("Error: error generating comment");
   } else {
-    if (showFeedback) {
-      console.log(data);
-      showFeedbackMessage(data.comment_id);
-    }
     return data.code;
   }
 };
