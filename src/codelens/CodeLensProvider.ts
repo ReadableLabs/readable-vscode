@@ -3,6 +3,7 @@ import { getLenses } from "./codeLensTools";
 import { getSymbols } from "../symbols";
 import { CODELENS_COMMAND, CODELENS_TITLE } from "./consts";
 
+/* BROKEN - Coming in later release */
 export class CodeLensProvider implements vscode.CodeLensProvider {
   private _textDocument: vscode.TextDocument | undefined;
   private _onDidChangeCodeLenses: vscode.EventEmitter<void> =

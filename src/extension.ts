@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "commentai" is now active!');
 
-  const codeLensProvider = new CodeLensProvider();
+  // const codeLensProvider = new CodeLensProvider();
   const commentProvider = new CommentProvider();
   const statusBarProvider = new StatusBarProvider();
   // const githubProvider = new GithubProvider();
@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  vscode.languages.registerCodeLensProvider("*", codeLensProvider);
+  // vscode.languages.registerCodeLensProvider("*", codeLensProvider);
   try {
     const session = await vscode.authentication.getSession(
       CodeCommentAuthenticationProvider.id,
