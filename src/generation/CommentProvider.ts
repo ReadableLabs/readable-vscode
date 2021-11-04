@@ -42,16 +42,26 @@ export class CommentProvider {
         kind: kind,
       });
       if (data.status !== 200) {
-        // vscode.window.showErrorMessage(data.message);
         throw new Error("Error: Failed Generating comment");
       } else {
-        // if (showFeedback()) {
-        //   showFeedbackMessage(data.comment_id);
-        // }
         return data.code;
       }
     } catch (err: any) {
       throw new Error(err.toString());
     }
+  }
+
+  public async insertComment(comment: string, position: vscode.Position) {
+    throw new Error("Not Implemented");
+  }
+
+  public async generateAndInsert(
+    text: string,
+    language: string,
+    kind: number,
+    position: vscode.Position
+  ) {
+    let comment = await this.generateComment(text, language, kind);
+    await this.insertComment(comment, position);
   }
 }
