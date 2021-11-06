@@ -31,37 +31,55 @@ export class CommentProvider {
     },
   ];
   public async generateComment(
-    text: string,
+    code: string,
     language: string,
-    kind: number
+    keyword: string,
+    comment_type: string
   ): Promise<string> {
     try {
+      const commentTypes = ["summary", "docstring", "detailed"];
+      if (commentTypes.indexOf(comment_type) == -1) {
+        throw new Error("Error: invalid comment type");
+      }
       const { data } = await axios.post(COMPLETION_URL, {
-        code: text,
-        language: language,
-        kind: kind,
+        code,
+        language,
+        keyword,
+        comment_type: comment_type,
       });
       if (data.status !== 200) {
         throw new Error("Error: Failed Generating comment");
       } else {
-        return data.code;
+        return data;
       }
     } catch (err: any) {
       throw new Error(err.toString());
     }
   }
+  public formatComment(comment: string): string {
+    throw new Error("Not Implemented");
+  }
 
-  public async insertComment(comment: string, position: vscode.Position) {
+  public async insertComment(
+    comment: string,
+    position: vscode.Position,
+    editor: vscode.TextEditor
+  ) {
     throw new Error("Not Implemented");
   }
 
   public async generateAndInsert(
-    text: string,
+    code: string,
     language: string,
-    kind: number,
+    keyword: string,
     position: vscode.Position
   ) {
-    let comment = await this.generateComment(text, language, kind);
-    await this.insertComment(comment, position);
+    let comment = await this.generateComment(
+      code,
+      language,
+      keyword,
+      "summary"
+    );
+    // await this.insertComment(comment, position, vscode.window.activeTextEditor);
   }
 }

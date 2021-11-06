@@ -72,38 +72,91 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  interface IRange {
+    parent: object;
+    range: vscode.Range;
+  }
+
+  vscode.commands.registerCommand(
+    "commentai.generateSummaryComment",
+    async () => {
+      try {
+        console.log("ok");
+        let editor = vscode.window.activeTextEditor;
+        if (!editor?.selection.start || !editor.selection.end) {
+          throw new Error("find me in the lcub");
+        }
+        let selectionRange = new vscode.Range(
+          editor?.selection.start,
+          editor?.selection.end
+        );
+        if (!editor) throw new Error("No editor");
+
+        // console.log(editor.document.getText(editor.selection));
+        // console.log(editor.selection.start);
+        let hi =
+          await vscode.commands.executeCommand<vscode.SemanticTokensLegend>(
+            "vscode.provideDocumentRangeSemanticTokens",
+            editor.document.uri,
+            selectionRange
+            // editor.document.uri
+          );
+
+        console.log(hi);
+
+        // call the comment generation function withb the comment type
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  );
+
   let generate = vscode.commands.registerCommand(
     "commentai.generateComment",
     async () => {
       vscode.window.withProgress(
         {
           cancellable: false,
-          title: GENERATING_NOTIFICATION_TEXT,
+          title: "Generating comment",
           location: vscode.ProgressLocation.Notification,
         },
         (progress, token) => {
           let p = new Promise<void>(async (resolve, reject) => {
             let editor = vscode.window.activeTextEditor;
             if (!editor) return;
-            let selection = editor.selection;
-            let text = editor.document.getText(selection);
-            let generatedComment = await commentProvider.generateComment(
-              text,
-              editor.document.languageId,
-              12
-            ); // default for now, get the symbol in range of this for later
-            await insertComment(
-              new vscode.Position(
-                editor.selection.start.line,
-                editor.selection.start.character
-              ),
-              generatedComment,
-              editor
-            );
           });
           return p;
         }
       );
+      // vscode.window.withProgress(
+      //   {
+      //     cancellable: false,
+      //     title: GENERATING_NOTIFICATION_TEXT,
+      //     location: vscode.ProgressLocation.Notification,
+      //   },
+      //   (progress, token) => {
+      //     let p = new Promise<void>(async (resolve, reject) => {
+      //       let editor = vscode.window.activeTextEditor;
+      //       if (!editor) return;
+      //       let selection = editor.selection;
+      //       let text = editor.document.getText(selection);
+      //       let generatedComment = await commentProvider.generateComment(
+      //         text,
+      //         editor.document.languageId,
+      //         12
+      //       ); // default for now, get the symbol in range of this for later
+      //       await insertComment(
+      //         new vscode.Position(
+      //           editor.selection.start.line,
+      //           editor.selection.start.character
+      //         ),
+      //         generatedComment,
+      //         editor
+      //       );
+      //     });
+      //     return p;
+      //   }
+      // );
     }
   );
 
@@ -124,40 +177,40 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     "commentai.codelensAction",
     async ({ range, kind }: ICodeLensAction) => {
-      vscode.window.withProgress(
-        {
-          cancellable: true,
-          title: "Generating Comment",
-          location: vscode.ProgressLocation.Notification,
-        },
-        async (process, token) => {
-          let p = new Promise<void>(async (resolve, reject) => {
-            try {
-              const editor = vscode.window.activeTextEditor;
-              if (!editor) return;
-              let userCode = getTextRange(range);
-              let language = getLanguageId();
-              if (userCode === "" || language === "") {
-                reject("No language");
-              }
-              let generatedComment = await commentProvider.generateComment(
-                userCode,
-                language,
-                kind
-              );
-              await insertComment(
-                new vscode.Position(range.start.line, range.start.character),
-                generatedComment,
-                editor
-              );
-              resolve();
-            } catch (err) {
-              reject("Error Generating comment");
-            }
-          });
-          return p;
-        }
-      );
+      // vscode.window.withProgress(
+      //   {
+      //     cancellable: true,
+      //     title: "Generating Comment",
+      //     location: vscode.ProgressLocation.Notification,
+      //   },
+      //   async (process, token) => {
+      //     let p = new Promise<void>(async (resolve, reject) => {
+      //       try {
+      //         const editor = vscode.window.activeTextEditor;
+      //         if (!editor) return;
+      //         let userCode = getTextRange(range);
+      //         let language = getLanguageId();
+      //         if (userCode === "" || language === "") {
+      //           reject("No language");
+      //         }
+      //         let generatedComment = await commentProvider.generateComment(
+      //           userCode,
+      //           language,
+      //           kind
+      //         );
+      //         await insertComment(
+      //           new vscode.Position(range.start.line, range.start.character),
+      //           generatedComment,
+      //           editor
+      //         );
+      //         resolve();
+      //       } catch (err) {
+      //         reject("Error Generating comment");
+      //       }
+      //     });
+      //     return p;
+      //   }
+      // );
     }
   );
 

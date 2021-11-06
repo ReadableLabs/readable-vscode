@@ -36,6 +36,10 @@
         "title": "Readable: Disable Comment Suggestions"
       },
       {
+        "command": "commentai.generateSummaryComment",
+        "title": "Readable: Generate Summary of Selected Code"
+      },
+      {
         "command": "commentai.login",
         "title": "Readable: Login"
       },

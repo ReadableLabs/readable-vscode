@@ -1,7 +1,7 @@
 export const DOCSTRING_LABEL = "Docstring";
 
 export const DOCSTRING_DETAIL =
-  "Generate a docstring in the style of @brief, @param, ect.";
+  "Generate a docstring in the style of @brief, @param, etc.";
 
 export const SIMPLE_LABEL = "Simple Comment";
 

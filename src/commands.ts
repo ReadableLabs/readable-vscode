@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { HelloWorldPanel } from "./HelloWorldPanel";
 
 export const enableCodeLensCommand = () => {
   vscode.workspace
