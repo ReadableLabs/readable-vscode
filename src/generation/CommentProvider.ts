@@ -60,6 +60,10 @@ export class CommentProvider {
     throw new Error("Not Implemented");
   }
 
+  private _formatComment(comment: string): string {
+    throw new Error("Not Implemented");
+  }
+
   public async insertComment(
     comment: string,
     position: vscode.Position,

@@ -16,6 +16,7 @@ import { StatusBarProvider } from "./statusbar/StatusBarProvider";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import { disableCodeLensCommand, enableCodeLensCommand } from "./commands";
 import { GithubProvider } from "./authentication/GithubAuthProvider";
+import CodeReader from "./CodeReader";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -27,6 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // const codeLensProvider = new CodeLensProvider();
   const commentProvider = new CommentProvider();
   const statusBarProvider = new StatusBarProvider();
+  const reader = new CodeReader();
   // const githubProvider = new GithubProvider();
 
   context.subscriptions.push(
@@ -38,6 +40,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // vscode.languages.registerCodeLensProvider("*", codeLensProvider);
+  // todo: make this just generate a key and not prompt the user for authentication
   try {
     const session = await vscode.authentication.getSession(
       CodeCommentAuthenticationProvider.id,
