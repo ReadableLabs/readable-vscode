@@ -73,8 +73,10 @@ export async function activate(context: vscode.ExtensionContext) {
     async () => {
       try {
         let text = codeEditor.getSelectedText();
+        let selection = codeEditor.getSelection();
         let generatedComment = await textGenerator.generateSummary(text);
-        let formattedText = codeEditor.formatText();
+        let formattedText = codeEditor.formatText(generatedComment);
+        await codeEditor.insertTextAtPosition(formattedText, selection.start);
         // call the comment generation function withb the comment type
       } catch (err) {
         console.log(err);

@@ -90,10 +90,13 @@ export default class CodeEditor {
 
   public async insertTextAtPosition(
     text: string,
-    position: vscode.Position
+    position: vscode.Position,
+    format: boolean = false
   ): Promise<boolean> {
-    let formattedText = this.formatText(text);
-    let snippet = new vscode.SnippetString(formattedText);
+    if (format === true) {
+      text = this.formatText(text);
+    }
+    let snippet = new vscode.SnippetString(text);
     let result = await this._activeEditor?.insertSnippet(snippet, position);
     if (!result) {
       throw new Error("Error: unable to insert text");

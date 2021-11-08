@@ -21,6 +21,7 @@ export default class TextGenerator {
 
   public async generateSummary(text: string) {
     const data = await this.makeApiRequest(this._completionUrl);
+    console.log(data);
     return data;
   }
 
