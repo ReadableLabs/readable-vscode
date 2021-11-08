@@ -8,6 +8,11 @@ export default class CodeReader {
       this._activeEditor = editor;
       console.log("got active text editor");
     });
+
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      // may be really intensive, idk if we should use this one. Just get the active text editor in a function somewhere
+      console.log("updated text editor");
+    });
   }
 
   public async getAllSymbols(): Promise<vscode.SymbolInformation[]> {
