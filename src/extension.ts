@@ -16,7 +16,9 @@ import { StatusBarProvider } from "./statusbar/StatusBarProvider";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import { disableCodeLensCommand, enableCodeLensCommand } from "./commands";
 import { GithubProvider } from "./authentication/GithubAuthProvider";
-import CodeReader from "./CodeReader";
+import CodeEditor from "./CodeEditor";
+import { read } from "fs";
+import TextGenerator from "./TextGenerator";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -28,7 +30,8 @@ export async function activate(context: vscode.ExtensionContext) {
   // const codeLensProvider = new CodeLensProvider();
   const commentProvider = new CommentProvider();
   const statusBarProvider = new StatusBarProvider();
-  const reader = new CodeReader();
+  const codeEditor = new CodeEditor();
+  const textGenerator = new TextGenerator();
   // const githubProvider = new GithubProvider();
 
   context.subscriptions.push(
@@ -55,16 +58,6 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "commentai.enableCodeLens",
-      enableCodeLensCommand
-    ),
-
-    vscode.commands.registerCommand(
-      "commentai.disableCodeLens",
-      disableCodeLensCommand
-    ),
-
     vscode.commands.registerCommand("commentai.login", async () => {
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
@@ -75,38 +68,13 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  interface IRange {
-    parent: object;
-    range: vscode.Range;
-  }
-
   vscode.commands.registerCommand(
     "commentai.generateSummaryComment",
     async () => {
       try {
-        console.log("ok");
-        let editor = vscode.window.activeTextEditor;
-        if (!editor?.selection.start || !editor.selection.end) {
-          throw new Error("find me in the lcub");
-        }
-        let selectionRange = new vscode.Range(
-          editor?.selection.start,
-          editor?.selection.end
-        );
-        if (!editor) throw new Error("No editor");
-
-        // console.log(editor.document.getText(editor.selection));
-        // console.log(editor.selection.start);
-        let hi =
-          await vscode.commands.executeCommand<vscode.SemanticTokensLegend>(
-            "vscode.provideDocumentRangeSemanticTokens",
-            editor.document.uri,
-            selectionRange
-            // editor.document.uri
-          );
-
-        console.log(hi);
-
+        let text = codeEditor.getSelectedText();
+        let generatedComment = await textGenerator.generateSummary(text);
+        let formattedText = codeEditor.formatText();
         // call the comment generation function withb the comment type
       } catch (err) {
         console.log(err);
@@ -164,62 +132,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.commands.registerCommand("commentai.commentFile", async () => {
-    let symbols: vscode.SymbolInformation[] | undefined = await getSymbols();
-    if (symbols === undefined) {
-      // show error message
-      return;
-    }
-    symbols.forEach((value) => {});
-  });
-
-  interface ICodeLensAction {
-    range: vscode.Range;
-    kind: vscode.SymbolKind;
-  }
-
-  vscode.commands.registerCommand(
-    "commentai.codelensAction",
-    async ({ range, kind }: ICodeLensAction) => {
-      // vscode.window.withProgress(
-      //   {
-      //     cancellable: true,
-      //     title: "Generating Comment",
-      //     location: vscode.ProgressLocation.Notification,
-      //   },
-      //   async (process, token) => {
-      //     let p = new Promise<void>(async (resolve, reject) => {
-      //       try {
-      //         const editor = vscode.window.activeTextEditor;
-      //         if (!editor) return;
-      //         let userCode = getTextRange(range);
-      //         let language = getLanguageId();
-      //         if (userCode === "" || language === "") {
-      //           reject("No language");
-      //         }
-      //         let generatedComment = await commentProvider.generateComment(
-      //           userCode,
-      //           language,
-      //           kind
-      //         );
-      //         await insertComment(
-      //           new vscode.Position(range.start.line, range.start.character),
-      //           generatedComment,
-      //           editor
-      //         );
-      //         resolve();
-      //       } catch (err) {
-      //         reject("Error Generating comment");
-      //       }
-      //     });
-      //     return p;
-      //   }
-      // );
-    }
-  );
-
-  vscode.commands.registerCommand("commentai.statusBarClicked", async () => {
-    let command = await statusBarProvider.showMenu();
-    console.log(command);
+    throw new Error("Error: Not implemented");
   });
 
   context.subscriptions.push(generate, statusBarProvider.myStatusBar);
