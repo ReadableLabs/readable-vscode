@@ -7,6 +7,7 @@ export default class CodeEditor {
       // typescript
       start: "/*",
       formattedStart: "/**",
+      commentCharacter: "*",
       end: "*/",
       replace: [
         { start: "/*", end: "" },
@@ -18,6 +19,7 @@ export default class CodeEditor {
       // javascript
       start: "/*",
       formattedStart: "/**",
+      commentCharacter: "*",
       end: "*/",
       replace: [
         { start: "/*", end: "" },
@@ -29,6 +31,7 @@ export default class CodeEditor {
       // cpp
       start: "/*",
       formattedStart: "/**",
+      commentCharacter: "*",
       end: "*/",
       replace: [
         { start: "/*", end: "" },
@@ -40,6 +43,7 @@ export default class CodeEditor {
       // cs
       start: "/*",
       formattedStart: "/**",
+      commentCharacter: "*",
       end: "*/",
       replace: [
         { start: "/*", end: "" },
@@ -51,6 +55,7 @@ export default class CodeEditor {
       // python
       start: '"""',
       formattedStart: '"""',
+      commentCharacter: "*",
       end: '"""',
       replace: [
         { start: '"""', end: "" },
@@ -64,9 +69,17 @@ export default class CodeEditor {
     console.log("new codereader");
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
+      console.log("got editor");
       this._activeEditor = e;
     });
   }
+
+  private wrap = (s: string, w: number) =>
+    // s.replace(
+    //   new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
+    //   "* $1\n"
+    // );
+    s.concat("\n").replace(`/(?![^\n]{1,${w}}$)([^\n]{1,${w}})\s/g`, "[$1]\n"); // may work, may not, I have no idea. Use the other one but then the last line doesn't get the * appended to it. Workaround would be to just split the string by \n's, and then append a * right before the last one assuming the string has no whitespace trailing
 
   public formatText(comment: string, language?: string): string {
     let currentLanguage = language
@@ -91,9 +104,17 @@ export default class CodeEditor {
       formattedText = formattedText.replace(item.start, item.end);
     });
 
-    if (formattedText.split("\n")[-1] !== "\n") {
-      formattedText = formattedText + "\n";
-    }
+    formattedText = this.wrap(formattedText, 38);
+
+    // formattedText =
+    //   this.languageInfo[languageIndex].formattedStart +
+    //   "\n " +
+    //   this.languageInfo[languageIndex].commentCharacter +
+    //   " " +
+    //   formattedText +
+    //   "\n " +
+    //   this.languageInfo[languageIndex].end +
+    //   "\n";
 
     return formattedText;
   }
@@ -129,13 +150,17 @@ export default class CodeEditor {
   }
 
   public async getAllSymbols(): Promise<vscode.SymbolInformation[]> {
-    if (this._activeEditor) return [];
+    if (this._activeEditor) {
+      return [];
+    }
 
     let symbols = await vscode.commands.executeCommand<
       vscode.SymbolInformation[]
     >("vscode.executeDocumentSymbolProvider");
 
-    if (!symbols) return [];
+    if (!symbols) {
+      return [];
+    }
     return symbols;
   }
 }

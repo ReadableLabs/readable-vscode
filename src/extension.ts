@@ -46,18 +46,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // vscode.languages.registerCodeLensProvider("*", codeLensProvider);
   // todo: make this just generate a key and not prompt the user for authentication
-  try {
-    const session = await vscode.authentication.getSession(
-      CodeCommentAuthenticationProvider.id,
-      [],
-      { createIfNone: true }
-    );
-    console.log(session);
-  } catch (err) {
-    vscode.window.showErrorMessage(
-      "Error logging in with Readable. To log in, press ctrl + shift + p and type 'Readable: Login'"
-    );
-  }
+  // try {
+  //   const session = await vscode.authentication.getSession(
+  //     CodeCommentAuthenticationProvider.id,
+  //     [],
+  //     { createIfNone: true }
+  //   );
+  //   console.log(session);
+  // } catch (err) {
+  //   vscode.window.showErrorMessage(
+  //     "Error logging in with Readable. To log in, open the command palette and type 'Readable: Login''"
+  //   );
+  // }
 
   context.subscriptions.push(
     vscode.commands.registerCommand("commentai.login", async () => {
@@ -74,6 +74,7 @@ export async function activate(context: vscode.ExtensionContext) {
     "commentai.generateSummaryComment",
     async () => {
       try {
+        console.log("generating");
         let text = codeEditor.getSelectedText();
         let selection = codeEditor.getSelection();
         let generatedComment = await textGenerator.generateSummary(
@@ -83,6 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
         );
         let formattedText = codeEditor.formatText(generatedComment);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
+        console.log("generated");
         // call the comment generation function withb the comment type
       } catch (err) {
         console.log(err);
@@ -102,7 +104,9 @@ export async function activate(context: vscode.ExtensionContext) {
         (progress, token) => {
           let p = new Promise<void>(async (resolve, reject) => {
             let editor = vscode.window.activeTextEditor;
-            if (!editor) return;
+            if (!editor) {
+              return;
+            }
           });
           return p;
         }
