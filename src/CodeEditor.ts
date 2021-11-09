@@ -1,3 +1,4 @@
+import { privateEncrypt } from "crypto";
 import * as vscode from "vscode";
 export default class CodeEditor {
   private languages = ["typescript", "javascript", "cpp", "csharp", "python"];
@@ -74,12 +75,26 @@ export default class CodeEditor {
     });
   }
 
-  private wrap = (s: string, w: number) =>
-    // s.replace(
-    //   new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
-    //   "* $1\n"
-    // );
-    s.concat("\n").replace(`/(?![^\n]{1,${w}}$)([^\n]{1,${w}})\s/g`, "[$1]\n"); // may work, may not, I have no idea. Use the other one but then the last line doesn't get the * appended to it. Workaround would be to just split the string by \n's, and then append a * right before the last one assuming the string has no whitespace trailing
+  private wrap = (s: string, w: number) => {
+    let formatted = s.replace(
+      new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
+      " * $1\n"
+    );
+    let formattedArray = formatted.split(""); // todo: replace \t with ""
+    let indexLast = formattedArray.lastIndexOf("\n");
+    console.log(indexLast);
+    formattedArray.splice(indexLast + 1, 0, " ", "*", " ");
+    console.log(formattedArray);
+    formatted = formattedArray.join("");
+    console.log(formatted);
+    return formatted;
+    // return s
+    //   .concat("\n")
+    //   .replace(
+    //     new RegExp(`/(?![^\n]{1,${w}}$)([^\n]{1,${w}})\s/g`, "g"),
+    //     "[$1]\n"
+    //   ); // may work, may not, I have no idea. Use the other one but then the last line doesn't get the * appended to it. Workaround would be to just split the string by \n's, and then append a * right before the last one assuming the string has no whitespace trailing
+  };
 
   public formatText(comment: string, language?: string): string {
     let currentLanguage = language
@@ -88,7 +103,6 @@ export default class CodeEditor {
     if (!currentLanguage) {
       throw new Error("Error: unable to retrieve language");
     }
-
     // check if \n is at end to not insert comment into text which will clip
     let formattedText = comment;
 
