@@ -78,9 +78,8 @@ export default class CodeEditor {
 
     // check if \n is at end to not insert comment into text which will clip
     let formattedText = comment;
-    if (formattedText.split("\n")[-1] !== "\n") {
-      formattedText = formattedText + "\n";
-    }
+
+    formattedText = formattedText.trim();
 
     let languageIndex = this.languages.indexOf(currentLanguage);
 
@@ -92,7 +91,9 @@ export default class CodeEditor {
       formattedText = formattedText.replace(item.start, item.end);
     });
 
-    formattedText = formattedText.trim();
+    if (formattedText.split("\n")[-1] !== "\n") {
+      formattedText = formattedText + "\n";
+    }
 
     return formattedText;
   }
