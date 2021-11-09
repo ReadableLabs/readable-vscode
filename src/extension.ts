@@ -27,10 +27,12 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "commentai" is now active!');
 
+  let editor = vscode.window.activeTextEditor;
+
   // const codeLensProvider = new CodeLensProvider();
   const commentProvider = new CommentProvider();
   const statusBarProvider = new StatusBarProvider();
-  const codeEditor = new CodeEditor();
+  const codeEditor = new CodeEditor(editor);
   const textGenerator = new TextGenerator();
   // const githubProvider = new GithubProvider();
 
@@ -74,7 +76,11 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         let text = codeEditor.getSelectedText();
         let selection = codeEditor.getSelection();
-        let generatedComment = await textGenerator.generateSummary(text);
+        let generatedComment = await textGenerator.generateSummary(
+          text,
+          "javascript",
+          "summary"
+        );
         let formattedText = codeEditor.formatText(generatedComment);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
         // call the comment generation function withb the comment type

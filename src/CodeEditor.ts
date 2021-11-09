@@ -11,6 +11,7 @@ export default class CodeEditor {
       replace: [
         { start: "/*", end: "" },
         { start: "*/", end: "" },
+        { start: /^\s*[\r\n]/gm, end: "" },
       ],
     },
     {
@@ -21,6 +22,7 @@ export default class CodeEditor {
       replace: [
         { start: "/*", end: "" },
         { start: "*/", end: "" },
+        { start: /^\s*[\r\n]/gm, end: "" },
       ],
     },
     {
@@ -31,6 +33,7 @@ export default class CodeEditor {
       replace: [
         { start: "/*", end: "" },
         { start: "*/", end: "" },
+        { start: /^\s*[\r\n]/gm, end: "" },
       ],
     },
     {
@@ -41,6 +44,7 @@ export default class CodeEditor {
       replace: [
         { start: "/*", end: "" },
         { start: "*/", end: "" },
+        { start: /^\s*[\r\n]/gm, end: "" },
       ],
     },
     {
@@ -48,12 +52,15 @@ export default class CodeEditor {
       start: '"""',
       formattedStart: '"""',
       end: '"""',
-      replace: [{ start: '"""', end: "" }],
+      replace: [
+        { start: '"""', end: "" },
+        { start: /^\s*[\r\n]/gm, end: "" },
+      ],
     },
   ];
 
   private _activeEditor: vscode.TextEditor | undefined;
-  constructor() {
+  constructor(editor?: vscode.TextEditor) {
     console.log("new codereader");
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
@@ -84,6 +91,8 @@ export default class CodeEditor {
     this.languageInfo[languageIndex].replace.map((item) => {
       formattedText = formattedText.replace(item.start, item.end);
     });
+
+    formattedText = formattedText.trim();
 
     return formattedText;
   }

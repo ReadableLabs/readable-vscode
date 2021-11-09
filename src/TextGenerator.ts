@@ -6,8 +6,18 @@ export default class TextGenerator {
   private _languages = ["docstring", "summary", "in_line"];
   constructor() {}
 
-  private async makeApiRequest(route: string): Promise<any> {
-    const { data, status } = await axios.post(route);
+  private async makeApiRequest(
+    route: string,
+    code: string,
+    language: string,
+    commentType: string
+  ): Promise<any> {
+    const { data, status } = await axios.post(route, {
+      code,
+      language,
+      keyword: "Function",
+      commentType,
+    });
     if (status !== 200) {
       throw new Error(
         "Error: API Request failed with status " +
@@ -27,8 +37,17 @@ export default class TextGenerator {
     }
   }
 
-  public async generateSummary(text: string) {
-    const data = await this.makeApiRequest(this._completionUrl);
+  public async generateSummary(
+    code: string,
+    language: string,
+    commentType: string
+  ) {
+    const data = await this.makeApiRequest(
+      this._completionUrl,
+      code,
+      language,
+      commentType
+    );
     console.log(data);
     return data;
   }
