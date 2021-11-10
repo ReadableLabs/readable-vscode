@@ -14,7 +14,6 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
-        { start: "  ", end: "" },
       ],
     },
     {
@@ -27,7 +26,6 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
-        { start: "  ", end: "" },
       ],
     },
     {
@@ -53,7 +51,6 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
-        { start: "  ", end: "" },
       ],
     },
     {
@@ -98,11 +95,8 @@ export default class CodeEditor {
     );
     let formattedArray = formatted.split(""); // todo: replace \t with ""
     let indexLast = formattedArray.lastIndexOf("\n");
-    console.log(indexLast);
     formattedArray.splice(indexLast + 1, 0, " ", "*", " ");
-    console.log(formattedArray);
     formatted = formattedArray.join("");
-    console.log(formatted);
     return formatted;
   };
 

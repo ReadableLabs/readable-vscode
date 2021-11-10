@@ -120,7 +120,7 @@ export default class TextGenerator {
       code,
       language,
       commentType,
-      "Function"
+      this.languageInfo[index].keywordMeanings[keywordIndex]
     );
     console.log(data);
     return data;
