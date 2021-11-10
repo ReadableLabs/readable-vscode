@@ -79,8 +79,7 @@ export async function activate(context: vscode.ExtensionContext) {
         let selection = codeEditor.getSelection();
         let generatedComment = await textGenerator.generateSummary(
           text,
-          "javascript",
-          "summary"
+          "javascript"
         );
         let formattedText = codeEditor.formatText(generatedComment);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
