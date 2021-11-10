@@ -125,8 +125,13 @@ export default class TextGenerator {
     return separatedCode[keywordIndex + 1];
   }
 
-  public async generateSummary(code: string, language: string) {
+  public async generateSummary(code: string, language: string, type: string) {
     // let index = this.languages.indexOf(language);
+
+    if (this._types.indexOf(type) < 0) {
+      window.showErrorMessage("Error: Unknown comment type");
+      throw new Error("Error: Unknown comment type");
+    }
 
     let index = this._getLanguageIndex(language);
 
@@ -146,7 +151,7 @@ export default class TextGenerator {
       this._completionUrl,
       code,
       language,
-      "summary",
+      type,
       codeType
     );
     console.log(data);

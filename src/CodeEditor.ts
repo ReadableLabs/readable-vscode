@@ -14,6 +14,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: " *", end: "" },
       ],
     },
     {
@@ -27,6 +28,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: " *", end: "" },
       ],
     },
     {
@@ -40,6 +42,7 @@ export default class CodeEditor {
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
         { start: "  ", end: "" },
+        { start: " *", end: "" },
       ],
     },
     {
@@ -52,6 +55,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: " *", end: "" },
       ],
     },
     {
