@@ -10,22 +10,53 @@ export default class TextGenerator {
   private languageInfo = [
     {
       keywords: /namespace|class|function|\{|\>|let|var|const/,
-      keywordTypes: {
-        namespace: "namespace",
-        class: "Class",
-        function: "Function",
-        "{": "Function",
-        ">": "Function",
-        let: "Code",
-        var: "Code",
-        const: "Code",
-      },
+      keywordTypes: [
+        "namespace",
+        "class",
+        "function",
+        "{",
+        ">",
+        "let",
+        "var",
+        "const",
+      ],
+      keywordMeanings: [
+        "Namespace",
+        "Class",
+        "Function",
+        "Function",
+        "Function",
+        "Code",
+        "Code",
+        "Code",
+      ],
+    },
+    {
+      keywords: /namespace|class|function|\{|\>|let|var|const/,
+      keywordTypes: [
+        "namespace",
+        "class",
+        "function",
+        "{",
+        ">",
+        "let",
+        "var",
+        "const",
+      ],
+      keywordMeanings: [
+        "Namespace",
+        "Class",
+        "Function",
+        "Function",
+        "Function",
+        "Code",
+        "Code",
+        "Code",
+      ],
     },
   ];
 
   constructor() {}
-
-  asdg() {}
 
   private async makeApiRequest(
     route: string,
@@ -66,12 +97,24 @@ export default class TextGenerator {
   ) {
     let index = this.languages.indexOf(language);
 
-    if (index < 0) {
+    if (index < 0 || !index) {
       throw new Error("Error: unsupported language");
     }
 
     let keyword = code.match(this.languageInfo[index].keywords);
+
     console.log(keyword);
+
+    if (!keyword) {
+      throw new Error("Error: unable to match token");
+    }
+
+    let keywordIndex = this.languageInfo[index].keywordTypes.indexOf(
+      keyword[0]
+    );
+
+    console.log(this.languageInfo[index].keywordMeanings[keywordIndex]);
+
     const data = await this.makeApiRequest(
       this._completionUrl,
       code,
