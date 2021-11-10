@@ -73,10 +73,22 @@ export default class CodeEditor {
   constructor(editor?: vscode.TextEditor) {
     console.log("new codereader");
 
+    if (editor) {
+      this._activeEditor = editor;
+      console.log(editor.document);
+    }
+
     vscode.window.onDidChangeActiveTextEditor((e) => {
       console.log("got editor");
       this._activeEditor = e;
     });
+  }
+
+  private getLanguageId() {
+    if (!this._activeEditor) {
+      throw new Error("Error: No active text editor");
+    }
+    return this._activeEditor.document.languageId;
   }
 
   private wrap = (s: string, w: number) => {
@@ -92,12 +104,6 @@ export default class CodeEditor {
     formatted = formattedArray.join("");
     console.log(formatted);
     return formatted;
-    // return s
-    //   .concat("\n")
-    //   .replace(
-    //     new RegExp(`/(?![^\n]{1,${w}}$)([^\n]{1,${w}})\s/g`, "g"),
-    //     "[$1]\n"
-    //   ); // may work, may not, I have no idea. Use the other one but then the last line doesn't get the * appended to it. Workaround would be to just split the string by \n's, and then append a * right before the last one assuming the string has no whitespace trailing
   };
 
   public formatText(comment: string, language?: string): string {
