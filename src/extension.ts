@@ -4,13 +4,7 @@
 import * as vscode from "vscode";
 import axios from "axios";
 import { CodeLensProvider } from "./codelens/CodeLensProvider";
-import {
-  getLanguageId,
-  getTextRange,
-  insertComment,
-} from "./comment/commentTools";
 import { getSymbols } from "./symbols";
-import { CommentProvider } from "./generation/CommentProvider";
 import { GENERATING_NOTIFICATION_TEXT } from "./globals/consts";
 import { StatusBarProvider } from "./statusbar/StatusBarProvider";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
@@ -30,7 +24,6 @@ export async function activate(context: vscode.ExtensionContext) {
   let editor = vscode.window.activeTextEditor;
 
   // const codeLensProvider = new CodeLensProvider();
-  const commentProvider = new CommentProvider();
   const statusBarProvider = new StatusBarProvider();
   const codeEditor = new CodeEditor(editor);
   const textGenerator = new TextGenerator();

@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { DETAILED_DESCRIPTION } from "../generation/consts";
 import {
   ACCOUNT_DETAIL,
   ACCOUNT_LABEL,
