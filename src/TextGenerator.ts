@@ -119,44 +119,38 @@ export default class TextGenerator {
     return this.languageInfo[index].keywordMeanings[keywordIndex];
   }
 
+  private _getCodeName(code: string, keyword: string) {
+    let separatedCode = code.split(" ");
+    let keywordIndex = separatedCode.indexOf(keyword);
+    return separatedCode[keywordIndex + 1];
+  }
+
   public async generateSummary(code: string, language: string) {
     // let index = this.languages.indexOf(language);
 
     let index = this._getLanguageIndex(language);
 
-    // if (index < 0 || !index) {
-    //   window.showErrorMessage("Error: unsupported language");
-    //   throw new Error("Error: unsupported language");
-    // }
-
     let keyword = this._getKeyword(code, index);
-
-    // let keyword = code.match(this.languageInfo[index].keywords);
-
-    // if (!keyword) {
-    //   window.showErrorMessage("Error: unable to match token");
-    //   throw new Error("Error: unable to match token");
-    // }
 
     let keywordIndex = this._getKeywordIndex(keyword[0], index);
 
-    // let keywordIndex = this.languageInfo[index].keywordTypes.indexOf(
-    //   keyword[0]
-    // );
-
     let codeType = this._getCodeType(index, keywordIndex);
 
-    // let codeType = this.languageInfo[index].keywordMeanings[keywordIndex];
+    let codeName = "This";
+
+    if (keyword[0] === "class") {
+      codeName = this._getCodeName(code, keyword[0]);
+    }
 
     const data = await this.makeApiRequest(
       this._completionUrl,
       code,
       language,
       "summary",
-      this.languageInfo[index].keywordMeanings[keywordIndex]
+      codeType
     );
     console.log(data);
-    return data.replace(codeType + " 1", "It");
+    return data.replace(codeType + " 1", codeName);
   }
 
   public generateDocstring(text: string) {}
