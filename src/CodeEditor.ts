@@ -17,6 +17,7 @@ export default class CodeEditor {
       ],
     },
     {
+      // variable instead of code
       // javascript
       start: "/*",
       formattedStart: "/**",
