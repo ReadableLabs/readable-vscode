@@ -14,6 +14,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: "  ", end: "" },
       ],
     },
     {
@@ -26,6 +27,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: "  ", end: "" },
       ],
     },
     {
@@ -38,6 +40,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: "  ", end: "" },
       ],
     },
     {
@@ -50,6 +53,7 @@ export default class CodeEditor {
         { start: "/*", end: "" },
         { start: "*/", end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
+        { start: "  ", end: "" },
       ],
     },
     {
@@ -62,7 +66,7 @@ export default class CodeEditor {
         { start: '"""', end: "" },
         { start: /^\s*[\r\n]/gm, end: "" },
       ],
-    },
+    }, // generate when command
   ];
 
   private _activeEditor: vscode.TextEditor | undefined;
@@ -119,16 +123,9 @@ export default class CodeEditor {
     });
 
     formattedText = this.wrap(formattedText, 38);
+    // stop writing mundane comments
 
-    // formattedText =
-    //   this.languageInfo[languageIndex].formattedStart +
-    //   "\n " +
-    //   this.languageInfo[languageIndex].commentCharacter +
-    //   " " +
-    //   formattedText +
-    //   "\n " +
-    //   this.languageInfo[languageIndex].end +
-    //   "\n";
+    formattedText = "/**\n" + formattedText + "\n */\n"; // whenever there is a ., append new line to separate the comments better
 
     return formattedText;
   }
