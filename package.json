@@ -40,6 +40,10 @@
         "title": "Readable: Generate Summary of Selected Code"
       },
       {
+        "command": "commentai.generateDocstringComment",
+        "title": "Readable: Generate Docstring of Selected Code"
+      },
+      {
         "command": "commentai.login",
         "title": "Readable: Login"
       },

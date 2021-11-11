@@ -125,13 +125,8 @@ export default class TextGenerator {
     return separatedCode[keywordIndex + 1];
   }
 
-  public async generateSummary(code: string, language: string, type: string) {
+  public async generateSummary(code: string, language: string) {
     // let index = this.languages.indexOf(language);
-
-    if (this._types.indexOf(type) < 0) {
-      window.showErrorMessage("Error: Unknown comment type");
-      throw new Error("Error: Unknown comment type");
-    }
 
     let index = this._getLanguageIndex(language);
 
@@ -151,12 +146,30 @@ export default class TextGenerator {
       this._completionUrl,
       code,
       language,
-      type,
+      "summary",
       codeType
     );
     console.log(data);
     return data.replace(codeType + " 1", codeName);
   }
 
-  public generateDocstring(text: string) {}
+  public async generateDocstring(code: string, language: string) {
+    let index = this._getLanguageIndex(language);
+
+    let keyword = this._getKeyword(code, index);
+
+    let keywordIndex = this._getKeywordIndex(keyword[0], index);
+
+    let codeType = this._getCodeType(index, keywordIndex);
+
+    const data = await this.makeApiRequest(
+      this._completionUrl,
+      code,
+      language,
+      "docstring",
+      codeType
+    );
+    console.log(data);
+    return data;
+  }
 }

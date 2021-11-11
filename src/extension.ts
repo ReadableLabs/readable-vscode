@@ -72,15 +72,35 @@ export async function activate(context: vscode.ExtensionContext) {
         let selection = codeEditor.getSelection();
         let generatedComment = await textGenerator.generateSummary(
           text,
-          "javascript",
-          "summary"
+          "javascript"
         );
         let formattedText = codeEditor.formatText(generatedComment);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
         console.log("generated");
         // call the comment generation function withb the comment type
-      } catch (err) {
+      } catch (err: any) {
+        vscode.window.showErrorMessage(err.toString());
         console.log(err);
+      }
+    }
+  );
+
+  vscode.commands.registerCommand(
+    "commentai.generateDocstringComment",
+    async () => {
+      try {
+        console.log("start");
+        let text = codeEditor.getSelectedText();
+        let selection = codeEditor.getSelection();
+        let generatedComment = await textGenerator.generateSummary(
+          text,
+          "javascript"
+        );
+        let formattedText = codeEditor.formatText(generatedComment);
+        await codeEditor.insertTextAtPosition(formattedText, selection.start);
+        console.log("generated");
+      } catch (err: any) {
+        vscode.window.showErrorMessage(err.toString());
       }
     }
   );
