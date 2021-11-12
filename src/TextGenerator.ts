@@ -52,7 +52,7 @@ export default class TextGenerator {
         "Function",
         "Code",
         "Code",
-        "Code",
+        "Function",
       ],
     },
   ];
