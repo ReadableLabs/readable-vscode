@@ -86,7 +86,7 @@ export default class CodeEditor {
     });
   }
 
-  private getLanguageId() {
+  public getLanguageId() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
     }

@@ -70,9 +70,10 @@ export async function activate(context: vscode.ExtensionContext) {
         console.log("generating");
         let text = codeEditor.getSelectedText();
         let selection = codeEditor.getSelection();
+        let language = codeEditor.getLanguageId();
         let generatedComment = await textGenerator.generateSummary(
           text,
-          "javascript"
+          language
         );
         let formattedText = codeEditor.formatText(generatedComment);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
