@@ -79,6 +79,7 @@ export async function activate(context: vscode.ExtensionContext) {
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
         console.log("generated");
         // call the comment generation function withb the comment type
+        // todo: get inline comments working
       } catch (err: any) {
         vscode.window.showErrorMessage(err.toString());
         console.log(err);
