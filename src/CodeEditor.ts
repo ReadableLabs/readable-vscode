@@ -105,7 +105,7 @@ export default class CodeEditor {
     return formatted;
   };
 
-  public formatText(comment: string, language?: string): string {
+  public formatText(comment: string, language?: string, spaces = 0): string {
     let currentLanguage = language
       ? language
       : this._activeEditor?.document.languageId;

@@ -69,7 +69,10 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         console.log("generating");
         let text = codeEditor.getSelectedText();
-        let spaces = /^\s/.test(text);
+        // let spaces = /^\s/.test(text);
+        let spaces = text.search(/\S/);
+        console.log(spaces); // -1
+        return;
         let selection = codeEditor.getSelection();
         let language = codeEditor.getLanguageId();
         let generatedComment = await textGenerator.generateSummary(

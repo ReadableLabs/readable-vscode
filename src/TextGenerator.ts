@@ -149,7 +149,7 @@ export default class TextGenerator {
       "summary",
       codeType
     );
-    console.log(data);
+    // console.log(data);
     return data.replace(codeType + " 1", codeName);
   }
 
