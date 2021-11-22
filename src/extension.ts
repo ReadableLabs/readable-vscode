@@ -72,14 +72,14 @@ export async function activate(context: vscode.ExtensionContext) {
         // let spaces = /^\s/.test(text);
         let spaces = text.search(/\S/);
         console.log(spaces); // -1
-        return;
         let selection = codeEditor.getSelection();
         let language = codeEditor.getLanguageId();
         let generatedComment = await textGenerator.generateSummary(
           text,
           language
         );
-        let formattedText = codeEditor.formatText(generatedComment);
+        let formattedText = codeEditor.formatText(generatedComment, spaces);
+        console.log(formattedText);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
         console.log("generated");
         // call the comment generation function withb the comment type
@@ -102,7 +102,7 @@ export async function activate(context: vscode.ExtensionContext) {
           text,
           "javascript"
         );
-        let formattedText = codeEditor.formatText(generatedComment);
+        let formattedText = codeEditor.formatText(generatedComment, 0);
         await codeEditor.insertTextAtPosition(formattedText, selection.start);
         console.log("generated");
       } catch (err: any) {

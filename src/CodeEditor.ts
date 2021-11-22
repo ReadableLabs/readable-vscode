@@ -93,25 +93,38 @@ export default class CodeEditor {
     return this._activeEditor.document.languageId;
   }
 
-  private wrap = (s: string, w: number) => {
+  private wrap = (s: string, w: number, spaces: number) => {
+    // make sure to append to the front and the bottom with the find and replace thing with the spaces string format
     let formatted = s.replace(
       new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
-      " * $1\n"
+      " ".repeat(spaces) + " * $1\n"
     );
     let formattedArray = formatted.split(""); // todo: replace \t with ""
     let indexLast = formattedArray.lastIndexOf("\n");
-    formattedArray.splice(indexLast + 1, 0, " ", "*", " ");
+    formattedArray.splice(indexLast + 1, 0, " ".repeat(spaces), " ", "*", " ");
     formatted = formattedArray.join("");
     return formatted;
   };
 
-  public formatText(comment: string, language?: string, spaces = 0): string {
+  public formatText(
+    comment: string,
+    _spaces: number,
+    language?: string
+  ): string {
+    let spaces = 0;
     let currentLanguage = language
       ? language
       : this._activeEditor?.document.languageId;
     if (!currentLanguage) {
       throw new Error("Error: unable to retrieve language");
     }
+
+    if (_spaces < 0) {
+      spaces = 0;
+    } else {
+      spaces = _spaces;
+    }
+
     // check if \n is at end to not insert comment into text which will clip
     let formattedText = comment;
 
@@ -127,22 +140,24 @@ export default class CodeEditor {
       formattedText = formattedText.replace(item.start, item.end);
     });
 
-    formattedText = this.wrap(formattedText, 38);
+    formattedText = this.wrap(formattedText, 38, spaces);
     // stop writing mundane comments
 
-    formattedText = "/**\n" + formattedText + "\n */\n"; // whenever there is a ., append new line to separate the comments better
+    formattedText =
+      " ".repeat(spaces) +
+      "/**\n" +
+      formattedText +
+      "\n" +
+      " ".repeat(spaces) +
+      " */\n"; // whenever there is a ., append new line to separate the comments better
 
     return formattedText;
   }
 
   public async insertTextAtPosition(
     text: string,
-    position: vscode.Position,
-    format: boolean = false
+    position: vscode.Position
   ): Promise<boolean> {
-    if (format === true) {
-      text = this.formatText(text);
-    }
     let snippet = new vscode.SnippetString(text);
     let result = await this._activeEditor?.insertSnippet(snippet, position);
     if (!result) {
