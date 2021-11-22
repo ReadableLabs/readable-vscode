@@ -66,48 +66,55 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     "commentai.generateSummaryComment",
     async () => {
-      try {
-        console.log("generating");
-        let text = codeEditor.getSelectedText();
-        // let spaces = /^\s/.test(text);
-        let spaces = text.search(/\S/);
-        console.log(spaces); // -1
-        let selection = codeEditor.getSelection();
-        let language = codeEditor.getLanguageId();
-        let generatedComment = await textGenerator.generateSummary(
-          text,
-          language
-        );
-        let formattedText = codeEditor.formatText(generatedComment, spaces);
-        console.log(formattedText);
-        await codeEditor.insertTextAtPosition(formattedText, selection.start);
-        console.log("generated");
-        // call the comment generation function withb the comment type
-        // todo: get inline comments working
-      } catch (err: any) {
-        vscode.window.showErrorMessage(err.toString());
-        console.log(err);
-      }
-    }
-  );
+      vscode.window.withProgress(
+        {
+          cancellable: true,
+          title: "Generating Comment",
+          location: vscode.ProgressLocation.Notification,
+        },
+        (progress: vscode.Progress<{}>, token: vscode.CancellationToken) => {
+          let p = new Promise<void>(async (resolve, reject) => {
+            try {
+              console.log("generating");
+              let text = codeEditor.getSelectedText();
+              // let spaces = /^\s/.test(text);
+              let spaces = text.search(/\S/);
+              console.log(spaces); // -1
+              let selection = codeEditor.getSelection();
+              let language = codeEditor.getLanguageId();
+              if (token.isCancellationRequested) {
+                return;
+              }
+              let generatedComment = await textGenerator.generateSummary(
+                text,
+                language
+              );
+              let formattedText = codeEditor.formatText(
+                generatedComment,
+                spaces
+              );
+              console.log(formattedText);
 
-  vscode.commands.registerCommand(
-    "commentai.generateDocstringComment",
-    async () => {
-      try {
-        console.log("start");
-        let text = codeEditor.getSelectedText();
-        let selection = codeEditor.getSelection();
-        let generatedComment = await textGenerator.generateSummary(
-          text,
-          "javascript"
-        );
-        let formattedText = codeEditor.formatText(generatedComment, 0);
-        await codeEditor.insertTextAtPosition(formattedText, selection.start);
-        console.log("generated");
-      } catch (err: any) {
-        vscode.window.showErrorMessage(err.toString());
-      }
+              if (token.isCancellationRequested) {
+                return;
+              }
+              await codeEditor.insertTextAtPosition(
+                formattedText,
+                selection.start
+              );
+              console.log("generated");
+              resolve();
+              // call the comment generation function withb the comment type
+              // todo: get inline comments working
+            } catch (err: any) {
+              vscode.window.showErrorMessage(err.toString());
+              console.log(err);
+              reject();
+            }
+          });
+          return p;
+        }
+      );
     }
   );
 

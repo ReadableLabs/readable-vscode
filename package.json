@@ -20,10 +20,6 @@
         "title": "Readable: Hello World"
       },
       {
-        "command": "commentai.generateComment",
-        "title": "Readable: Generate Comment"
-      },
-      {
         "command": "commentai.commentFile",
         "title": "Readable: Generate comments for entire file."
       },
@@ -38,10 +34,6 @@
       {
         "command": "commentai.generateSummaryComment",
         "title": "Readable: Generate Summary of Selected Code"
-      },
-      {
-        "command": "commentai.generateDocstringComment",
-        "title": "Readable: Generate Docstring of Selected Code"
       },
       {
         "command": "commentai.login",
