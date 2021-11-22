@@ -1,7 +1,14 @@
 import { privateEncrypt } from "crypto";
 import * as vscode from "vscode";
 export default class CodeEditor {
-  private languages = ["typescript", "javascript", "cpp", "csharp", "python"];
+  private languages = [
+    "typescript",
+    "javascript",
+    "cpp",
+    "csharp",
+    "python",
+    "php",
+  ];
 
   private languageInfo = [
     {
@@ -69,6 +76,19 @@ export default class CodeEditor {
         { start: /^\s*[\r\n]/gm, end: "" },
       ],
     }, // generate when command
+    {
+      // php
+      start: "/*",
+      formattedStart: "/**",
+      commentCharacter: "*",
+      end: "*/",
+      replace: [
+        { start: "/*", end: "" },
+        { start: "*/", end: "" },
+        { start: /^\s*[\r\n]/gm, end: "" },
+        { start: " *", end: "" },
+      ],
+    },
   ];
 
   private _activeEditor: vscode.TextEditor | undefined;
@@ -94,6 +114,7 @@ export default class CodeEditor {
   }
 
   private wrap = (s: string, w: number, spaces: number) => {
+    // make wrapPython
     // make sure to append to the front and the bottom with the find and replace thing with the spaces string format
     let formatted = s.replace(
       new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
