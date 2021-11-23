@@ -53,6 +53,10 @@ export async function activate(context: vscode.ExtensionContext) {
   // }
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("commentai.helloWorld", async () => {
+      let symbols = await codeEditor.getAllSymbols();
+      console.log(symbols);
+    }),
     vscode.commands.registerCommand("commentai.login", async () => {
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,

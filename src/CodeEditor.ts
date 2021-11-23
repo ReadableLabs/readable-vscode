@@ -207,6 +207,7 @@ export default class CodeEditor {
     }
 
     let symbols = await vscode.commands.executeCommand<
+      // vscode.SymbolInformation[]
       vscode.SymbolInformation[]
     >("vscode.executeDocumentSymbolProvider");
 
