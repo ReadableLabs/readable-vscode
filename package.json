@@ -40,6 +40,10 @@
         "title": "Readable: Login"
       },
       {
+        "command": "commentai.register",
+        "title": "Readable: Register"
+      },
+      {
         "command": "commentai.statusBarClicked",
         "title": "Readable: Show Menu"
       }

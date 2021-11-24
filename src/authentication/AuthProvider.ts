@@ -12,6 +12,7 @@ import {
 } from "vscode";
 import axios from "axios";
 const https = require("https");
+import * as vscode from "vscode";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class CodeCommentPatSession implements AuthenticationSession {
@@ -45,12 +46,12 @@ export class CodeCommentAuthenticationProvider
       detail: "Log in with Email",
       picked: false,
     },
-    {
-      label: "$(person-add)  Register",
-      detail:
-        "Create an account. Note: if you sign in with GitHub, an account is created automatically",
-      picked: false,
-    },
+    // {
+    //   label: "$(person-add)  Register",
+    //   detail:
+    //     "Create an account. Note: if you sign in with GitHub, an account is created automatically",
+    //   picked: false,
+    // },
   ];
 
   private currentToken: Promise<string | undefined> | undefined;
@@ -181,7 +182,7 @@ export class CodeCommentAuthenticationProvider
     if (providerName === "$(mark-github)  GitHub") {
       return this.githubLogin();
     }
-    if (providerName === "$(email)  Email") {
+    if (providerName === "$(mail)  Email") {
       return this.accountLogin();
     } else {
       throw new Error("Invalid provider name");
@@ -267,7 +268,22 @@ export class CodeCommentAuthenticationProvider
     if (!password) {
       throw new Error("Enter in a password");
     }
-    throw new Error("Invalid authentication session");
+
+    const { data } = await axios.post(
+      "http://127.0.0.1:8000/api/v1/users/auth/login/",
+      {
+        email: email,
+        password: password,
+      }
+    );
+
+    if (!data.key) {
+      throw new Error(
+        "Error: unable to login. You can reset your password at readable.so"
+      );
+    }
+
+    return data.key;
   }
 
   async removeSession(_sessionId: string): Promise<void> {

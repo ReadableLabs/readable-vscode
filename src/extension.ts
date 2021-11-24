@@ -66,6 +66,41 @@ export async function activate(context: vscode.ExtensionContext) {
         { createIfNone: true }
       );
       console.log(session);
+    }),
+
+    vscode.commands.registerCommand("commentai.register", async () => {
+      const email = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Email",
+        prompt: "Enter an email",
+      });
+
+      const password1 = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Password",
+        prompt: "Enter in a password",
+        password: true,
+      });
+
+      const password2 = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Password",
+        prompt: "Repeat the password",
+        password: true,
+      });
+
+      const { data } = await axios.post(
+        "http://127.0.0.1:8000/api/v1/users/auth/register/",
+        {
+          email: email,
+          password1,
+          password2,
+        }
+      );
+
+      vscode.window.showInformationMessage(
+        data.detail + " Check your inbox and try logging in."
+      );
     })
   );
 
