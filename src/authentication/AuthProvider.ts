@@ -195,7 +195,7 @@ export class CodeCommentAuthenticationProvider
     if (session) {
       console.log("got here");
       const { data, status } = await axios.post(
-        "https://api.codecomment.ai/api/v1/users/login/github/",
+        "http://127.0.0.1:8000/api/v1/users/login/github/",
         {
           access_token: session.accessToken,
         },
@@ -216,7 +216,7 @@ export class CodeCommentAuthenticationProvider
       }
 
       const updatedAccount = await axios.post(
-        "https://api.codecomment.ai/api/v1/users/finish/",
+        "http://127.0.0.1:8000/api/v1/users/finish/",
         {
           access_token: session.accessToken,
         },

@@ -47,8 +47,10 @@ export async function activate(context: vscode.ExtensionContext) {
   //   );
   //   console.log(session);
   // } catch (err) {
+  //   console.log(err);
   //   vscode.window.showErrorMessage(
-  //     "Error logging in with Readable. To log in, open the command palette and type 'Readable: Login''"
+  //     "Error logging in with Readable. To log in, open the command palette and type 'Readable: Login''",
+  //     "Don't show again"
   //   );
   // }
 
@@ -70,6 +72,13 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     "commentai.generateSummaryComment",
     async () => {
+      const session = await vscode.authentication.getSession(
+        CodeCommentAuthenticationProvider.id,
+        [],
+        { createIfNone: true }
+      );
+      console.log(session);
+      return;
       vscode.window.withProgress(
         {
           cancellable: true,
