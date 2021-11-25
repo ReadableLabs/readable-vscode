@@ -13,6 +13,7 @@ import { GithubProvider } from "./authentication/GithubAuthProvider";
 import CodeEditor from "./CodeEditor";
 import { read } from "fs";
 import TextGenerator from "./TextGenerator";
+import { resolve } from "path";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -58,6 +59,20 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("commentai.helloWorld", async () => {
       let symbols = await codeEditor.getAllSymbols();
       console.log(symbols);
+      let title = await vscode.window.withProgress(
+        {
+          title: "Hi",
+          cancellable: false,
+          location: vscode.ProgressLocation.Notification,
+        },
+        (progress, token) => {
+          let p = new Promise<string>((resolve, reject) => {
+            resolve("hello");
+          });
+          return p;
+        }
+      );
+      console.log(title);
     }),
     vscode.commands.registerCommand("commentai.login", async () => {
       const session = await vscode.authentication.getSession(
@@ -91,17 +106,29 @@ export async function activate(context: vscode.ExtensionContext) {
         password: true,
       });
 
-      const { data } = await axios.post(
-        "http://127.0.0.1:8000/api/v1/users/auth/register/",
+      let detail = await vscode.window.withProgress(
         {
-          email: email,
-          password1,
-          password2,
+          title: "Registering",
+          cancellable: false,
+          location: vscode.ProgressLocation.Notification,
+        },
+        (progress, token) => {
+          let p = new Promise<string>(async (resolve, reject) => {
+            const { data } = await axios.post(
+              "http://127.0.0.1:8000/api/v1/users/auth/register/",
+              {
+                email: email,
+                password1,
+                password2,
+              }
+            );
+            resolve(data.detail);
+          });
+          return p;
         }
       );
-
       vscode.window.showInformationMessage(
-        data.detail + " Check your inbox and try logging in."
+        detail + " Check your inbox and try logging in."
       );
     })
   );
