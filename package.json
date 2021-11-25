@@ -14,10 +14,28 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "menus": {
+      "editor/context": [
+        {
+          "command": "commentai.rightClickComment",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "keybindings": [{
+      "command": "commentai.rightClickComment",
+      "key": "ctrl+shift+f8",
+      "mac": "cmd+shift+f8",
+      "when": "editorTextFocus"
+    }],
     "commands": [
       {
         "command": "commentai.helloWorld",
         "title": "Readable: Hello World"
+      },
+      {
+        "command": "commentai.rightClickComment",
+        "title": "Generate Comment"
       },
       {
         "command": "commentai.commentFile",

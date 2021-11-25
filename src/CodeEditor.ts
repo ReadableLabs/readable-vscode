@@ -201,15 +201,16 @@ export default class CodeEditor {
     return this._activeEditor.selection;
   }
 
-  public async getAllSymbols(): Promise<vscode.SymbolInformation[]> {
-    if (this._activeEditor) {
+  public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
+    if (!this._activeEditor) {
+      console.log("hello");
       return [];
     }
 
-    let symbols = await vscode.commands.executeCommand<
-      // vscode.SymbolInformation[]
-      vscode.SymbolInformation[]
-    >("vscode.executeDocumentSymbolProvider");
+    let symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
+      "vscode.executeDocumentSymbolProvider",
+      this._activeEditor.document.uri
+    );
 
     if (!symbols) {
       return [];

@@ -83,6 +83,12 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log(session);
     }),
 
+    vscode.commands.registerCommand("commentai.rightClickComment", async () => {
+      let symbols = await codeEditor.getAllSymbols();
+      console.log(symbols);
+      vscode.window.showInformationMessage("done");
+    }),
+
     vscode.commands.registerCommand("commentai.register", async () => {
       const email = await vscode.window.showInputBox({
         ignoreFocusOut: true,
