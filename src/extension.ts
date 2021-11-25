@@ -114,6 +114,9 @@ export async function activate(context: vscode.ExtensionContext) {
         [],
         { createIfNone: true }
       );
+      if (!session) {
+        vscode.window.showErrorMessage("Error: Please login.");
+      }
       vscode.window.withProgress(
         {
           cancellable: true,
@@ -135,7 +138,8 @@ export async function activate(context: vscode.ExtensionContext) {
               }
               let generatedComment = await textGenerator.generateSummary(
                 text,
-                language
+                language,
+                session.accessToken
               );
               let formattedText = codeEditor.formatText(
                 generatedComment,

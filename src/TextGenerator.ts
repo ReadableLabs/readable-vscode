@@ -64,14 +64,23 @@ export default class TextGenerator {
     code: string,
     language: string,
     commentType: string,
-    keyword: string
+    keyword: string,
+    user_token: string
   ): Promise<any> {
-    const { data, status } = await axios.post(route, {
-      code,
-      language,
-      keyword,
-      commentType,
-    });
+    const { data, status } = await axios.post(
+      route,
+      {
+        code,
+        language,
+        keyword,
+        commentType,
+      },
+      {
+        headers: {
+          Authorization: `Token ${user_token}`,
+        },
+      }
+    );
     if (status !== 200) {
       throw new Error(
         "Error: API Request failed with status " +
@@ -125,7 +134,11 @@ export default class TextGenerator {
     return separatedCode[keywordIndex + 1];
   }
 
-  public async generateSummary(code: string, language: string) {
+  public async generateSummary(
+    code: string,
+    language: string,
+    user_key: string
+  ) {
     // let index = this.languages.indexOf(language);
 
     let index = this._getLanguageIndex(language);
@@ -147,13 +160,18 @@ export default class TextGenerator {
       code,
       language,
       "summary",
-      codeType
+      codeType,
+      user_key
     );
     // console.log(data);
     return data.replace(codeType + " 1", codeName);
   }
 
-  public async generateDocstring(code: string, language: string) {
+  public async generateDocstring(
+    code: string,
+    language: string,
+    user_key: string
+  ) {
     let index = this._getLanguageIndex(language);
 
     let keyword = this._getKeyword(code, index);
@@ -167,7 +185,8 @@ export default class TextGenerator {
       code,
       language,
       "docstring",
-      codeType
+      codeType,
+      user_key
     );
     console.log(data);
     return data;
