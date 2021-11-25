@@ -75,6 +75,8 @@ export async function activate(context: vscode.ExtensionContext) {
         prompt: "Enter an email",
       });
 
+      // add check if email, whatever are null to just abort
+
       const password1 = await vscode.window.showInputBox({
         ignoreFocusOut: true,
         placeHolder: "Password",
@@ -112,8 +114,6 @@ export async function activate(context: vscode.ExtensionContext) {
         [],
         { createIfNone: true }
       );
-      console.log(session);
-      return;
       vscode.window.withProgress(
         {
           cancellable: true,
