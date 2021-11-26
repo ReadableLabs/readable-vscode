@@ -201,6 +201,14 @@ export default class CodeEditor {
     return this._activeEditor.selection;
   }
 
+  public getCursorPosition(): number {
+    if (!this._activeEditor) {
+      throw new Error("Error: unable to get cursor position");
+    }
+
+    return this._activeEditor.selection.active.line;
+  }
+
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {
       console.log("hello");
