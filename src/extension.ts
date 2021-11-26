@@ -14,6 +14,7 @@ import CodeEditor from "./CodeEditor";
 import { read } from "fs";
 import TextGenerator from "./TextGenerator";
 import { resolve } from "path";
+import { symbolKinds } from "./codelens/consts";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -86,6 +87,17 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("commentai.rightClickComment", async () => {
       let symbols = await codeEditor.getAllSymbols();
       console.log(symbols);
+      let position = codeEditor.getCursorPosition();
+      console.log(position);
+      symbols.map((symbol) => {
+        if (symbol.kind === vscode.SymbolKind.Class) {
+          symbol.children.map((symbol) => {
+            if (symbol.kind === vscode.SymbolKind.Variable)
+          })
+        }
+        symbol.children.map((symbol) => {});
+        console.log(symbol.kind);
+      });
       vscode.window.showInformationMessage("done");
     }),
 
