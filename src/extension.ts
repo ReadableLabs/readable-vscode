@@ -91,9 +91,6 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log(position);
       symbols.map((symbol) => {
         if (symbol.kind === vscode.SymbolKind.Class) {
-          symbol.children.map((symbol) => {
-            if (symbol.kind === vscode.SymbolKind.Variable)
-          })
         }
         symbol.children.map((symbol) => {});
         console.log(symbol.kind);
