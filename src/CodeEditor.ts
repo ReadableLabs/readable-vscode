@@ -113,6 +113,10 @@ export default class CodeEditor {
     return this._activeEditor.document.languageId;
   }
 
+  public getSpaces(text: string): number {
+    return text.search(/\S/);
+  }
+
   private wrap = (s: string, w: number, spaces: number) => {
     // make wrapPython
     // make sure to append to the front and the bottom with the find and replace thing with the spaces string format

@@ -155,27 +155,6 @@ export class CodeCommentAuthenticationProvider
     console.log("successfully logged into Code Comment");
 
     return new CodeCommentPatSession(session);
-
-    // const token = await window.showInputBox({
-    //   ignoreFocusOut: true,
-    //   placeHolder: "Personal Access Token",
-    //   prompt:
-    //     "Enter the CodeComment Access Token which you were shown in your web browser",
-    //   password: true,
-    // });
-
-    // if (!token) {
-    //   throw new Error("PAT is required");
-    // }
-
-    // await this.secretStorage.store(
-    //   CodeCommentAuthenticationProvider.secretKey,
-    //   token
-    // );
-
-    // console.log("Successfully logged into CodeComment");
-
-    // return new CodeCommentPatSession(token);
   }
 
   async loginWithProvider(providerName: string): Promise<string> {
@@ -206,6 +185,7 @@ export class CodeCommentAuthenticationProvider
             const { data, status } = await axios.post(
               "http://127.0.0.1:8000/api/v1/users/login/github/",
               {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 access_token: session.accessToken,
               },
               {
@@ -227,10 +207,12 @@ export class CodeCommentAuthenticationProvider
             const updatedAccount = await axios.post(
               "http://127.0.0.1:8000/api/v1/users/finish/",
               {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 access_token: session.accessToken,
               },
               {
                 headers: {
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
                   Authorization: `Token ${data.key}`,
                   "content-type": "application/json",
                 },
@@ -241,7 +223,7 @@ export class CodeCommentAuthenticationProvider
             );
             if (!updatedAccount) {
               window.showWarningMessage(
-                "Unable to get email from GitHub account. NOTE: You will still be able to use the extension like this."
+                "Unable to get email from GitHub account. NOTE: You will still be able to use the extension like this." // TODO: Have url to help page
               );
             }
             // this.secretStorage.store(
@@ -285,7 +267,7 @@ export class CodeCommentAuthenticationProvider
 
     let key = await vscode.window.withProgress(
       {
-        title: "Loggin in",
+        title: "Logging in",
         cancellable: false,
         location: vscode.ProgressLocation.Notification,
       },
@@ -303,16 +285,62 @@ export class CodeCommentAuthenticationProvider
             throw new Error(
               "Error: unable to login. You can reset your password at readable.so"
             );
-            reject(data.key);
           }
-
           resolve(data.key);
         });
         return p;
       }
     );
-
     return key;
+  }
+
+  async registerAccount(): Promise<void> {
+    const email = await vscode.window.showInputBox({
+      ignoreFocusOut: true,
+      placeHolder: "Email",
+      prompt: "Enter an email",
+    });
+
+    // add check if email, whatever are null to just abort
+
+    const password1 = await vscode.window.showInputBox({
+      ignoreFocusOut: true,
+      placeHolder: "Password",
+      prompt: "Enter in a password",
+      password: true,
+    });
+
+    const password2 = await vscode.window.showInputBox({
+      ignoreFocusOut: true,
+      placeHolder: "Password",
+      prompt: "Repeat the password",
+      password: true,
+    });
+
+    let detail = await vscode.window.withProgress(
+      {
+        title: "Registering",
+        cancellable: false,
+        location: vscode.ProgressLocation.Notification,
+      },
+      (progress, token) => {
+        let p = new Promise<string>(async (resolve, reject) => {
+          const { data } = await axios.post(
+            "http://127.0.0.1:8000/api/v1/users/auth/register/",
+            {
+              email: email,
+              password1,
+              password2,
+            }
+          );
+          resolve(data.detail);
+        });
+        return p;
+      }
+    );
+    vscode.window.showInformationMessage(
+      detail + " Check your inbox and try logging in."
+    );
   }
 
   async removeSession(_sessionId: string): Promise<void> {

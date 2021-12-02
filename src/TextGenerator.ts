@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import axios from "axios";
 import { window } from "vscode";
 export default class TextGenerator {
