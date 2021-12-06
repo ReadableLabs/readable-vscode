@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { getLenses } from "./codeLensTools";
-import { getSymbols } from "../symbols";
 import { CODELENS_COMMAND, CODELENS_TITLE } from "./consts";
 
 /* BROKEN - Coming in later release */

@@ -4,15 +4,10 @@
 import * as vscode from "vscode";
 import axios from "axios";
 import { CodeLensProvider } from "./codelens/CodeLensProvider";
-import { getSymbols } from "./symbols";
 import { GENERATING_NOTIFICATION_TEXT } from "./globals/consts";
 import { StatusBarProvider } from "./statusbar/StatusBarProvider";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
-import {
-  disableCodeLensCommand,
-  enableCodeLensCommand,
-  loginCommand,
-} from "./commands";
+import Commands from "./commands";
 import CodeEditor from "./CodeEditor";
 import { read } from "fs";
 import TextGenerator from "./TextGenerator";
@@ -46,19 +41,24 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("commentai.helloWorld", async () => {}),
-    vscode.commands.registerCommand("commentai.login", loginCommand),
+    vscode.commands.registerCommand("commentai.login", Commands.loginCommand),
     vscode.commands.registerCommand("commentai.rightClickComment", async () => {
       let selection = codeEditor.getSelection();
+      console.log(codeEditor.hasSelection());
       console.log(selection);
+      return;
       let symbols = await codeEditor.getAllSymbols();
       console.log(symbols);
       let position = codeEditor.getCursorPosition();
+      let foundSymbol: vscode.DocumentSymbol | null = null;
       if (
         selection.start.line === selection.end.line &&
         selection.start.character === selection.end.character
       ) {
       }
+      let index = 0;
       symbols.map((symbol) => {
+        // todo: break from map
         // if (symbol.kind === vscode.SymbolKind.Class) {
         //   symbol.children.map((_symbol) => {
         //     if (
@@ -75,9 +75,12 @@ export async function activate(context: vscode.ExtensionContext) {
           position
         ) {
           console.log("found the symbol");
-          console.log(symbol);
+          foundSymbol = symbol;
         }
       });
+      if (!foundSymbol) {
+        throw Error("Unable to find symbol");
+      }
       vscode.window.showInformationMessage("done");
     }),
 

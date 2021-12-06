@@ -198,6 +198,22 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
 
+  public hasSelection(): boolean {
+    if (!this._activeEditor) {
+      throw new Error("Error: No active text editor");
+    }
+    if (
+      this._activeEditor.selection.start.line ===
+        this._activeEditor.selection.end.line &&
+      this._activeEditor.selection.start.character ===
+        this._activeEditor.selection.end.character
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   public getSelection() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
