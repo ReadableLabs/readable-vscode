@@ -43,44 +43,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("commentai.helloWorld", async () => {}),
     vscode.commands.registerCommand("commentai.login", Commands.loginCommand),
     vscode.commands.registerCommand("commentai.rightClickComment", async () => {
-      let selection = codeEditor.getSelection();
-      console.log(codeEditor.hasSelection());
-      console.log(selection);
-      return;
-      let symbols = await codeEditor.getAllSymbols();
-      console.log(symbols);
-      let position = codeEditor.getCursorPosition();
-      let foundSymbol: vscode.DocumentSymbol | null = null;
-      if (
-        selection.start.line === selection.end.line &&
-        selection.start.character === selection.end.character
-      ) {
+      if (codeEditor.hasSelection()) {
+        let selection = codeEditor.getSelection();
+      } else {
+        let selectedSymbol = await codeEditor.getSymbolUnderCusor();
+        console.log(selectedSymbol);
       }
-      let index = 0;
-      symbols.map((symbol) => {
-        // todo: break from map
-        // if (symbol.kind === vscode.SymbolKind.Class) {
-        //   symbol.children.map((_symbol) => {
-        //     if (
-        //       symbol.kind === vscode.SymbolKind.Method ||
-        //       vscode.SymbolKind.Function ||
-        //       vscode.SymbolKind.Constant
-        //     ) {
-        //     }
-        //   });
-        // }
-        if (
-          symbol.range.start.line <= position &&
-          symbol.range.end.line &&
-          position
-        ) {
-          console.log("found the symbol");
-          foundSymbol = symbol;
-        }
-      });
-      if (!foundSymbol) {
-        throw Error("Unable to find symbol");
-      }
+
       vscode.window.showInformationMessage("done");
     }),
 
