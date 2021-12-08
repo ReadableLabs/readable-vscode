@@ -179,11 +179,20 @@ export default class CodeEditor {
     return formattedText;
   }
 
+  public getTextFromSelection(selection: vscode.Selection): string {
+    if (!this._activeEditor) {
+      throw new Error("Error: unable to get active editor");
+    }
+    return this._activeEditor?.document.getText(
+      new vscode.Range(selection.start, selection.end)
+    );
+  }
+
   public getTextFromSymbol(symbol: vscode.DocumentSymbol) {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get active editor");
     }
-    return this._activeEditor?.document.getText(symbol.range);
+    return this._activeEditor.document.getText(symbol.range);
   }
 
   public async insertTextAtPosition(
