@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 const https = require("https");
 import * as vscode from "vscode";
+import { resolve } from "path";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class CodeCommentPatSession implements AuthenticationSession {
@@ -292,6 +293,42 @@ export class CodeCommentAuthenticationProvider
       }
     );
     return key;
+  }
+
+  async resetPassword(): Promise<void> {
+    const email = await vscode.window.showInputBox({
+      ignoreFocusOut: true,
+      placeHolder: "Email",
+      prompt: "Enter your email",
+    });
+    vscode.window.withProgress(
+      {
+        cancellable: true,
+        location: vscode.ProgressLocation.Notification,
+        title: "Sending Password Reset Email",
+      },
+      (progress, token) => {
+        const p = new Promise<void>(async (resolve, reject) => {
+          try {
+            const { data } = await axios.post(
+              "https://api.codecomment.ai/api/v1/users/password-reset/",
+              {
+                email: email,
+              }
+            );
+            if (!data.detail) {
+              vscode.window.showErrorMessage("Error: can't send email request");
+            } else {
+              vscode.window.showInformationMessage(data.detail);
+              reject();
+            }
+          } catch (err) {
+            reject();
+          }
+        });
+        return p;
+      }
+    );
   }
 
   async registerAccount(): Promise<void> {

@@ -76,15 +76,24 @@ export async function activate(context: vscode.ExtensionContext) {
                 startPosition = selectedSymbol.range.start;
               }
               let language = codeEditor.getLanguageId();
+              if (token.isCancellationRequested) {
+                return;
+              }
               const generatedComment = await textGenerator.generateSummary(
                 selectedCode,
                 language,
                 session.accessToken
               );
+              if (token.isCancellationRequested) {
+                return;
+              }
               let formattedComment = codeEditor.formatText(
                 generatedComment,
                 spaces
               );
+              if (token.isCancellationRequested) {
+                return;
+              }
               await codeEditor.insertTextAtPosition(
                 formattedComment,
                 startPosition
