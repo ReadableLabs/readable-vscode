@@ -53,14 +53,17 @@ export async function activate(context: vscode.ExtensionContext) {
       }
       let selectedCode: string | null;
       let spaces: number | null;
+      let startPosition: vscode.Position | null;
       if (codeEditor.hasSelection()) {
         let selection = codeEditor.getSelection();
         selectedCode = codeEditor.getTextFromSelection(selection);
         spaces = selectedCode.search(/\S/);
+        startPosition = selection.start;
       } else {
         let selectedSymbol = await codeEditor.getSymbolUnderCusor();
         selectedCode = codeEditor.getTextFromSymbol(selectedSymbol);
         spaces = selectedSymbol.range.start.character;
+        startPosition = selectedSymbol.range.start;
       }
       let language = codeEditor.getLanguageId();
       const generatedComment = await textGenerator.generateSummary(
@@ -71,7 +74,8 @@ export async function activate(context: vscode.ExtensionContext) {
       let formattedComment = codeEditor.formatText(generatedComment, spaces);
       await codeEditor.insertTextAtPosition(
         formattedComment,
-        selectedSymbol.range.start
+        startPosition
+        // selectedSymbol.range.start
       );
       vscode.window.showInformationMessage("done");
     }),
