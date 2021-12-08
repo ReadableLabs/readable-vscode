@@ -13,6 +13,7 @@ import { read } from "fs";
 import TextGenerator from "./TextGenerator";
 import { resolve } from "path";
 import { symbolKinds } from "./codelens/consts";
+import { rejects } from "assert";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -51,33 +52,52 @@ export async function activate(context: vscode.ExtensionContext) {
       if (!session) {
         vscode.window.showErrorMessage("Error: Please login.");
       }
-      let selectedCode: string | null;
-      let spaces: number | null;
-      let startPosition: vscode.Position | null;
-      if (codeEditor.hasSelection()) {
-        let selection = codeEditor.getSelection();
-        selectedCode = codeEditor.getTextFromSelection(selection);
-        spaces = selectedCode.search(/\S/);
-        startPosition = selection.start;
-      } else {
-        let selectedSymbol = await codeEditor.getSymbolUnderCusor();
-        selectedCode = codeEditor.getTextFromSymbol(selectedSymbol);
-        spaces = selectedSymbol.range.start.character;
-        startPosition = selectedSymbol.range.start;
-      }
-      let language = codeEditor.getLanguageId();
-      const generatedComment = await textGenerator.generateSummary(
-        selectedCode,
-        language,
-        session.accessToken
+      vscode.window.withProgress(
+        {
+          cancellable: true,
+          location: vscode.ProgressLocation.Notification,
+          title: "Generating Comment",
+        },
+        (progress, token) => {
+          const p = new Promise<void>(async (resolve, reject) => {
+            try {
+              let selectedCode: string | null;
+              let spaces: number | null;
+              let startPosition: vscode.Position | null;
+              if (codeEditor.hasSelection()) {
+                let selection = codeEditor.getSelection();
+                selectedCode = codeEditor.getTextFromSelection(selection);
+                spaces = selectedCode.search(/\S/);
+                startPosition = selection.start;
+              } else {
+                let selectedSymbol = await codeEditor.getSymbolUnderCusor();
+                selectedCode = codeEditor.getTextFromSymbol(selectedSymbol);
+                spaces = selectedSymbol.range.start.character;
+                startPosition = selectedSymbol.range.start;
+              }
+              let language = codeEditor.getLanguageId();
+              const generatedComment = await textGenerator.generateSummary(
+                selectedCode,
+                language,
+                session.accessToken
+              );
+              let formattedComment = codeEditor.formatText(
+                generatedComment,
+                spaces
+              );
+              await codeEditor.insertTextAtPosition(
+                formattedComment,
+                startPosition
+                // selectedSymbol.range.start
+              );
+              resolve();
+            } catch (err) {
+              reject();
+            }
+          });
+          return p;
+        }
       );
-      let formattedComment = codeEditor.formatText(generatedComment, spaces);
-      await codeEditor.insertTextAtPosition(
-        formattedComment,
-        startPosition
-        // selectedSymbol.range.start
-      );
-      vscode.window.showInformationMessage("done");
     }),
 
     vscode.commands.registerCommand(
