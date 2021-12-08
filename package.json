@@ -22,12 +22,14 @@
         }
       ]
     },
-    "keybindings": [{
-      "command": "commentai.rightClickComment",
-      "key": "ctrl+shift+f8",
-      "mac": "cmd+shift+f8",
-      "when": "editorTextFocus"
-    }],
+    "keybindings": [
+      {
+        "command": "commentai.rightClickComment",
+        "key": "ctrl+shift+f8",
+        "mac": "cmd+shift+f8",
+        "when": "editorTextFocus"
+      }
+    ],
     "commands": [
       {
         "command": "commentai.helloWorld",
@@ -64,6 +66,10 @@
       {
         "command": "commentai.statusBarClicked",
         "title": "Readable: Show Menu"
+      },
+      {
+        "command": "commentai.resetPassword",
+        "title": "Readable: Reset Password"
       }
     ],
     "configuration": {
