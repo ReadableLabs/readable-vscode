@@ -43,13 +43,32 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("commentai.helloWorld", async () => {}),
     vscode.commands.registerCommand("commentai.login", Commands.loginCommand),
     vscode.commands.registerCommand("commentai.rightClickComment", async () => {
+      const session = await vscode.authentication.getSession(
+        CodeCommentAuthenticationProvider.id,
+        [],
+        { createIfNone: true }
+      );
+      if (!session) {
+        vscode.window.showErrorMessage("Error: Please login.");
+      }
       if (codeEditor.hasSelection()) {
         let selection = codeEditor.getSelection();
       } else {
         let selectedSymbol = await codeEditor.getSymbolUnderCusor();
-        console.log(selectedSymbol);
+        let selectedCode = codeEditor.getTextFromSymbol(selectedSymbol);
+        let language = codeEditor.getLanguageId();
+        const generatedComment = await textGenerator.generateSummary(
+          selectedCode,
+          language,
+          session.accessToken
+        );
+        let spaces = selectedSymbol.range.start.character;
+        let formattedComment = codeEditor.formatText(generatedComment, spaces);
+        await codeEditor.insertTextAtPosition(
+          formattedComment,
+          selectedSymbol.range.start
+        );
       }
-
       vscode.window.showInformationMessage("done");
     }),
 
