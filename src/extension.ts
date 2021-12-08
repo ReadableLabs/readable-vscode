@@ -51,24 +51,28 @@ export async function activate(context: vscode.ExtensionContext) {
       if (!session) {
         vscode.window.showErrorMessage("Error: Please login.");
       }
+      let selectedCode: string | null;
+      let spaces: number | null;
       if (codeEditor.hasSelection()) {
         let selection = codeEditor.getSelection();
+        selectedCode = codeEditor.getTextFromSelection(selection);
+        spaces = selectedCode.search(/\S/);
       } else {
         let selectedSymbol = await codeEditor.getSymbolUnderCusor();
-        let selectedCode = codeEditor.getTextFromSymbol(selectedSymbol);
-        let language = codeEditor.getLanguageId();
-        const generatedComment = await textGenerator.generateSummary(
-          selectedCode,
-          language,
-          session.accessToken
-        );
-        let spaces = selectedSymbol.range.start.character;
-        let formattedComment = codeEditor.formatText(generatedComment, spaces);
-        await codeEditor.insertTextAtPosition(
-          formattedComment,
-          selectedSymbol.range.start
-        );
+        selectedCode = codeEditor.getTextFromSymbol(selectedSymbol);
+        spaces = selectedSymbol.range.start.character;
       }
+      let language = codeEditor.getLanguageId();
+      const generatedComment = await textGenerator.generateSummary(
+        selectedCode,
+        language,
+        session.accessToken
+      );
+      let formattedComment = codeEditor.formatText(generatedComment, spaces);
+      await codeEditor.insertTextAtPosition(
+        formattedComment,
+        selectedSymbol.range.start
+      );
       vscode.window.showInformationMessage("done");
     }),
 
