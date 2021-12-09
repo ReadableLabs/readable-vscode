@@ -48,6 +48,34 @@ export async function activate(context: vscode.ExtensionContext) {
       authProvider.resetPassword
     ),
     vscode.commands.registerCommand("commentai.rightClickComment", async () => {
+      console.log("hello");
+      const session = await vscode.authentication.getSession(
+        CodeCommentAuthenticationProvider.id,
+        [],
+        { createIfNone: true }
+      );
+      if (!session) {
+        vscode.window.showErrorMessage("Error: Please login");
+        return;
+      }
+      vscode.window.withProgress(
+        {
+          cancellable: true,
+          location: vscode.ProgressLocation.Notification,
+          title: "Generating Comment",
+        },
+        (progress, token) => {
+          const p = new Promise<void>(async (resolve, reject) => {
+            let symbols = await codeEditor.getAllSymbols();
+            console.log(symbols);
+            vscode.window.showInformationMessage("done");
+            resolve();
+          });
+          return p;
+        }
+      );
+    }),
+    vscode.commands.registerCommand("commentai.leftClickComment", async () => {
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
         [],
@@ -55,6 +83,7 @@ export async function activate(context: vscode.ExtensionContext) {
       );
       if (!session) {
         vscode.window.showErrorMessage("Error: Please login.");
+        return;
       }
       vscode.window.withProgress(
         {

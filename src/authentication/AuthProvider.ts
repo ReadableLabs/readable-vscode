@@ -13,7 +13,6 @@ import {
 import axios from "axios";
 const https = require("https");
 import * as vscode from "vscode";
-import { resolve } from "path";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class CodeCommentPatSession implements AuthenticationSession {
@@ -130,9 +129,15 @@ export class CodeCommentAuthenticationProvider
   async getSessions(
     _scopes?: string[]
   ): Promise<readonly AuthenticationSession[]> {
-    this.ensureInitialized();
-    const token = await this.cacheTokenFromStorage();
-    return token ? [new CodeCommentPatSession(token)] : [];
+    try {
+      console.log("get sessions");
+      this.ensureInitialized();
+      const token = await this.cacheTokenFromStorage();
+      return token ? [new CodeCommentPatSession(token)] : [];
+    } catch (err) {
+      console.log(err);
+      throw new Error("hadsigoh");
+    }
   }
 
   async createSession(_scopes: string[]): Promise<AuthenticationSession> {
@@ -182,58 +187,64 @@ export class CodeCommentAuthenticationProvider
         },
         (progress, token) => {
           let p = new Promise<string>(async (resolve, reject) => {
-            console.log("got here");
-            const { data, status } = await axios.post(
-              "http://127.0.0.1:8000/api/v1/users/login/github/",
-              {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                access_token: session.accessToken,
-              },
-              {
-                headers: {
-                  "content-type": "application/json",
-                },
-                httpsAgent: new https.Agent({
-                  rejectUnauthorized: false,
-                }),
-              }
-            );
-            if (status !== 200 && status !== 201) {
-              throw new Error("Unable to create an account with GitHub");
-            }
-            if (data === null || data === undefined) {
-              throw new Error("Unable to create an account with GitHub");
-            }
-
-            const updatedAccount = await axios.post(
-              "http://127.0.0.1:8000/api/v1/users/finish/",
-              {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                access_token: session.accessToken,
-              },
-              {
-                headers: {
+            try {
+              console.log("got here");
+              const { data, status } = await axios.post(
+                "http://127.0.0.1:8000/api/v1/users/login/github/",
+                {
                   // eslint-disable-next-line @typescript-eslint/naming-convention
-                  Authorization: `Token ${data.key}`,
-                  "content-type": "application/json",
+                  access_token: session.accessToken,
                 },
-                httpsAgent: new https.Agent({
-                  rejectUnauthorized: false,
-                }),
-              }
-            );
-            if (!updatedAccount) {
-              window.showWarningMessage(
-                "Unable to get email from GitHub account. NOTE: You will still be able to use the extension like this." // TODO: Have url to help page
+                {
+                  headers: {
+                    "content-type": "application/json",
+                  },
+                  httpsAgent: new https.Agent({
+                    rejectUnauthorized: false,
+                  }),
+                }
               );
+              if (status !== 200 && status !== 201) {
+                throw new Error("Unable to create an account with GitHub");
+              }
+              if (data === null || data === undefined) {
+                throw new Error("Unable to create an account with GitHub");
+              }
+
+              const updatedAccount = await axios.post(
+                "http://127.0.0.1:8000/api/v1/users/finish/",
+                {
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  access_token: session.accessToken,
+                },
+                {
+                  headers: {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    Authorization: `Token ${data.key}`,
+                    "content-type": "application/json",
+                  },
+                  httpsAgent: new https.Agent({
+                    rejectUnauthorized: false,
+                  }),
+                }
+              );
+              if (!updatedAccount) {
+                window.showWarningMessage(
+                  "Unable to get email from GitHub account. NOTE: You will still be able to use the extension like this." // TODO: Have url to help page
+                );
+              }
+              // this.secretStorage.store(
+              //   CodeCommentAuthenticationProvider.secretKey,
+              //   data
+              // );
+              console.log(data);
+              resolve(data.key);
+              // return data.key;
+            } catch (err: any) {
+              console.log(err);
+              vscode.window.showErrorMessage(err);
+              reject();
             }
-            // this.secretStorage.store(
-            //   CodeCommentAuthenticationProvider.secretKey,
-            //   data
-            // );
-            console.log(data);
-            resolve(data.key);
-            // return data.key;
           });
           return p;
         }
@@ -274,20 +285,26 @@ export class CodeCommentAuthenticationProvider
       },
       (progress, token) => {
         let p = new Promise<string>(async (resolve, reject) => {
-          const { data } = await axios.post(
-            "http://127.0.0.1:8000/api/v1/users/auth/login/",
-            {
-              email: email,
-              password: password,
-            }
-          );
-
-          if (!data.key) {
-            throw new Error(
-              "Error: unable to login. You can reset your password at readable.so"
+          try {
+            const { data } = await axios.post(
+              "http://127.0.0.1:8000/api/v1/users/auth/login/",
+              {
+                email: email,
+                password: password,
+              }
             );
+
+            if (!data.key) {
+              throw new Error(
+                "Error: unable to login. You can reset your password using the reset password command."
+              );
+            }
+            resolve(data.key);
+          } catch (err: any) {
+            console.log(err);
+            vscode.window.showErrorMessage("Error: failed to login");
+            reject();
           }
-          resolve(data.key);
         });
         return p;
       }
