@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
   let editor = vscode.window.activeTextEditor;
 
   // const codeLensProvider = new CodeLensProvider();
-  const statusBarProvider = new StatusBarProvider();
+  // const statusBarProvider = new StatusBarProvider();
   const codeEditor = new CodeEditor(editor);
   const textGenerator = new TextGenerator();
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
@@ -104,7 +104,9 @@ export async function activate(context: vscode.ExtensionContext) {
                 // selectedSymbol.range.start
               );
               resolve();
-            } catch (err) {
+            } catch (err: any) {
+              console.log(err);
+              vscode.window.showErrorMessage(err.toString());
               reject();
             }
           });
@@ -186,7 +188,7 @@ export async function activate(context: vscode.ExtensionContext) {
     throw new Error("Error: Not implemented");
   });
 
-  context.subscriptions.push(statusBarProvider.myStatusBar);
+  // context.subscriptions.push(statusBarProvider.myStatusBar);
 }
 
 // this method is called when your extension is deactivated
