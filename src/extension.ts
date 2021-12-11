@@ -25,15 +25,14 @@ export async function activate(context: vscode.ExtensionContext) {
   let editor = vscode.window.activeTextEditor;
 
   const provider = vscode.languages.registerCompletionItemProvider(
-    "plaintext",
+    "javascript",
     {
-      provideCompletionItems(
+      async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
       ) {
-        console.log("ok");
         const linePrefix = document
           .lineAt(position)
           .text.substring(0, position.character);
@@ -41,9 +40,16 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!linePrefix.endsWith("//")) {
           return undefined;
         } else {
+          const { data } = await axios.post(
+            "http://127.0.0.1:8000/complete/autocomplete/",
+            {
+              code: linePrefix,
+            }
+          );
+          console.log(data);
           return [
             new vscode.CompletionItem(
-              " Test Item",
+              " " + data,
               vscode.CompletionItemKind.Text
             ),
           ];
