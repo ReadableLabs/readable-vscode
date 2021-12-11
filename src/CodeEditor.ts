@@ -245,6 +245,14 @@ export default class CodeEditor {
     return this._activeEditor.selection.active.line;
   }
 
+  public getTextInRange(range: vscode.Range): string {
+    if (!this._activeEditor) {
+      throw new Error("Error: unable to get active editor");
+    }
+
+    return this._activeEditor.document.getText(range);
+  }
+
   public async getSymbolUnderCusor(): Promise<vscode.DocumentSymbol> {
     let symbols = await this.getAllSymbols();
     if (symbols === []) {

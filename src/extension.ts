@@ -40,19 +40,40 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!linePrefix.endsWith("//")) {
           return undefined;
         } else {
+          const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
+          const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol);
+          const autoCode = codeEditor
+            .getTextInRange(
+              new vscode.Range(full_codeSymbol.range.start, position)
+            )
+            .trimRight();
+          console.log(autoCode);
+          // console.log(full_code);
           const { data } = await axios.post(
             "http://127.0.0.1:8000/complete/autocomplete/",
             {
-              code: linePrefix,
+              full_code: full_code,
+              code: autoCode,
             }
           );
+          if (
+            data.includes("comment describing what the code below does") ||
+            data.includes(
+              "comment describing what the code above does" || data === ""
+            )
+          ) {
+            let result = vscode.window.showWarningMessage(
+              "No comment was able to be generated.",
+              "Don't show again"
+            );
+            return [new vscode.CompletionItem("")];
+          }
           console.log(data);
-          return [
-            new vscode.CompletionItem(
-              " " + data,
-              vscode.CompletionItemKind.Text
-            ),
-          ];
+          let completion = new vscode.CompletionItem(
+            data,
+            vscode.CompletionItemKind.Text
+          );
+          return [completion];
         }
       },
     },
