@@ -24,6 +24,35 @@ export async function activate(context: vscode.ExtensionContext) {
 
   let editor = vscode.window.activeTextEditor;
 
+  const provider = vscode.languages.registerCompletionItemProvider(
+    "plaintext",
+    {
+      provideCompletionItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken,
+        context: vscode.CompletionContext
+      ) {
+        console.log("ok");
+        const linePrefix = document
+          .lineAt(position)
+          .text.substring(0, position.character);
+        console.log(linePrefix);
+        if (!linePrefix.endsWith("//")) {
+          return undefined;
+        } else {
+          return [
+            new vscode.CompletionItem(
+              " Test Item",
+              vscode.CompletionItemKind.Text
+            ),
+          ];
+        }
+      },
+    },
+    "/"
+  );
+
   // const codeLensProvider = new CodeLensProvider();
   // const statusBarProvider = new StatusBarProvider();
   const codeEditor = new CodeEditor(editor);
