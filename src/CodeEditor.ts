@@ -122,7 +122,7 @@ export default class CodeEditor {
     // make sure to append to the front and the bottom with the find and replace thing with the spaces string format
     let formatted = s.replace(
       new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
-      " ".repeat(spaces) + " * $1\n"
+      " ".repeat(spaces) + " $1\n"
     );
     let formattedArray = formatted.split(""); // todo: replace \t with ""
     let indexLast = formattedArray.lastIndexOf("\n");
@@ -165,7 +165,7 @@ export default class CodeEditor {
       formattedText = formattedText.replace(item.start, item.end);
     });
 
-    formattedText = this.wrap(formattedText, 38, spaces);
+    formattedText = this.wrap(formattedText, 70, spaces); // 38
     // stop writing mundane comments
 
     formattedText =

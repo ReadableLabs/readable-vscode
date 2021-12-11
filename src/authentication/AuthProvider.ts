@@ -349,52 +349,57 @@ export class CodeCommentAuthenticationProvider
   }
 
   async registerAccount(): Promise<void> {
-    const email = await vscode.window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Email",
-      prompt: "Enter an email",
-    });
+    try {
+      const email = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Email",
+        prompt: "Enter an email",
+      });
 
-    // add check if email, whatever are null to just abort
+      // add check if email, whatever are null to just abort
 
-    const password1 = await vscode.window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Password",
-      prompt: "Enter in a password",
-      password: true,
-    });
+      const password1 = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Password",
+        prompt: "Enter in a password",
+        password: true,
+      });
 
-    const password2 = await vscode.window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Password",
-      prompt: "Repeat the password",
-      password: true,
-    });
+      const password2 = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Password",
+        prompt: "Repeat the password",
+        password: true,
+      });
 
-    let detail = await vscode.window.withProgress(
-      {
-        title: "Registering",
-        cancellable: false,
-        location: vscode.ProgressLocation.Notification,
-      },
-      (progress, token) => {
-        let p = new Promise<string>(async (resolve, reject) => {
-          const { data } = await axios.post(
-            "http://127.0.0.1:8000/api/v1/users/auth/register/",
-            {
-              email: email,
-              password1,
-              password2,
-            }
-          );
-          resolve(data.detail);
-        });
-        return p;
-      }
-    );
-    vscode.window.showInformationMessage(
-      detail + " Check your inbox and try logging in."
-    );
+      let detail = await vscode.window.withProgress(
+        {
+          title: "Registering",
+          cancellable: false,
+          location: vscode.ProgressLocation.Notification,
+        },
+        (progress, token) => {
+          let p = new Promise<string>(async (resolve, reject) => {
+            const { data } = await axios.post(
+              "http://127.0.0.1:8000/api/v1/users/auth/register/",
+              {
+                email: email,
+                password1,
+                password2,
+              }
+            );
+            resolve(data.detail);
+          });
+          return p;
+        }
+      );
+      vscode.window.showInformationMessage(
+        detail + " Check your inbox and try logging in."
+      );
+    } catch (err: any) {
+      console.log(err);
+      vscode.window.showErrorMessage(err);
+    }
   }
 
   async removeSession(_sessionId: string): Promise<void> {

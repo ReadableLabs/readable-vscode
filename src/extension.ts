@@ -25,7 +25,21 @@ export async function activate(context: vscode.ExtensionContext) {
   let editor = vscode.window.activeTextEditor;
 
   const provider = vscode.languages.registerCompletionItemProvider(
-    "javascript",
+    // "javascript",
+    [
+      { language: "javascript" },
+      { language: "typescript" },
+      { language: "cpp" },
+      {
+        language: "csharp",
+      },
+      {
+        language: "go",
+      },
+      {
+        language: "java",
+      },
+    ],
     {
       async provideCompletionItems(
         document: vscode.TextDocument,
@@ -41,8 +55,8 @@ export async function activate(context: vscode.ExtensionContext) {
           return undefined;
         } else {
           const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
-          const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol);
-          const autoCode = codeEditor
+          const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
+          const autoCode = codeEditor // comment on bottom of IDE like the GitHub Copilot logo, but with Readable
             .getTextInRange(
               new vscode.Range(full_codeSymbol.range.start, position)
             )
@@ -180,6 +194,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 return;
               }
               let formattedComment = codeEditor.formatText(
+                // add a check to see if the string it returns is empty, and show a warning or error
                 generatedComment,
                 spaces
               );

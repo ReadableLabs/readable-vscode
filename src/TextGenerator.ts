@@ -164,7 +164,12 @@ export default class TextGenerator {
       codeType,
       user_key
     );
-    // console.log(data);
+    console.log(data);
+
+    // const { data } = await axios.post(this._completionUrl, {
+    //   full_code: code,
+    // });
+
     return data.replace(codeType + " 1", codeName);
   }
 
