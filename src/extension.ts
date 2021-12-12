@@ -3,18 +3,10 @@
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
 import axios from "axios";
-import { CodeLensProvider } from "./codelens/CodeLensProvider";
-import { GENERATING_NOTIFICATION_TEXT } from "./globals/consts";
-import { StatusBarProvider } from "./statusbar/StatusBarProvider";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import Commands from "./commands";
 import CodeEditor from "./CodeEditor";
-import { read } from "fs";
 import TextGenerator from "./TextGenerator";
-import { resolve } from "path";
-import { symbolKinds } from "./codelens/consts";
-import { rejects } from "assert";
-import { privateEncrypt } from "crypto";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -73,11 +65,6 @@ export async function activate(context: vscode.ExtensionContext) {
             full_codeSymbol.range.end.line > position.line + 16
               ? position.line + 16
               : full_codeSymbol.range.end.line;
-          // if (full_codeSymbol.range.start.line < position.line - 8) {
-          //   startLine = position.line;
-          // } else {
-          //   startLine = full_codeSymbol.range.end.line;
-          // }
           const full_code = await codeEditor.getTextInRange(
             new vscode.Range(
               new vscode.Position(startLine, 0),
@@ -220,7 +207,12 @@ export async function activate(context: vscode.ExtensionContext) {
               if (token.isCancellationRequested) {
                 return;
               }
-              const generatedComment = await textGenerator.generateSummary(
+              // const generatedComment = await textGenerator.generateSummary(
+              //   selectedCode,
+              //   language,
+              //   session.accessToken
+              // );
+              const generatedComment = await textGenerator.generateComment(
                 selectedCode,
                 language,
                 session.accessToken

@@ -3,9 +3,16 @@ import axios from "axios";
 import { window } from "vscode";
 export default class TextGenerator {
   private _baseUrl = "http://127.0.0.1:8000";
-  private _completionUrl = this._baseUrl + "/complete/";
+  private _completionUrl = this._baseUrl + "/complete/right-click/";
 
-  private languages = ["typescript", "javascript", "cpp", "csharp", "python"];
+  private languages = [
+    "typescript",
+    "javascript",
+    "cpp",
+    "csharp",
+    "python",
+    "php",
+  ];
 
   private _types = ["docstring", "summary", "in_line"];
 
@@ -133,6 +140,22 @@ export default class TextGenerator {
     let separatedCode = code.split(" ");
     let keywordIndex = separatedCode.indexOf(keyword);
     return separatedCode[keywordIndex + 1];
+  }
+
+  public async generateComment(code: string, language: string, id: string) {
+    const { data } = await axios.post(
+      this._completionUrl,
+      {
+        full_code: code,
+        language: language,
+      },
+      {
+        headers: {
+          Authorization: `Token ${id}`,
+        },
+      }
+    );
+    return data;
   }
 
   public async generateSummary(

@@ -120,15 +120,21 @@ export default class CodeEditor {
   private wrap = (s: string, w: number, spaces: number) => {
     // make wrapPython
     // make sure to append to the front and the bottom with the find and replace thing with the spaces string format
-    let formatted = s.replace(
-      new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
-      " ".repeat(spaces) + " $1\n"
-    );
-    let formattedArray = formatted.split(""); // todo: replace \t with ""
-    let indexLast = formattedArray.lastIndexOf("\n");
-    formattedArray.splice(indexLast + 1, 0, " ".repeat(spaces), " ", "*", " ");
-    formatted = formattedArray.join("");
-    return formatted;
+    // let formatted = s.replace(
+    //   new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
+    //   " ".repeat(spaces) + " $1\n"
+    // );
+    // let formatted = s.replace(/\*/, "");
+    // formatted = formatted.replace(/\n/, "\n" + " ".repeat(spaces));
+    // let formattedArray = formatted.split(""); // todo: replace \t with ""
+    // let indexLast = formattedArray.lastIndexOf("\n");
+    // formattedArray.splice(indexLast + 1, 0, " ".repeat(spaces), " ", "*", " ");
+    // formatted = formattedArray.join("");
+    // return formatted;
+    // let formatted = s.replace(/\n/, "\n" + " ".repeat(spaces));
+    // formatted = " ".repeat(spaces) + formatted;
+    // return formatted;
+    return s;
   };
 
   public formatText(
@@ -151,9 +157,21 @@ export default class CodeEditor {
     }
 
     // check if \n is at end to not insert comment into text which will clip
-    let formattedText = comment;
+    let formattedText = "";
 
-    formattedText = formattedText.trim();
+    // formattedText = formattedText.trim();
+    let formattedArray = comment.split("\n");
+    for (let k = 0; k < formattedArray.length; k++) {
+      // formattedArray[k] = formattedArray[k].trim();
+      if (!/^\s+$/.test(formattedArray[k])) {
+        formattedText +=
+          " ".repeat(spaces) + " * " + formattedArray[k].trim() + "\n";
+      }
+    }
+
+    formattedText = formattedText.replace(/\*\//, "");
+
+    console.log(formattedText);
 
     let languageIndex = this.languages.indexOf(currentLanguage);
 
@@ -161,20 +179,15 @@ export default class CodeEditor {
       throw new Error("Error: unsupported language."); // send axios request here for language
     }
 
-    this.languageInfo[languageIndex].replace.map((item) => {
-      formattedText = formattedText.replace(item.start, item.end);
-    });
+    // this.languageInfo[languageIndex].replace.map((item) => {
+    //   formattedText = formattedText.replace(item.start, item.end);
+    // });
 
-    formattedText = this.wrap(formattedText, 70, spaces); // 38
+    // formattedText = this.wrap(formattedText, 110, spaces); // 38
     // stop writing mundane comments
 
     formattedText =
-      " ".repeat(spaces) +
-      "/**\n" +
-      formattedText +
-      "\n" +
-      " ".repeat(spaces) +
-      " */\n"; // whenever there is a ., append new line to separate the comments better
+      " ".repeat(spaces) + "/**\n" + formattedText + "\n" + " */\n"; // whenever there is a ., append new line to separate the comments better
 
     return formattedText;
   }
