@@ -14,6 +14,7 @@ import TextGenerator from "./TextGenerator";
 import { resolve } from "path";
 import { symbolKinds } from "./codelens/consts";
 import { rejects } from "assert";
+import { privateEncrypt } from "crypto";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -62,7 +63,29 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
           }
           const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
-          const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
+          // const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
+          let startLine: number, endLine: number;
+          startLine =
+            full_codeSymbol.range.start.line < position.line - 8
+              ? position.line - 8
+              : full_codeSymbol.range.start.line;
+          endLine =
+            full_codeSymbol.range.end.line > position.line + 16
+              ? position.line + 16
+              : full_codeSymbol.range.end.line;
+          // if (full_codeSymbol.range.start.line < position.line - 8) {
+          //   startLine = position.line;
+          // } else {
+          //   startLine = full_codeSymbol.range.end.line;
+          // }
+          const full_code = await codeEditor.getTextInRange(
+            new vscode.Range(
+              new vscode.Position(startLine, 0),
+              new vscode.Position(endLine, 0)
+            ) // TODO: implement something which gets the starting character, not 0
+          );
+          console.log(full_code);
+          // const selectedRange = codeEditor.getTextInRange();
           const autoCode = codeEditor // comment on bottom of IDE like the GitHub Copilot logo, but with Readable
             .getTextInRange(
               new vscode.Range(full_codeSymbol.range.start, position)
