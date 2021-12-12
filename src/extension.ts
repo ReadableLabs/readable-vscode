@@ -50,10 +50,17 @@ export async function activate(context: vscode.ExtensionContext) {
         const linePrefix = document
           .lineAt(position)
           .text.substring(0, position.character);
-        console.log(linePrefix);
         if (!linePrefix.endsWith("//")) {
           return undefined;
         } else {
+          const session = await vscode.authentication.getSession(
+            CodeCommentAuthenticationProvider.id,
+            [],
+            { createIfNone: false }
+          );
+          if (!session) {
+            return;
+          }
           const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
           const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
           const autoCode = codeEditor // comment on bottom of IDE like the GitHub Copilot logo, but with Readable
@@ -68,6 +75,11 @@ export async function activate(context: vscode.ExtensionContext) {
             {
               full_code: full_code,
               code: autoCode,
+            },
+            {
+              headers: {
+                Authorization: `Token ${session.accessToken}`,
+              },
             }
           );
           if (
