@@ -94,6 +94,7 @@ export default class CodeEditor {
   private _activeEditor: vscode.TextEditor | undefined;
   constructor(editor?: vscode.TextEditor) {
     console.log("new codereader");
+    this._activeEditor = vscode.window.activeTextEditor;
 
     if (editor) {
       this._activeEditor = editor;
@@ -102,6 +103,7 @@ export default class CodeEditor {
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
       console.log("got editor");
+      console.log(e);
       this._activeEditor = e;
     });
   }
@@ -303,6 +305,7 @@ export default class CodeEditor {
         }
       }
     }
+    vscode.window.showErrorMessage("Error: Unable to find valid symbol");
     throw new Error("Error: Unable to find valid symbol");
   }
 
