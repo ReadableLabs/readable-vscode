@@ -18,6 +18,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
   let editor = vscode.window.activeTextEditor;
 
+  const isEnabled = () => {
+    return vscode.workspace
+      .getConfiguration("commentai")
+      .get<boolean>("enableAutoComplete");
+  };
+
   const pythonProvider = vscode.languages.registerCompletionItemProvider(
     [{ language: "python" }],
     {
@@ -27,9 +33,18 @@ export async function activate(context: vscode.ExtensionContext) {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
       ) {
-        throw new Error("asdgoh");
+        if (!isEnabled()) {
+          return;
+        }
+        try {
+          return await ProvideComments(position, "python");
+        } catch (err: any) {
+          console.log(err);
+          vscode.window.showErrorMessage(err);
+        }
       },
-    }
+    },
+    "#"
   );
 
   const provider = vscode.languages.registerCompletionItemProvider(
