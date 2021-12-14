@@ -36,20 +36,20 @@
         "title": "Readable: Hello World"
       },
       {
+        "command": "commentai.enableAutoComplete",
+        "title": "Readable: Enable Comment Suggestions"
+      },
+      {
+        "command": "commentai.disableAutoComplete",
+        "title": "Readable: Disable Comment Suggestions"
+      },
+      {
         "command": "commentai.rightClickComment",
         "title": "Generate Comment"
       },
       {
         "command": "commentai.commentFile",
         "title": "Readable: Generate comments for entire file."
-      },
-      {
-        "command": "commentai.enableCodeLens",
-        "title": "Readable: Enable Comment Suggestions"
-      },
-      {
-        "command": "commentai.disableCodeLens",
-        "title": "Readable: Disable Comment Suggestions"
       },
       {
         "command": "commentai.generateSummaryComment",
@@ -75,10 +75,10 @@
     "configuration": {
       "title": "CodeComment",
       "properties": {
-        "commentai.enableCodeLens": {
+        "commentai.enableAutoComplete": {
           "type": "boolean",
           "default": true,
-          "description": "Enables or disables the small comment text you see on top of functions."
+          "description": "Enables or disables suggestion of comments to write"
         },
         "commentai.showFeedback": {
           "type": "boolean",

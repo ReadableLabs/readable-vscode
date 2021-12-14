@@ -18,6 +18,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
   let editor = vscode.window.activeTextEditor;
 
+  const pythonProvider = vscode.languages.registerCompletionItemProvider(
+    [{ language: "python" }],
+    {
+      async provideCompletionItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken,
+        context: vscode.CompletionContext
+      ) {
+        throw new Error("asdgoh");
+      },
+    }
+  );
+
   const provider = vscode.languages.registerCompletionItemProvider(
     // "javascript",
     [
@@ -35,6 +49,12 @@ export async function activate(context: vscode.ExtensionContext) {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
       ) {
+        let isEnabled = vscode.workspace
+          .getConfiguration("commentai")
+          .get<boolean>("enableAutoComplete");
+        if (!isEnabled) {
+          return;
+        }
         const linePrefix = document
           .lineAt(position)
           .text.substring(0, position.character);
@@ -105,6 +125,22 @@ export async function activate(context: vscode.ExtensionContext) {
             return p;
           }
         );
+      }
+    ),
+    vscode.commands.registerCommand(
+      "commentai.enableAutoComplete",
+      async () => {
+        vscode.workspace
+          .getConfiguration("commentai")
+          .update("enableAutoComplete", true, true);
+      }
+    ),
+    vscode.commands.registerCommand(
+      "commentai.disableAutoComplete",
+      async () => {
+        vscode.workspace
+          .getConfiguration("commentai")
+          .update("enableAutoComplete", false, true);
       }
     ),
     vscode.commands.registerCommand("commentai.rightClickComment", async () => {
