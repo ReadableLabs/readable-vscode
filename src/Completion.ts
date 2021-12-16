@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
 import axios from "axios";
+import { posix } from "path";
 
 const codeEditor = new CodeEditor();
 
@@ -16,8 +17,21 @@ const nthIndex = (str: string, pat: string, n: number) => {
   return i;
 };
 
-export const ProvideComments = async (
+export const provideCommentsPython = async (position: vscode.Position) => {
+  const session = await vscode.authentication.getSession(
+    CodeCommentAuthenticationProvider.id,
+    [],
+    { createIfNone: false }
+  );
+  if (!session) {
+    return;
+  }
+  console.log("something python");
+};
+
+export const provideComments = async (
   position: vscode.Position,
+  document: vscode.TextDocument,
   _language?: string
 ) => {
   const session = await vscode.authentication.getSession(
@@ -30,7 +44,6 @@ export const ProvideComments = async (
   }
   console.log("something");
   const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
-  console.log(full_codeSymbol);
   // const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
   let startLine: number, endLine: number;
   startLine =
@@ -41,17 +54,31 @@ export const ProvideComments = async (
     full_codeSymbol.range.end.line > position.line + 16
       ? position.line + 16
       : full_codeSymbol.range.end.line;
+  console.log(startLine);
+  console.log(endLine);
   let full_code = await codeEditor.getTextInRange(
     new vscode.Range(
       new vscode.Position(startLine, 0),
       new vscode.Position(endLine, 0)
     ) // TODO: implement something which gets the starting character, not 0
   );
-  const lineNumber = position.line - full_codeSymbol.range.start.line;
+  // const lineNumber = position.line - full_codeSymbol.range.start.line;
   let fullCodeSplit = full_code.split("\n");
-  console.log(position.line);
-  console.log(full_codeSymbol.range.start.line);
-  console.log(fullCodeSplit);
+  // const lineNumber = fullCodeSplit.findIndex(
+  //   document.lineAt(position.line).text
+  // );
+  // document.lineAt(position.line).text
+  let currentLine = document.lineAt(position.line).text;
+  const lineNumber = fullCodeSplit.findIndex((value) => {
+    if (value === currentLine) {
+      return true;
+    }
+  });
+  if (lineNumber < 0) {
+    vscode.window.showErrorMessage("Error: could not find line number");
+    return;
+  }
+  console.log(lineNumber);
   fullCodeSplit[lineNumber] = fullCodeSplit[lineNumber]
     .slice(0, -2)
     .trimRight();
@@ -59,15 +86,19 @@ export const ProvideComments = async (
   fullCodeSplit.map((item) => {
     full_code += item + "\n";
   });
-  console.log(lineNumber);
-  console.log(full_code);
+  // console.log(full_code);
+  // console.log(full_code);
   // console.log(full_code.split("\n")[lineNumber].replace(/\/\//, ""));
   // const selectedRange = codeEditor.getTextInRange();
   const autoCode = codeEditor // comment on bottom of IDE like the GitHub Copilot logo, but with Readable
-    .getTextInRange(new vscode.Range(full_codeSymbol.range.start, position))
+    .getTextInRange(
+      new vscode.Range(new vscode.Position(startLine, 0), position)
+    )
     .trimRight();
   console.log(autoCode);
+  console.log("ok----");
   // console.log(full_code);
+  console.log(full_code);
   const language = _language ? _language : "normal";
   const { data } = await axios.post(
     "http://127.0.0.1:8000/complete/autocomplete/",

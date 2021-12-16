@@ -7,7 +7,7 @@ import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider
 import Commands from "./commands";
 import CodeEditor from "./CodeEditor";
 import TextGenerator from "./TextGenerator";
-import { ProvideComments } from "./Completion";
+import { provideComments } from "./Completion";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
         try {
-          return await ProvideComments(position, "python");
+          return await provideComments(position, document, "python");
         } catch (err: any) {
           console.log(err);
           vscode.window.showErrorMessage(err);
@@ -77,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return undefined;
         } else {
           try {
-            return await ProvideComments(position);
+            return await provideComments(position, document);
           } catch (err: any) {
             console.log(err);
             vscode.window.showErrorMessage(err);
