@@ -43,6 +43,8 @@ export const provideComments = async (
     return;
   }
   console.log("something");
+  let allSymbols = await codeEditor.getAllSymbols();
+  console.log(allSymbols);
   const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
   // const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
   let startLine: number, endLine: number;
