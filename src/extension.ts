@@ -54,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
       { language: "typescript" },
       { language: "cpp" },
       { language: "csharp" },
-      { language: "go" },
+      { language: "php" },
       { language: "java" },
     ],
     {
