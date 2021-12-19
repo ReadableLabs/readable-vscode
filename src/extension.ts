@@ -78,7 +78,6 @@ export async function activate(context: vscode.ExtensionContext) {
           return undefined;
         } else {
           try {
-            vscode.window.showInformationMessage("generaitng comments");
             return await provideComments(position, document);
           } catch (err: any) {
             console.log(err);

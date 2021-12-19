@@ -44,7 +44,6 @@ export const provideComments = async (
       vscode.window.showErrorMessage("Error: no session");
       return;
     }
-    vscode.window.showInformationMessage("sesion done");
     console.log("something");
     let allSymbols = await codeEditor.getAllSymbols();
     console.log(allSymbols);
