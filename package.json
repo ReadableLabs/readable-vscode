@@ -53,7 +53,7 @@
       }
     ],
     "configuration": {
-      "title": "CodeComment",
+      "title": "Readable",
       "properties": {
         "commentai.enableAutoComplete": {
           "type": "boolean",

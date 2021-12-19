@@ -70,6 +70,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!isEnabled) {
           return;
         }
+        console.log("it is working");
         const linePrefix = document
           .lineAt(position)
           .text.substring(0, position.character);
@@ -77,6 +78,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return undefined;
         } else {
           try {
+            vscode.window.showInformationMessage("generaitng comments");
             return await provideComments(position, document);
           } catch (err: any) {
             console.log(err);
