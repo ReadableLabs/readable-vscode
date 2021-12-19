@@ -2,7 +2,7 @@
   "name": "readable",
   "displayName": "Readable",
   "description": "Instantly generate readable code comments.",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.60.0"
   },

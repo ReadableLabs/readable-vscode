@@ -35,66 +35,79 @@ export const provideComments = async (
   _language?: string
 ) => {
   try {
+    // get session
     const session = await vscode.authentication.getSession(
       CodeCommentAuthenticationProvider.id,
       [],
       { createIfNone: false }
     );
+
+    // if no session, show error message
     if (!session) {
       vscode.window.showErrorMessage("Error: no session");
       return;
     }
+
     console.log("something");
+
     let allSymbols = await codeEditor.getAllSymbols();
+
     console.log(allSymbols);
-    const full_codeSymbol = await codeEditor.getSymbolUnderCusor(); // show generating thing in bottom bar
-    // const full_code = await codeEditor.getTextFromSymbol(full_codeSymbol); // make toggle to generate on and off from command
+
+    const full_codeSymbol = await codeEditor.getSymbolUnderCusor();
+
     let startLine: number, endLine: number;
+
     startLine =
       full_codeSymbol.range.start.line < position.line - 8
         ? position.line - 8
         : full_codeSymbol.range.start.line;
+
     endLine =
       full_codeSymbol.range.end.line > position.line + 16
         ? position.line + 16
         : full_codeSymbol.range.end.line;
+
     console.log(startLine);
     console.log(endLine);
+
     let full_code = await codeEditor.getTextInRange(
+      // get the full code
       new vscode.Range(
         new vscode.Position(startLine, 0),
         new vscode.Position(endLine, 0)
-      ) // TODO: implement something which gets the starting character, not 0
+      )
     );
-    // const lineNumber = position.line - full_codeSymbol.range.start.line;
+
     let fullCodeSplit = full_code.split("\n");
-    // const lineNumber = fullCodeSplit.findIndex(
-    //   document.lineAt(position.line).text
-    // );
-    // document.lineAt(position.line).text
+
     let currentLine = document.lineAt(position.line).text;
+
     const lineNumber = fullCodeSplit.findIndex((value) => {
+      // find the line number of the current line
       if (value === currentLine) {
         return true;
       }
     });
+
     if (lineNumber < 0) {
       vscode.window.showErrorMessage("Error: could not find line number");
       return;
     }
+
     console.log(lineNumber);
+
     fullCodeSplit[lineNumber] = fullCodeSplit[lineNumber]
       .slice(0, -2)
       .trimRight();
     full_code = "";
+
     fullCodeSplit.map((item) => {
+      // map through the array and add each item to the full_code variable
       full_code += item + "\n";
     });
-    // console.log(full_code);
-    // console.log(full_code);
-    // console.log(full_code.split("\n")[lineNumber].replace(/\/\//, ""));
-    // const selectedRange = codeEditor.getTextInRange();
-    const autoCode = codeEditor // comment on bottom of IDE like the GitHub Copilot logo, but with Readable
+
+    const autoCode = codeEditor // get the code from the editor
       .getTextInRange(
         new vscode.Range(new vscode.Position(startLine, 0), position)
       )
@@ -103,8 +116,9 @@ export const provideComments = async (
     console.log("ok----");
     // console.log(full_code);
     console.log(full_code);
-    const language = _language ? _language : "normal";
+    const language = _language ? _language : "normal"; // default language
     const { data } = await axios.post(
+      // send code to server
       "https://api.readable.so/complete/autocomplete/",
       {
         full_code: full_code,
@@ -118,23 +132,26 @@ export const provideComments = async (
       }
     );
     if (
+      // if no comment was able to be generated
       data.includes("comment describing what the code below does") ||
       data.includes(
         "comment describing what the code above does" || data === ""
       )
     ) {
+      // show an error message
       let result = vscode.window.showWarningMessage(
         "No comment was able to be generated."
       );
       return [new vscode.CompletionItem("")];
     }
     console.log(data);
-    let completion = new vscode.CompletionItem(
+    let completion = new vscode.CompletionItem( // create a completion item
       data,
       vscode.CompletionItemKind.Text
     );
     return [completion];
   } catch (err: any) {
+    // show an error message
     vscode.window.showErrorMessage(err);
   }
 };

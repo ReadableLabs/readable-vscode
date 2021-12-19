@@ -25,6 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
   };
 
   const pythonProvider = vscode.languages.registerCompletionItemProvider(
+    // register a completion item provider
     [{ language: "python" }],
     {
       async provideCompletionItems(
@@ -64,17 +65,18 @@ export async function activate(context: vscode.ExtensionContext) {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
       ) {
-        let isEnabled = vscode.workspace
+        let isEnabled = vscode.workspace // get the configuration
           .getConfiguration("commentai")
           .get<boolean>("enableAutoComplete");
         if (!isEnabled) {
           return;
         }
         console.log("it is working");
-        const linePrefix = document
+        const linePrefix = document // get the line prefix
           .lineAt(position)
           .text.substring(0, position.character);
         if (!linePrefix.endsWith("//")) {
+          // if it doesn't end with a comment
           return undefined;
         } else {
           try {
@@ -89,24 +91,20 @@ export async function activate(context: vscode.ExtensionContext) {
     "/"
   );
 
-  // const codeLensProvider = new CodeLensProvider();
-  // const statusBarProvider = new StatusBarProvider();
   const codeEditor = new CodeEditor(editor);
   const textGenerator = new TextGenerator();
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
-  // const githubProvider = new GithubProvider();
 
   context.subscriptions.push(
+    // register the authentication provider
     vscode.authentication.registerAuthenticationProvider(
       CodeCommentAuthenticationProvider.id,
       "Readable-Auth",
-      // new CodeCommentAuthenticationProvider(context.secrets)
       authProvider
     )
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("commentai.helloWorld", async () => {}),
     vscode.commands.registerCommand("commentai.login", Commands.loginCommand),
     vscode.commands.registerCommand(
       "commentai.resetPassword",
@@ -285,8 +283,10 @@ export async function activate(context: vscode.ExtensionContext) {
     );
     if (!result) return;
     if (result === "Log In With GitHub") {
+      // if the user chooses to log in with GitHub
       await vscode.commands.executeCommand("commentai.login");
     } else if (result === "Sign up with Email") {
+      // if the user chooses to sign up with email
       await vscode.commands.executeCommand("commentai.register");
     }
   }
