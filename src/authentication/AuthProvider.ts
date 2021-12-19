@@ -121,6 +121,7 @@ export class CodeCommentAuthenticationProvider
 
   private cacheTokenFromStorage() {
     this.currentToken = this.secretStorage.get(
+      // get the current token
       CodeCommentAuthenticationProvider.secretKey
     ) as Promise<string | undefined>;
     return this.currentToken;
@@ -133,7 +134,7 @@ export class CodeCommentAuthenticationProvider
       console.log("get sessions");
       this.ensureInitialized();
       const token = await this.cacheTokenFromStorage();
-      return token ? [new CodeCommentPatSession(token)] : [];
+      return token ? [new CodeCommentPatSession(token)] : []; // return a session
     } catch (err) {
       console.log(err);
       throw new Error("hadsigoh");
@@ -152,6 +153,7 @@ export class CodeCommentAuthenticationProvider
     const session = await this.loginWithProvider(loginChoice.label);
 
     await this.secretStorage.store(
+      // store the session in the secret storage
       CodeCommentAuthenticationProvider.secretKey,
       session
     );
@@ -205,13 +207,16 @@ export class CodeCommentAuthenticationProvider
                 }
               );
               if (status !== 200 && status !== 201) {
+                // if the status is not 200 or 201
                 throw new Error("Unable to create an account with GitHub");
               }
               if (data === null || data === undefined) {
+                // if the data is null or undefined
                 throw new Error("Unable to create an account with GitHub");
               }
 
               const updatedAccount = await axios.post(
+                // post the updated account to the database
                 "https://api.readable.so/api/v1/users/finish/",
                 {
                   // eslint-disable-next-line @typescript-eslint/naming-convention

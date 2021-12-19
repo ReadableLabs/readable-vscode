@@ -50,7 +50,7 @@ export const provideComments = async (
 
     console.log("something");
 
-    let allSymbols = await codeEditor.getAllSymbols();
+    let allSymbols = await codeEditor.getAllSymbols(); // get all symbols
 
     console.log(allSymbols);
 
@@ -58,12 +58,12 @@ export const provideComments = async (
 
     let startLine: number, endLine: number;
 
-    startLine =
+    startLine = // the start line
       full_codeSymbol.range.start.line < position.line - 8
         ? position.line - 8
         : full_codeSymbol.range.start.line;
 
-    endLine =
+    endLine = // the end line
       full_codeSymbol.range.end.line > position.line + 16
         ? position.line + 16
         : full_codeSymbol.range.end.line;
@@ -99,12 +99,11 @@ export const provideComments = async (
 
     fullCodeSplit[lineNumber] = fullCodeSplit[lineNumber]
       .slice(0, -2)
-      .trimRight();
+      .trimRight(); // remove the last two characters
     full_code = "";
 
     fullCodeSplit.map((item) => {
-      // map through the array and add each item to the full_code variable
-      full_code += item + "\n";
+      full_code += item + "\n"; // add the line to the full code
     });
 
     const autoCode = codeEditor // get the code from the editor
@@ -114,11 +113,9 @@ export const provideComments = async (
       .trimRight();
     console.log(autoCode);
     console.log("ok----");
-    // console.log(full_code);
     console.log(full_code);
-    const language = _language ? _language : "normal"; // default language
+    const language = _language ? _language : "normal";
     const { data } = await axios.post(
-      // send code to server
       "https://api.readable.so/complete/autocomplete/",
       {
         full_code: full_code,
