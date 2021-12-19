@@ -188,8 +188,7 @@ export default class CodeEditor {
     // formattedText = this.wrap(formattedText, 110, spaces); // 38
     // stop writing mundane comments
 
-    formattedText =
-      " ".repeat(spaces) + "/**\n" + formattedText + "\n" + " */\n"; // whenever there is a ., append new line to separate the comments better
+    formattedText = " ".repeat(spaces) + "/**\n" + formattedText + " */\n"; // whenever there is a ., append new line to separate the comments better
 
     return formattedText;
   }

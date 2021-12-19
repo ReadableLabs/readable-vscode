@@ -32,10 +32,6 @@
     ],
     "commands": [
       {
-        "command": "commentai.helloWorld",
-        "title": "Readable: Hello World"
-      },
-      {
         "command": "commentai.enableAutoComplete",
         "title": "Readable: Enable Comment Suggestions"
       },
@@ -44,28 +40,12 @@
         "title": "Readable: Disable Comment Suggestions"
       },
       {
-        "command": "commentai.rightClickComment",
-        "title": "Generate Comment"
-      },
-      {
-        "command": "commentai.commentFile",
-        "title": "Readable: Generate comments for entire file."
-      },
-      {
-        "command": "commentai.generateSummaryComment",
-        "title": "Readable: Generate Summary of Selected Code"
-      },
-      {
         "command": "commentai.login",
         "title": "Readable: Login"
       },
       {
         "command": "commentai.register",
         "title": "Readable: Register"
-      },
-      {
-        "command": "commentai.statusBarClicked",
-        "title": "Readable: Show Menu"
       },
       {
         "command": "commentai.resetPassword",
@@ -116,7 +96,6 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
-    "@vscode/webview-ui-toolkit": "^0.8.2",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "isomorphic-fetch": "^3.0.0"
