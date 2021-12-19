@@ -2,7 +2,7 @@
 import axios from "axios";
 import { window } from "vscode";
 export default class TextGenerator {
-  private _baseUrl = "http://127.0.0.1:8000";
+  private _baseUrl = "https://api.readable.so";
   private _completionUrl = this._baseUrl + "/complete/right-click/";
 
   private languages = [

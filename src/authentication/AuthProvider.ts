@@ -190,7 +190,7 @@ export class CodeCommentAuthenticationProvider
             try {
               console.log("got here");
               const { data, status } = await axios.post(
-                "http://127.0.0.1:8000/api/v1/users/login/github/",
+                "https://api.readable.so/api/v1/users/login/github/",
                 {
                   // eslint-disable-next-line @typescript-eslint/naming-convention
                   access_token: session.accessToken,
@@ -212,7 +212,7 @@ export class CodeCommentAuthenticationProvider
               }
 
               const updatedAccount = await axios.post(
-                "http://127.0.0.1:8000/api/v1/users/finish/",
+                "https://api.readable.so/api/v1/users/finish/",
                 {
                   // eslint-disable-next-line @typescript-eslint/naming-convention
                   access_token: session.accessToken,
@@ -287,7 +287,7 @@ export class CodeCommentAuthenticationProvider
         let p = new Promise<string>(async (resolve, reject) => {
           try {
             const { data } = await axios.post(
-              "http://127.0.0.1:8000/api/v1/users/auth/login/",
+              "https://api.readable.so/api/v1/users/auth/login/",
               {
                 email: email,
                 password: password,
@@ -381,7 +381,7 @@ export class CodeCommentAuthenticationProvider
         let p = new Promise<string>(async (resolve, reject) => {
           try {
             const { data } = await axios.post(
-              "http://127.0.0.1:8000/api/v1/users/auth/register/",
+              "https://api.readable.so/api/v1/users/auth/register/",
               {
                 email: email,
                 password1,

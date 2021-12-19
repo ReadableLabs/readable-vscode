@@ -103,7 +103,7 @@ export const provideComments = async (
   console.log(full_code);
   const language = _language ? _language : "normal";
   const { data } = await axios.post(
-    "http://127.0.0.1:8000/complete/autocomplete/",
+    "https://api.readable.so/complete/autocomplete/",
     {
       full_code: full_code,
       code: autoCode,

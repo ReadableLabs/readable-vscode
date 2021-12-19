@@ -279,13 +279,13 @@ export async function activate(context: vscode.ExtensionContext) {
   if (!session) {
     const result = await vscode.window.showInformationMessage(
       "No account detected. Make an account or login to use Readable.",
-      "Login",
-      "Sign Up"
+      "Log In With GitHub",
+      "Sign up with Email"
     );
     if (!result) return;
-    if (result === "Login") {
+    if (result === "Log In With GitHub") {
       await vscode.commands.executeCommand("commentai.login");
-    } else if (result === "Sign Up") {
+    } else if (result === "Sign up with Email") {
       await vscode.commands.executeCommand("commentai.register");
     }
   }
