@@ -6,6 +6,9 @@
   "engines": {
     "vscode": "^1.60.0"
   },
+  "repository": {
+    "url": "https://github.com/Nevin1901/codecomment_extension"
+  },
   "categories": [
     "Other"
   ],

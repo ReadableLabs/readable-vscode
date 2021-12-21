@@ -51,7 +51,7 @@ export class StatusBarProvider {
       vscode.StatusBarAlignment.Left,
       1
     );
-    this.myStatusBar.command = "readable.statusBarClicked";
+    this.myStatusBar.command = "readable.statusBarClicked"; // command to execute on click
     this.myStatusBar.text = this.statusBarState.Loading;
     this.myStatusBar.show();
     this.loadStatusBar(); // it's ok to not await because this will run on its own

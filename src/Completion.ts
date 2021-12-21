@@ -4,10 +4,11 @@ import CodeEditor from "./CodeEditor";
 import axios from "axios";
 import { posix } from "path";
 
+const notComments = ["inline comment", "comment", "generate an inline comment"];
+
 const codeEditor = new CodeEditor();
 
 const nthIndex = (str: string, pat: string, n: number) => {
-  // so glad I didn't have to write this
   let L = str.length,
     i = -1;
   while (n-- && i++ < L) {
@@ -42,8 +43,8 @@ export const provideComments = async (
       { createIfNone: false }
     );
 
-    // if no session, show error message
     if (!session) {
+      // no session
       vscode.window.showErrorMessage("Error: no session");
       return;
     }
@@ -58,12 +59,12 @@ export const provideComments = async (
 
     let startLine: number, endLine: number;
 
-    startLine = // the start line
+    startLine = // get the start line
       full_codeSymbol.range.start.line < position.line - 8
         ? position.line - 8
         : full_codeSymbol.range.start.line;
 
-    endLine = // the end line
+    endLine = // get the end line
       full_codeSymbol.range.end.line > position.line + 16
         ? position.line + 16
         : full_codeSymbol.range.end.line;
@@ -130,10 +131,10 @@ export const provideComments = async (
     );
     if (
       // if no comment was able to be generated
-      data.includes("comment describing what the code below does") ||
-      data.includes(
-        "comment describing what the code above does" || data === ""
-      )
+      data === "" ||
+      data.includes("comment") ||
+      data.includes("<--") ||
+      data.includes("TODO")
     ) {
       // show an error message
       let result = vscode.window.showWarningMessage(
@@ -142,7 +143,7 @@ export const provideComments = async (
       return [new vscode.CompletionItem("")];
     }
     console.log(data);
-    let completion = new vscode.CompletionItem( // create a completion item
+    let completion = new vscode.CompletionItem( // generate a completion item
       data,
       vscode.CompletionItemKind.Text
     );

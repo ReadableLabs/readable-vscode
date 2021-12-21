@@ -1,9 +1,2 @@
-add category, images, readme, change feedback, rightCLickCOmment, remove enableAutoComplete commadn, change commentai to readable in settings and everywhere, it doesn't work on the function anmes, add check for inline comment
-
-add a check if it's on the end of a { and have a different prompt
-
-make { or the line above the function, tell what the function does
-
-
 2. add users comments as context
 3. add more context being sent in
