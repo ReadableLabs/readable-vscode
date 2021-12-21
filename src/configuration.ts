@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
 const codeLensEnabled = () =>
-  vscode.workspace.getConfiguration("commentai").get("enableCodeLens", true);
+  vscode.workspace.getConfiguration("readable").get("enableCodeLens", true);
 
 const showFeedback = () =>
-  vscode.workspace.getConfiguration("commentai").get("showFeedback", true);
+  vscode.workspace.getConfiguration("readable").get("showFeedback", true);
 
 export { codeLensEnabled, showFeedback };

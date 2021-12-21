@@ -17,14 +17,14 @@
     "menus": {
       "editor/context": [
         {
-          "command": "commentai.rightClickComment",
+          "command": "readable.rightClickComment",
           "group": "1_modification"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "commentai.rightClickComment",
+        "command": "readable.rightClickComment",
         "key": "ctrl+shift+f8",
         "mac": "cmd+shift+f8",
         "when": "editorTextFocus"
@@ -32,35 +32,35 @@
     ],
     "commands": [
       {
-        "command": "commentai.enableAutoComplete",
+        "command": "readable.enableAutoComplete",
         "title": "Readable: Enable Comment Suggestions"
       },
       {
-        "command": "commentai.disableAutoComplete",
+        "command": "readable.disableAutoComplete",
         "title": "Readable: Disable Comment Suggestions"
       },
       {
-        "command": "commentai.login",
+        "command": "readable.login",
         "title": "Readable: Login"
       },
       {
-        "command": "commentai.register",
+        "command": "readable.register",
         "title": "Readable: Register"
       },
       {
-        "command": "commentai.resetPassword",
+        "command": "readable.resetPassword",
         "title": "Readable: Reset Password"
       }
     ],
     "configuration": {
       "title": "Readable",
       "properties": {
-        "commentai.enableAutoComplete": {
+        "readable.enableAutoComplete": {
           "type": "boolean",
           "default": true,
           "description": "Enables or disables suggestion of comments to write"
         },
-        "commentai.showFeedback": {
+        "readable.showFeedback": {
           "type": "boolean",
           "default": true,
           "description": "Enables or disables the feedback prompt after every completion."

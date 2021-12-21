@@ -4,13 +4,13 @@ import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider
 export default class Commands {
   static enableCodeLensCommand = () => {
     vscode.workspace
-      .getConfiguration("commentai")
+      .getConfiguration("readable")
       .update("enableCodeLens", true, true);
   };
 
   static disableCodeLensCommand = () => {
     vscode.workspace
-      .getConfiguration("commentai")
+      .getConfiguration("readable")
       .update("enableCodeLens", false, true);
   };
 

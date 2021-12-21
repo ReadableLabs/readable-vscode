@@ -81,7 +81,7 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
     token: vscode.CancellationToken
   ) {
     if (
-      vscode.workspace.getConfiguration("commentai").get("enableCodeLens", true)
+      vscode.workspace.getConfiguration("readable").get("enableCodeLens", true)
     ) {
       let symbols = await this._getSymbols();
       let lenses = await this._getLenses(symbols);
@@ -96,7 +96,7 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
     token: vscode.CancellationToken
   ) {
     if (
-      vscode.workspace.getConfiguration("commentai").get("enableCodeLens", true)
+      vscode.workspace.getConfiguration("readable").get("enableCodeLens", true)
     ) {
       return codeLens;
     }

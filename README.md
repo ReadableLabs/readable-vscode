@@ -20,7 +20,7 @@ Include if your extension adds any VS Code settings through the `contributes.con
 
 Readable contributes the following settings:
 
-- `commentai.showFeedback`: enable/disable comments
+- `readable.enableAutoComplete`: enable/disable comments
 
 ## Known Issues
 

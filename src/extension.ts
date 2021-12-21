@@ -20,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const isEnabled = () => {
     return vscode.workspace
-      .getConfiguration("commentai")
+      .getConfiguration("readable")
       .get<boolean>("enableAutoComplete");
   };
 
@@ -66,7 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
         context: vscode.CompletionContext
       ) {
         let isEnabled = vscode.workspace // get the configuration
-          .getConfiguration("commentai")
+          .getConfiguration("readable")
           .get<boolean>("enableAutoComplete");
         if (!isEnabled) {
           return;
@@ -105,24 +105,21 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("commentai.login", Commands.loginCommand),
+    vscode.commands.registerCommand("readable.login", Commands.loginCommand),
     vscode.commands.registerCommand(
-      "commentai.resetPassword",
+      "readable.resetPassword",
       authProvider.resetPassword
     ),
+    vscode.commands.registerCommand("readable.enableAutoComplete", async () => {
+      vscode.workspace
+        .getConfiguration("readable")
+        .update("enableAutoComplete", true, true);
+    }),
     vscode.commands.registerCommand(
-      "commentai.enableAutoComplete",
+      "readable.disableAutoComplete",
       async () => {
         vscode.workspace
-          .getConfiguration("commentai")
-          .update("enableAutoComplete", true, true);
-      }
-    ),
-    vscode.commands.registerCommand(
-      "commentai.disableAutoComplete",
-      async () => {
-        vscode.workspace
-          .getConfiguration("commentai")
+          .getConfiguration("readable")
           .update("enableAutoComplete", false, true);
       }
     ),
@@ -202,7 +199,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // }),
 
     vscode.commands.registerCommand(
-      "commentai.register",
+      "readable.register",
       authProvider.registerAccount
     )
   );
@@ -284,10 +281,10 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!result) return;
     if (result === "Log In With GitHub") {
       // if the user chooses to log in with GitHub
-      await vscode.commands.executeCommand("commentai.login");
+      await vscode.commands.executeCommand("readable.login");
     } else if (result === "Sign up with Email") {
       // if the user chooses to sign up with email
-      await vscode.commands.executeCommand("commentai.register");
+      await vscode.commands.executeCommand("readable.register");
     }
   }
 
