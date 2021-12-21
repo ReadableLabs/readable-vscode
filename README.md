@@ -12,7 +12,7 @@ Instantly write comments with Readable. Just type "//", and get autocomplete for
 - VsCode
 - An internet connection whenever you want comment autocomplete
 
-Note: Due to Readable using GPT-3, to prevent abuse you must sign in using GitHub or create an account before you use the extension.
+Note: Due to Readable using GPT-3, to prevent abuse, you must sign in using GitHub or create an account before you use the extension.
 
 ## Extension Settings
 

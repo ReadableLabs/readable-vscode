@@ -1,7 +1,7 @@
 {
   "name": "readable",
   "displayName": "Readable",
-  "description": "Instantly generate readable code comments.",
+  "description": "Instantly Generate Readable Code Comments.",
   "version": "0.0.3",
   "engines": {
     "vscode": "^1.60.0"

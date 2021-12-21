@@ -20,11 +20,13 @@ const nthIndex = (str: string, pat: string, n: number) => {
 
 export const provideCommentsPython = async (position: vscode.Position) => {
   const session = await vscode.authentication.getSession(
+    // get the session
     CodeCommentAuthenticationProvider.id,
     [],
     { createIfNone: false }
   );
   if (!session) {
+    // if there is no session, return
     return;
   }
   console.log("something python");
@@ -36,7 +38,6 @@ export const provideComments = async (
   _language?: string
 ) => {
   try {
-    // get session
     const session = await vscode.authentication.getSession(
       CodeCommentAuthenticationProvider.id,
       [],
@@ -44,7 +45,6 @@ export const provideComments = async (
     );
 
     if (!session) {
-      // no session
       vscode.window.showErrorMessage("Error: no session");
       return;
     }
@@ -82,7 +82,7 @@ export const provideComments = async (
 
     let fullCodeSplit = full_code.split("\n");
 
-    let currentLine = document.lineAt(position.line).text;
+    let currentLine = document.lineAt(position.line).text; // get the current line
 
     const lineNumber = fullCodeSplit.findIndex((value) => {
       // find the line number of the current line
@@ -92,6 +92,7 @@ export const provideComments = async (
     });
 
     if (lineNumber < 0) {
+      // if the line number is not found
       vscode.window.showErrorMessage("Error: could not find line number");
       return;
     }
@@ -104,19 +105,21 @@ export const provideComments = async (
     full_code = "";
 
     fullCodeSplit.map((item) => {
-      full_code += item + "\n"; // add the line to the full code
+      // create a new string with the new line
+      full_code += item + "\n";
     });
 
-    const autoCode = codeEditor // get the code from the editor
+    const autoCode = codeEditor
       .getTextInRange(
         new vscode.Range(new vscode.Position(startLine, 0), position)
       )
-      .trimRight();
+      .trimRight(); // get the code from the editor
     console.log(autoCode);
     console.log("ok----");
     console.log(full_code);
     const language = _language ? _language : "normal";
     const { data } = await axios.post(
+      // send the code to the server
       "https://api.readable.so/complete/autocomplete/",
       {
         full_code: full_code,
@@ -130,26 +133,25 @@ export const provideComments = async (
       }
     );
     if (
-      // if no comment was able to be generated
+      // if the comment is empty, return an empty completion item
       data === "" ||
       data.includes("comment") ||
       data.includes("<--") ||
       data.includes("TODO")
     ) {
-      // show an error message
       let result = vscode.window.showWarningMessage(
         "No comment was able to be generated."
       );
       return [new vscode.CompletionItem("")];
     }
     console.log(data);
-    let completion = new vscode.CompletionItem( // generate a completion item
+    let completion = new vscode.CompletionItem(
       data,
       vscode.CompletionItemKind.Text
     );
-    return [completion];
+    return [completion]; // return the completion list
   } catch (err: any) {
-    // show an error message
+    // if there is an error, show the error message
     vscode.window.showErrorMessage(err);
   }
 };
