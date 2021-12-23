@@ -55,29 +55,41 @@ export const provideComments = async (
 
     console.log(allSymbols);
 
-    let full_codeSymbol = await codeEditor.getSymbolUnderCusor();
+    let full_codeSymbol = await codeEditor.getSymbolUnderCusor(position);
 
     if (!full_codeSymbol) {
       full_codeSymbol = new vscode.DocumentSymbol(
         "CurrentLineSymbol",
         "The Symbol on the Current Line",
         vscode.SymbolKind.String,
-        new vscode.Range(position, position),
-        new vscode.Range(position, position)
+        new vscode.Range(
+          new vscode.Position(position.line - 1 > 0 ? position.line - 1 : 1, 0),
+          new vscode.Position(
+            position.line + 1 < document.lineCount
+              ? position.line + 1
+              : position.line,
+            position.character
+          )
+        ), // we need to get the position to be character 0 to the max character, or the position character since it is most likely already the max
+        new vscode.Range(new vscode.Position(position.line, 0), position)
       );
       // create new symbol
       // throw new Error("Error: no symbol");
     }
 
+    console.log(full_codeSymbol);
+
     let startLine: number, endLine: number;
 
     startLine = // get the start line
-      full_codeSymbol.range.start.line < position.line - 8
+      full_codeSymbol.range.start.line < position.line - 8 &&
+      position.line - 8 > 0
         ? position.line - 8
         : full_codeSymbol.range.start.line;
 
     endLine = // get the end line
-      full_codeSymbol.range.end.line > position.line + 16
+      full_codeSymbol.range.end.line > position.line + 16 &&
+      position.line + 16 < document.lineCount
         ? position.line + 16
         : full_codeSymbol.range.end.line;
 
@@ -165,5 +177,6 @@ export const provideComments = async (
   } catch (err: any) {
     // if there is an error, show the error message
     vscode.window.showErrorMessage(err);
+    console.log(err);
   }
 };

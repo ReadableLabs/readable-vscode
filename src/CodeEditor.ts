@@ -267,21 +267,23 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
-  public async getSymbolUnderCusor(): Promise<vscode.DocumentSymbol | null> {
+  public async getSymbolUnderCusor(
+    position: vscode.Position
+  ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
     if (symbols === []) {
       throw new Error("Error: no symbols");
     }
-    let position = this.getCursorPosition();
+    // let position = this.getCursorPosition();
     for (let i = 0; i < symbols.length; i++) {
       if (
-        symbols[i].range.start.line <= position &&
-        symbols[i].range.end.line >= position
+        symbols[i].range.start.line <= position.line &&
+        symbols[i].range.end.line >= position.line
       ) {
         console.log("found symbol");
         if (
           symbols[i].kind === vscode.SymbolKind.Class &&
-          symbols[i].range.start.line !== position
+          symbols[i].range.start.line !== position.line
         ) {
           console.log("symbol is class");
           // check if cursor position is on line of the symbol. If it is and it's a class, generate it for teh class. Because of this, add an && to check
@@ -291,8 +293,8 @@ export default class CodeEditor {
               (symbols[i].children[k].kind === vscode.SymbolKind.Method ||
                 symbols[i].children[k].kind === vscode.SymbolKind.Function ||
                 symbols[i].children[k].kind === vscode.SymbolKind.Constant) &&
-              symbols[i].children[k].range.start.line <= position &&
-              symbols[i].children[k].range.end.line >= position
+              symbols[i].children[k].range.start.line <= position.line &&
+              symbols[i].children[k].range.end.line >= position.line
             ) {
               console.log("found symbol");
               return symbols[i].children[k];
@@ -304,14 +306,14 @@ export default class CodeEditor {
         }
       }
     }
-    vscode.window.showErrorMessage("Error: Unable to find valid symbol");
+    // vscode.window.showErrorMessage("Error: Unable to find valid symbol");
+    console.log("Error: unable to find symbol under cursor");
     // throw new Error("Error: Unable to find valid symbol");
     return null;
   }
 
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {
-      console.log("hello");
       return [];
     }
 

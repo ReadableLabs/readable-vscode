@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.0.0]
+
+- Fixed "Unable to find symbol" bug for real.
+- Initial Release!
+
 ## [0.0.5]
 
 - Fixed "no symbol found" bug. Made it use single line
