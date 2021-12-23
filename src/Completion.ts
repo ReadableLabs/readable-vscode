@@ -46,7 +46,7 @@ export const provideComments = async (
               : position.line,
             position.character
           )
-        ), // we need to get the position to be character 0 to the max character, or the position character since it is most likely already the max
+        ),
         new vscode.Range(new vscode.Position(position.line, 0), position)
       );
       // create new symbol
