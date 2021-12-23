@@ -55,7 +55,19 @@ export const provideComments = async (
 
     console.log(allSymbols);
 
-    const full_codeSymbol = await codeEditor.getSymbolUnderCusor();
+    let full_codeSymbol = await codeEditor.getSymbolUnderCusor();
+
+    if (!full_codeSymbol) {
+      full_codeSymbol = new vscode.DocumentSymbol(
+        "CurrentLineSymbol",
+        "The Symbol on the Current Line",
+        vscode.SymbolKind.String,
+        new vscode.Range(position, position),
+        new vscode.Range(position, position)
+      );
+      // create new symbol
+      // throw new Error("Error: no symbol");
+    }
 
     let startLine: number, endLine: number;
 

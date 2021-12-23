@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.0.5]
+
+- Fixed "no symbol found" bug. Made it use single line
+
+## [0.0.4]
+
+- Fixed python suggestions triggering unexpectedly
+
 ## [0.0.3]
 
 - Added more checks so you don't get garbage suggestions

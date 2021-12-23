@@ -267,7 +267,7 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
-  public async getSymbolUnderCusor(): Promise<vscode.DocumentSymbol> {
+  public async getSymbolUnderCusor(): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
     if (symbols === []) {
       throw new Error("Error: no symbols");
@@ -305,7 +305,8 @@ export default class CodeEditor {
       }
     }
     vscode.window.showErrorMessage("Error: Unable to find valid symbol");
-    throw new Error("Error: Unable to find valid symbol");
+    // throw new Error("Error: Unable to find valid symbol");
+    return null;
   }
 
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {

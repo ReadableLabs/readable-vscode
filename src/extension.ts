@@ -37,6 +37,12 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!isEnabled()) {
           return;
         }
+        const linePrefix = document
+          .lineAt(position)
+          .text.substring(0, position.character);
+        if (!linePrefix.endsWith("#")) {
+          return undefined;
+        }
         try {
           return await provideComments(position, document, "python");
         } catch (err: any) {
