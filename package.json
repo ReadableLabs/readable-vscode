@@ -2,7 +2,7 @@
   "name": "readable",
   "displayName": "Readable",
   "description": "Instantly Generate Readable Code Comments.",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -17,22 +17,7 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "menus": {
-      "editor/context": [
-        {
-          "command": "readable.rightClickComment",
-          "group": "1_modification"
-        }
-      ]
-    },
-    "keybindings": [
-      {
-        "command": "readable.rightClickComment",
-        "key": "ctrl+shift+f8",
-        "mac": "cmd+shift+f8",
-        "when": "editorTextFocus"
-      }
-    ],
+    "menus": {},
     "commands": [
       {
         "command": "readable.enableAutoComplete",
