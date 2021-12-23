@@ -8,30 +8,6 @@ const notComments = ["inline comment", "comment", "generate an inline comment"];
 
 const codeEditor = new CodeEditor();
 
-const nthIndex = (str: string, pat: string, n: number) => {
-  let L = str.length,
-    i = -1;
-  while (n-- && i++ < L) {
-    i = str.indexOf(pat, i);
-    if (i < 0) break;
-  }
-  return i;
-};
-
-export const provideCommentsPython = async (position: vscode.Position) => {
-  const session = await vscode.authentication.getSession(
-    // get the session
-    CodeCommentAuthenticationProvider.id,
-    [],
-    { createIfNone: false }
-  );
-  if (!session) {
-    // if there is no session, return
-    return;
-  }
-  console.log("something python");
-};
-
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,
