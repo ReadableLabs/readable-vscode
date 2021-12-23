@@ -1,5 +1,7 @@
 # Readable - Instantly Comment Your Code
 
+![Readable Demo](./assets/final_video.gif)
+
 Instantly write comments with Readable. Just type "//", and get autocomplete for the comment you were about to write.
 
 ## Features
