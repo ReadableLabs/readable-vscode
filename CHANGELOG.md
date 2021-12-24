@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.1]
+
+- Removed unnecessary code from project
+
 ## [1.0.0]
 
 - Fixed "Unable to find symbol" bug for real.
