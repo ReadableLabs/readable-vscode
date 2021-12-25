@@ -1,4 +1,4 @@
-# Readable - Save time writing comments
+# Readable - Instantly Comment Your Code
 
 ![Readable Demo](./assets/final_video.gif)
 
