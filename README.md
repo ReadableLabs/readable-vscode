@@ -2,12 +2,19 @@
 
 ![Readable Demo](./assets/final_video.gif)
 
-Instantly write comments with Readable. Just type "//", and get autocomplete for the comment you were about to write. Currently supports VSCode.
+Comment Autocomplete in your IDE. Just type "//", and get a comment written.
 
 ## Features
 
-- Instantly write detailed inline comments by typing // (or # in Python)
-- Supports Typescript, Javascript, Python, C#, C++, Java, and PHP
+- Save time writing comments with autocomplete suggestions (just type //, or # in Python)
+- Works with many languages
+    - Typescript
+    - Javascript
+    - Python
+    - C#
+    - C++
+    - Java
+    - PHP
 
 ## Getting Set Up
 
