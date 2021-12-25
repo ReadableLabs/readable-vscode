@@ -7,7 +7,7 @@ Comment Autocomplete in your IDE. Just type "//", and get a comment written.
 ## Features
 
 - Save time writing comments with autocomplete suggestions (just type //, or # in Python)
-- Works with many languages
+- Works in 7 languages
     - Typescript
     - Javascript
     - Python
