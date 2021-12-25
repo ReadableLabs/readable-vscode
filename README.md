@@ -1,15 +1,16 @@
 # Readable - Instantly Comment Your Code
 
-![Readable Demo](./assets/final_video.gif)
-
 Save time writing comments with Ai comment suggestions.
 
-Just type //, or # on Python, and get autocomplete for a Readable comment. 
+## Comment Autocomplete Suggestions
 
-## Features
+![Readable Demo](./assets/final_video.gif)
 
-- Comment autocomplete suggestions
-- Works in 7 languages
+Intellisense works for code, so why shouldn't it work for comments? Well Now it does.
+
+Just start typing, and get a comment suggestion, almost **instantly**
+
+## Works in 7 Languages
   - Typescript
   - Javascript
   - Python
