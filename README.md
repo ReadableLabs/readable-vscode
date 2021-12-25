@@ -1,20 +1,22 @@
-# Readable - Instantly Comment Your Code
+# Readable - Save time writing comments
 
 ![Readable Demo](./assets/final_video.gif)
 
-Comment Autocomplete in your IDE. Just type "//", and get a comment written.
+Save time writing comments with Ai comment suggestions.
+
+Just type //, or # on Python, and get autocomplete for a Readable comment. 
 
 ## Features
 
-- Save time writing comments with autocomplete suggestions (just type //, or # in Python)
+- Comment autocomplete suggestions
 - Works in 7 languages
-    - Typescript
-    - Javascript
-    - Python
-    - C#
-    - C++
-    - Java
-    - PHP
+  - Typescript
+  - Javascript
+  - Python
+  - C#
+  - C++
+  - Java
+  - PHP
 
 ## Getting Set Up
 
