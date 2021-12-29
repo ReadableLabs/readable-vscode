@@ -15,12 +15,12 @@ export default class CodeEditor {
     console.log("new codereader");
     this._activeEditor = vscode.window.activeTextEditor;
 
-    if (editor) {
+    if (editor) { // if we have an editor, use it
       this._activeEditor = editor;
       console.log(editor.document);
     }
 
-    vscode.window.onDidChangeActiveTextEditor((e) => {
+    vscode.window.onDidChangeActiveTextEditor((e) => { // if we change the active editor, update the active editor
       console.log("got editor");
       console.log(e);
       this._activeEditor = e;
@@ -31,7 +31,7 @@ export default class CodeEditor {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
     }
-    return this._activeEditor.document.languageId;
+    return this._activeEditor.document.languageId; //returns the language id of the active editor
   }
 
   public getSpaces(text: string): number {
@@ -153,9 +153,9 @@ export default class CodeEditor {
     }
     if (
       this._activeEditor.selection.start.line ===
-        this._activeEditor.selection.end.line &&
+      this._activeEditor.selection.end.line &&
       this._activeEditor.selection.start.character ===
-        this._activeEditor.selection.end.character
+      this._activeEditor.selection.end.character
     ) {
       return false;
     } else {
