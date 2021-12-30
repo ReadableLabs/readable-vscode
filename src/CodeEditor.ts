@@ -40,6 +40,11 @@ export default class CodeEditor {
     return this._activeEditor.document.languageId; //returns the language id of the active editor
   }
 
+  /**
+   * Returns the number of spaces at the beginning of a string.
+   * @param {string} text - The string to check.
+   * @returns {number} The number of spaces at the beginning of the string.
+   */
   public getSpaces(text: string): number {
     return text.search(/\S/);
   }
@@ -64,6 +69,11 @@ export default class CodeEditor {
     return s;
   };
 
+  /**
+   * @param {string} comment
+   * @param {number} _spaces
+   * @param {string} language
+   */
   public formatText(
     comment: string,
     _spaces: number,
@@ -118,6 +128,10 @@ export default class CodeEditor {
     return formattedText;
   }
 
+  /**
+   * @param {vscode.Selection} selection
+   * @returns {string}
+   */
   public getTextFromSelection(selection: vscode.Selection): string {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get active editor");
@@ -134,6 +148,12 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(symbol.range);
   }
 
+  /**
+   * Inserts text at the given position in the active editor.
+   * @param text The text to insert.
+   * @param position The position to insert the text at.
+   * @returns True if the text was inserted, false otherwise.
+   */
   public async insertTextAtPosition(
     text: string,
     position: vscode.Position
@@ -146,6 +166,10 @@ export default class CodeEditor {
     return result;
   }
 
+  /**
+   * Returns the selected text in the active text editor.
+   * @returns {string}
+   */
   public getSelectedText(): string {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -153,6 +177,9 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
 
+  /**
+   * @returns {boolean} True if the current selection is not empty, false otherwise
+   */
   public hasSelection(): boolean {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -169,6 +196,10 @@ export default class CodeEditor {
     }
   }
 
+  /**
+   * Returns the current selection in the active editor
+   * @returns {Selection}
+   */
   public getSelection() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
