@@ -1,22 +1,18 @@
-# Readable - Instantly Comment Your Code
+# Save Time Writing Comments With Ai Comment Suggestions
 
-Save time writing comments with Ai comment suggestions.
+Readable is a VSCode extension which writes comments for you. Using **GPT-3**, you're able to get detailed comment suggestions through intellisense.
 
-## Comment Autocomplete Suggestions
+![Readable Demo](https://github.com/Nevin1901/Readable-Assets/blob/main/final_video.gif?raw=true)
 
-![Readable Demo](https://github.com/Nevin1901/Readable/blob/1ec1ba0404f61b1fad26dd650bd1ebb0623c7699/assets/final_video.gif)
+Just start writing a comment, and get a suggestion.
 
-Intellisense works for code, so why shouldn't it work for comments? Well Now it does.
+#
 
-Just start typing, and get a comment suggestion, almost **instantly**
-
-## Docstring Comment Generation
+## Ai Generated Comments and Docstrings
 
 ![Docstring Demo](./assets/docstring_demo.gif)
 
-Generate detailed docstrings for your functions without filling in a template.
-
-Just start typing, and get a detailed docstring suggestion.
+Readable generates both inline comments, as well as docstrings.
 
 ## Works in 7 Languages
 
@@ -27,6 +23,12 @@ Just start typing, and get a detailed docstring suggestion.
 - C++
 - Java
 - PHP
+
+## Privacy
+
+At Readable, we do not store your code, or use it to train any of our models.
+
+Note: As we use GPT-3, OpenAi might store your code, so make sure to read their privacy policy if you are unsure.
 
 ## Getting Set Up
 

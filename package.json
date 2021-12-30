@@ -3,7 +3,7 @@
   "publisher": "Puri Chapman Software",
   "displayName": "Readable - Ai Generated Comments",
   "icon": "logo.png",
-  "description": "🚀 Instantly generate Readable comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
+  "description": "🚀 Instantly generate detailed comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
   "author": "Puri Chapman Software <support@readable.so> (https://readable.so)",
   "license": "MIT",
   "galleryBanner": {
