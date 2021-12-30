@@ -33,14 +33,54 @@ export const provideDocstring = async (
         position.character
       )
     );
-    console.log(full_codeSymbol);
 
-    return [
-      new vscode.CompletionItem(
-        "Test Docstring",
-        vscode.CompletionItemKind.Text
-      ),
-    ];
+    if (!full_codeSymbol) {
+      vscode.window.showErrorMessage("Error: unable to find symbol");
+      return undefined;
+    }
+
+    let startLine = full_codeSymbol.range.start.line; // get the start line
+
+    let endLine = // get the end line
+      full_codeSymbol.range.end.line > position.line + 16 &&
+      position.line + 16 < document.lineCount
+        ? position.line + 16
+        : full_codeSymbol.range.end.line;
+
+    let fullCode = document.getText(
+      new vscode.Range(
+        full_codeSymbol.range.start,
+        new vscode.Position(endLine, 0)
+      )
+    );
+
+    const language = _language ? _language : "normal";
+
+    const { data } = await axios.post(
+      "https://api.readable.so/complete/right-click/",
+      {
+        full_code: fullCode,
+        language: language,
+      },
+      {
+        headers: {
+          Authorization: `Token ${session.accessToken}`,
+        },
+      }
+    );
+    console.log(data);
+
+    if (!data) {
+      vscode.window.showWarningMessage("No docstring was able to be generated");
+      return undefined;
+    }
+
+    let completionItem = new vscode.CompletionItem(
+      data,
+      vscode.CompletionItemKind.Text
+    );
+
+    return [completionItem];
   } catch (err: any) {
     console.log(err);
     vscode.window.showErrorMessage(err);
@@ -188,6 +228,7 @@ export const provideComments = async (
       data,
       vscode.CompletionItemKind.Text
     );
+    completion.detail = "Readable";
     return [completion]; // return the completion list
   } catch (err: any) {
     // if there is an error, show the error message

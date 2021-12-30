@@ -87,9 +87,6 @@ export async function activate(context: vscode.ExtensionContext) {
         try {
           if (linePrefix.endsWith("//")) {
             return await provideComments(position, document);
-          }
-          if (linePrefix.endsWith("/*")) {
-            console.log("working docstring");
           } else {
             return undefined;
           }
@@ -122,7 +119,15 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!linePrefix.endsWith("/**")) {
           return undefined;
         }
+        console.log("working docstring things");
+        let completion = new vscode.CompletionItem(
+          "Generate Docstring",
+          vscode.CompletionItemKind.Text
+        );
         return await provideDocstring(position, document);
+      },
+      async resolveCompletionItem(item, token) {
+        return undefined;
       },
     },
     "*"
