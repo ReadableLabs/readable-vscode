@@ -1,17 +1,59 @@
 {
   "name": "readable",
-  "displayName": "Readable",
-  "description": "Instantly Generate Readable Code Comments.",
+  "publisher": "Puri Chapman Software",
+  "displayName": "Readable - Ai Generated Comments",
+  "icon": "logo.png",
+  "description": "🚀 Instantly generate Readable comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
+  "author": "Puri Chapman Software <support@readable.so> (https://readable.so)",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#041621",
+    "theme": "dark"
+  },
+  "badges": [],
+  "homepage": "https://readable.so",
   "version": "1.2.1",
   "engines": {
     "vscode": "^1.59.0"
   },
   "repository": {
+    "type": "git",
     "url": "https://github.com/Nevin1901/readable"
   },
+  "bugs": {
+    "url": "https://github.com/Nevin1901/issues",
+    "email": "support@readable.so"
+  },
   "categories": [
+    "Programming Languages",
+    "Snippets",
     "Other"
   ],
+  "keywords": [
+    "comment",
+    "comments",
+    "docstring",
+    "documentation",
+    "completion",
+    "completions",
+    "javascript",
+    "typescript",
+    "python",
+    "csharp",
+    "c#",
+    "c++",
+    "php",
+    "ai",
+    "snippets",
+    "snippet"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true,
+      "description": ""
+    }
+  },
   "activationEvents": [
     "onStartupFinished"
   ],

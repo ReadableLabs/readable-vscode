@@ -4,8 +4,6 @@ import CodeEditor from "./CodeEditor";
 import axios from "axios";
 import { posix } from "path";
 
-const notComments = ["inline comment", "comment", "generate an inline comment"];
-
 const codeEditor = new CodeEditor();
 
 export const provideDocstring = async (

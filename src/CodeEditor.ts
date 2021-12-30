@@ -215,6 +215,11 @@ export default class CodeEditor {
     return this._activeEditor.selection.active.line;
   }
 
+  /**
+   * This function gets the text in the given range of the active editor.
+   * @param {vscode.Range} range - The range of the text to get.
+   * @returns {string} The text in the given range of the active editor.
+   */
   public getTextInRange(range: vscode.Range): string {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get active editor");
@@ -223,6 +228,11 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
+  /**
+   * @param {string} name
+   * @param {string} value
+   * @returns {string}
+   */
   public async getSymbolUnderCusor(
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
