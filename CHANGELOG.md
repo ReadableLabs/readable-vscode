@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.1]
+
+- Pre select Readable docstring completion item
+
 ## [1.2.0]
 
 - Added more languages to docstring suggestions

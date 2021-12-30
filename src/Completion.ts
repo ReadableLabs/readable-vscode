@@ -77,6 +77,7 @@ export const provideDocstring = async (
       data,
       vscode.CompletionItemKind.Text
     );
+    completionItem.preselect = true;
 
     return [completionItem];
   } catch (err: any) {
