@@ -10,14 +10,23 @@ Intellisense works for code, so why shouldn't it work for comments? Well Now it 
 
 Just start typing, and get a comment suggestion, almost **instantly**
 
+## Docstring Comment Generation
+
+![Docstring Demo](./assets/docstring_demo.gif)
+
+Generate detailed docstrings for your functions without filling in a template.
+
+Just start typing, and get a detailed docstring suggestion.
+
 ## Works in 7 Languages
-  - Typescript
-  - Javascript
-  - Python
-  - C#
-  - C++
-  - Java
-  - PHP
+
+- Typescript
+- Javascript
+- Python
+- C#
+- C++
+- Java
+- PHP
 
 ## Getting Set Up
 
@@ -28,13 +37,14 @@ When you first install Readable, you will be prompted to log in or create an acc
 Once you log in with GitHub or create an account, comment autocomplete will be active. In order to get a comment suggestion, just type "//" on languages with C-Style comments, or "#" on Python.
 
 Readable currently supports the following languages:
-* Typescript
-* Javascript
-* Python
-* C#
-* C++
-* Java
-* PHP
+
+- Typescript
+- Javascript
+- Python
+- C#
+- C++
+- Java
+- PHP
 
 If you would like to enable/disable comment suggestions, then you can run "Readable: Enable Comment Suggestions", or "Readable: Disable Comment Suggestions" via the command palette.
 

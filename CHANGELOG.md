@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.0]
+
+- Added Docstring Suggestions
+
 ## [1.0.1]
 
 - Removed unnecessary code from project
