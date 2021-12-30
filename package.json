@@ -2,12 +2,12 @@
   "name": "readable",
   "displayName": "Readable",
   "description": "Instantly Generate Readable Code Comments.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engines": {
     "vscode": "^1.59.0"
   },
   "repository": {
-    "url": "https://github.com/Nevin1901/codecomment_extension"
+    "url": "https://github.com/Nevin1901/readable"
   },
   "categories": [
     "Other"

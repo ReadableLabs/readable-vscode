@@ -100,7 +100,14 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const docstringProvider = vscode.languages.registerCompletionItemProvider(
-    [{ language: "javascript" }],
+    [
+      { language: "javascript" },
+      { language: "typescript" },
+      { language: "cpp" },
+      { language: "csharp" },
+      { language: "php" },
+      { language: "java" },
+    ],
     {
       async provideCompletionItems(document, position, token, context) {
         let isEnabled = vscode.workspace // get the configuration

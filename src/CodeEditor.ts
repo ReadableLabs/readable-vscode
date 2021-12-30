@@ -15,12 +15,14 @@ export default class CodeEditor {
     console.log("new codereader");
     this._activeEditor = vscode.window.activeTextEditor;
 
-    if (editor) { // if we have an editor, use it
+    if (editor) {
+      // if we have an editor, use it
       this._activeEditor = editor;
       console.log(editor.document);
     }
 
-    vscode.window.onDidChangeActiveTextEditor((e) => { // if we change the active editor, update the active editor
+    vscode.window.onDidChangeActiveTextEditor((e) => {
+      // if we change the active editor, update the active editor
       console.log("got editor");
       console.log(e);
       this._activeEditor = e;
@@ -147,16 +149,15 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
 
-  
   public hasSelection(): boolean {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
     }
     if (
       this._activeEditor.selection.start.line ===
-      this._activeEditor.selection.end.line &&
+        this._activeEditor.selection.end.line &&
       this._activeEditor.selection.start.character ===
-      this._activeEditor.selection.end.character
+        this._activeEditor.selection.end.character
     ) {
       return false;
     } else {
@@ -234,7 +235,7 @@ export default class CodeEditor {
 
   /**
    * Get
-   * @returns 
+   * @returns
    */
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {
@@ -246,7 +247,8 @@ export default class CodeEditor {
       this._activeEditor.document.uri
     );
 
-    if (!symbols) { // no symbols found
+    if (!symbols) {
+      // no symbols found
       return [];
     }
     return symbols;

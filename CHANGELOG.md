@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.0]
+
+- Added more languages to docstring suggestions
+
 ## [1.1.0]
 
 - Added Docstring Suggestions
