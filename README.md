@@ -4,7 +4,7 @@ Save time writing comments with Ai comment suggestions.
 
 ## Comment Autocomplete Suggestions
 
-![Readable Demo](./assets/final_video.gif)
+![Readable Demo](https://github.com/Nevin1901/Readable/blob/1ec1ba0404f61b1fad26dd650bd1ebb0623c7699/assets/final_video.gif)
 
 Intellisense works for code, so why shouldn't it work for comments? Well Now it does.
 
