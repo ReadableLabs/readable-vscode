@@ -8,6 +8,45 @@ const notComments = ["inline comment", "comment", "generate an inline comment"];
 
 const codeEditor = new CodeEditor();
 
+export const provideDocstring = async (
+  position: vscode.Position,
+  document: vscode.TextDocument,
+  _language?: string
+) => {
+  try {
+    const session = await vscode.authentication.getSession(
+      CodeCommentAuthenticationProvider.id,
+      [],
+      { createIfNone: false }
+    );
+
+    if (!session) {
+      vscode.window.showErrorMessage("Error: no session");
+      return;
+    }
+
+    let full_codeSymbol = await codeEditor.getSymbolUnderCusor(
+      new vscode.Position(
+        position.line + 1 < document.lineCount
+          ? position.line + 1
+          : position.line,
+        position.character
+      )
+    );
+    console.log(full_codeSymbol);
+
+    return [
+      new vscode.CompletionItem(
+        "Test Docstring",
+        vscode.CompletionItemKind.Text
+      ),
+    ];
+  } catch (err: any) {
+    console.log(err);
+    vscode.window.showErrorMessage(err);
+  }
+};
+
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,

@@ -147,6 +147,7 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
 
+  
   public hasSelection(): boolean {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -231,6 +232,10 @@ export default class CodeEditor {
     return null;
   }
 
+  /**
+   * Get
+   * @returns 
+   */
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {
       return [];
@@ -241,7 +246,7 @@ export default class CodeEditor {
       this._activeEditor.document.uri
     );
 
-    if (!symbols) {
+    if (!symbols) { // no symbols found
       return [];
     }
     return symbols;

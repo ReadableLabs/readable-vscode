@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
 import TextGenerator from "./TextGenerator";
-import { provideComments } from "./Completion";
+import { provideComments, provideDocstring } from "./Completion";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -75,24 +75,57 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!isEnabled) {
           return;
         }
+
         console.log("it is working");
+
         const linePrefix = document // get the line prefix
           .lineAt(position)
           .text.substring(0, position.character);
-        if (!linePrefix.endsWith("//")) {
-          // if it doesn't end with a comment
-          return undefined;
-        } else {
-          try {
+
+        console.log(linePrefix);
+
+        try {
+          if (linePrefix.endsWith("//")) {
             return await provideComments(position, document);
-          } catch (err: any) {
-            console.log(err);
-            vscode.window.showErrorMessage(err);
           }
+          if (linePrefix.endsWith("/*")) {
+            console.log("working docstring");
+          } else {
+            return undefined;
+          }
+        } catch (err: any) {
+          console.log(err);
+          vscode.window.showErrorMessage(err);
         }
       },
     },
     "/"
+  );
+
+  const docstringProvider = vscode.languages.registerCompletionItemProvider(
+    [{ language: "javascript" }],
+    {
+      async provideCompletionItems(document, position, token, context) {
+        let isEnabled = vscode.workspace // get the configuration
+          .getConfiguration("readable")
+          .get<boolean>("enableAutoComplete");
+        if (!isEnabled) {
+          return;
+        }
+
+        console.log("it is working");
+
+        const linePrefix = document // get the line prefix
+          .lineAt(position)
+          .text.substring(0, position.character);
+
+        if (!linePrefix.endsWith("/**")) {
+          return undefined;
+        }
+        return await provideDocstring(position, document);
+      },
+    },
+    "*"
   );
 
   const codeEditor = new CodeEditor(editor);
