@@ -120,14 +120,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return undefined;
         }
         console.log("working docstring things");
-        let completion = new vscode.CompletionItem(
-          "Generate Docstring",
-          vscode.CompletionItemKind.Text
-        );
         return await provideDocstring(position, document);
-      },
-      async resolveCompletionItem(item, token) {
-        return undefined;
       },
     },
     "*"

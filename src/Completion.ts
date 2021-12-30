@@ -39,8 +39,6 @@ export const provideDocstring = async (
       return undefined;
     }
 
-    let startLine = full_codeSymbol.range.start.line; // get the start line
-
     let endLine = // get the end line
       full_codeSymbol.range.end.line > position.line + 16 &&
       position.line + 16 < document.lineCount
