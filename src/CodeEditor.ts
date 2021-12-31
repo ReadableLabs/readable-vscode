@@ -42,8 +42,8 @@ export default class CodeEditor {
 
   /**
    * Returns the number of spaces at the beginning of a string.
-   * @param {string} text - The string to check.
-   * @returns {number} The number of spaces at the beginning of the string.
+   * @param text The string to check.
+   * @returns The number of spaces at the beginning of a string.
    */
   public getSpaces(text: string): number {
     return text.search(/\S/);
@@ -73,6 +73,7 @@ export default class CodeEditor {
    * @param {string} comment
    * @param {number} _spaces
    * @param {string} language
+   * @returns {string}
    */
   public formatText(
     comment: string,
@@ -129,8 +130,9 @@ export default class CodeEditor {
   }
 
   /**
-   * @param {vscode.Selection} selection
-   * @returns {string}
+   * Returns the text from the current selection
+   * @param selection The current selection
+   * @returns The text from the current selection
    */
   public getTextFromSelection(selection: vscode.Selection): string {
     if (!this._activeEditor) {
@@ -141,6 +143,11 @@ export default class CodeEditor {
     );
   }
 
+  /**
+   * Returns the text of the symbol.
+   * @param {vscode.DocumentSymbol} symbol The symbol to get the text from.
+   * @returns {string} The text of the symbol.
+   */
   public getTextFromSymbol(symbol: vscode.DocumentSymbol) {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get active editor");
@@ -149,25 +156,27 @@ export default class CodeEditor {
   }
 
   /**
-   * Inserts text at the given position in the active editor.
+   * Inserts the given text at the given position in the active editor.
+   *
    * @param text The text to insert.
    * @param position The position to insert the text at.
-   * @returns True if the text was inserted, false otherwise.
+   * @returns A promise that resolves to true if the text was inserted successfully.
    */
   public async insertTextAtPosition(
     text: string,
     position: vscode.Position
   ): Promise<boolean> {
-    let snippet = new vscode.SnippetString(text);
-    let result = await this._activeEditor?.insertSnippet(snippet, position);
+    let snippet = new vscode.SnippetString(text); // create a snippet
+    let result = await this._activeEditor?.insertSnippet(snippet, position); // insert the snippet
     if (!result) {
+      // if the snippet failed to insert
       throw new Error("Error: unable to insert text");
     }
     return result;
   }
 
   /**
-   * Returns the selected text in the active text editor.
+   * Returns the selected text of the active text editor
    * @returns {string}
    */
   public getSelectedText(): string {
@@ -178,7 +187,7 @@ export default class CodeEditor {
   }
 
   /**
-   * @returns {boolean} True if the current selection is not empty, false otherwise
+   * @returns {boolean} True if there is a selection in the active text editor.
    */
   public hasSelection(): boolean {
     if (!this._activeEditor) {
@@ -197,8 +206,8 @@ export default class CodeEditor {
   }
 
   /**
-   * Returns the current selection in the active editor
-   * @returns {Selection}
+   * Returns the current selection in the active editor.
+   * @return {Selection}
    */
   public getSelection() {
     if (!this._activeEditor) {
@@ -207,6 +216,10 @@ export default class CodeEditor {
     return this._activeEditor.selection;
   }
 
+  /**
+   * Returns the current cursor position in the editor.
+   * @returns {number} The current cursor position.
+   */
   public getCursorPosition(): number {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get cursor position");
@@ -216,9 +229,9 @@ export default class CodeEditor {
   }
 
   /**
-   * This function gets the text in the given range of the active editor.
-   * @param {vscode.Range} range - The range of the text to get.
-   * @returns {string} The text in the given range of the active editor.
+   * Returns the text in the given range of the active editor
+   * @param range The range of the text to return
+   * @returns The text in the given range
    */
   public getTextInRange(range: vscode.Range): string {
     if (!this._activeEditor) {
@@ -228,26 +241,25 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
-  /**
-   * @param {string} name
-   * @param {string} value
-   * @returns {string}
-   */
   public async getSymbolUnderCusor(
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
     if (symbols === []) {
+      // no symbols
       throw new Error("Error: no symbols");
     }
     // let position = this.getCursorPosition();
     for (let i = 0; i < symbols.length; i++) {
+      // loop through symbols
       if (
+        // if the symbol is the class we're in
         symbols[i].range.start.line <= position.line &&
         symbols[i].range.end.line >= position.line
       ) {
         console.log("found symbol");
         if (
+          // if the symbol is a method or function
           symbols[i].kind === vscode.SymbolKind.Class &&
           symbols[i].range.start.line !== position.line
         ) {
@@ -279,8 +291,9 @@ export default class CodeEditor {
   }
 
   /**
-   * Get
-   * @returns
+   * Returns an array of all symbols in the current document.
+   *
+   * @returns {Promise<vscode.DocumentSymbol[]>}
    */
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {

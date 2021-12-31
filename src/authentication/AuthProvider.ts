@@ -144,7 +144,15 @@ export class CodeCommentAuthenticationProvider
   async createSession(_scopes: string[]): Promise<AuthenticationSession> {
     this.ensureInitialized();
 
-    const loginChoice = await window.showQuickPick(this.quickPickItems);
+    let loginChoice;
+
+    if (_scopes === []) {
+      loginChoice = await window.showQuickPick(this.quickPickItems);
+    }
+
+    if (_scopes[0] === "GitHub") {
+      loginChoice = this.quickPickItems[0];
+    }
 
     if (loginChoice === undefined) {
       throw new Error("Please select a choice");
@@ -354,58 +362,114 @@ export class CodeCommentAuthenticationProvider
   }
 
   async registerAccount(): Promise<void> {
-    const email = await vscode.window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Email",
-      prompt: "Enter an email",
-    });
-
-    // add check if email, whatever are null to just abort
-
-    const password1 = await vscode.window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Password",
-      prompt: "Enter in a password",
-      password: true,
-    });
-
-    const password2 = await vscode.window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Password",
-      prompt: "Repeat the password",
-      password: true,
-    });
-
-    let detail = await vscode.window.withProgress(
+    const session = await vscode.authentication.getSession(
+      CodeCommentAuthenticationProvider.id,
+      [],
+      { createIfNone: false }
+    );
+    if (session) {
+      vscode.window.showInformationMessage("You are already logged in!");
+      return;
+    }
+    const quickPickRegister: QuickPickItem[] = [
       {
-        title: "Registering",
-        cancellable: false,
-        location: vscode.ProgressLocation.Notification,
+        label: "$(mark-github)  GitHub",
+        detail: "Register with GitHub",
+        picked: true,
       },
-      (progress, token) => {
-        let p = new Promise<string>(async (resolve, reject) => {
-          try {
-            const { data } = await axios.post(
-              "https://api.readable.so/api/v1/users/auth/register/",
-              {
-                email: email,
-                password1,
-                password2,
-              }
-            );
+      {
+        label: "$(mail)  Email",
+        detail: "Register with Email",
+        picked: false,
+      },
+    ];
+    let choice = await window.showQuickPick(quickPickRegister);
 
-            resolve(data.detail);
-          } catch (err: any) {
-            console.log(err);
-            vscode.window.showErrorMessage(err);
-          }
-        });
-        return p;
+    if (!choice) {
+      return;
+    }
+
+    if (choice.label === "$(mark-github)  GitHub") {
+      const session = await vscode.authentication.getSession(
+        CodeCommentAuthenticationProvider.id,
+        ["GitHub"],
+        { createIfNone: true }
+      );
+      if (!session) {
+        vscode.window.showErrorMessage("Error: failed to login with GitHub");
       }
-    );
-    vscode.window.showInformationMessage(
-      detail + " Check your inbox and try logging in."
-    );
+    } else if (choice.label === "$(mail)  Email") {
+      const email = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Email",
+        prompt: "Enter an email",
+      });
+
+      if (!email) {
+        return;
+      }
+
+      // add check if email, whatever are null to just abort
+
+      const password1 = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Password",
+        prompt: "Enter in a password",
+        password: true,
+      });
+
+      if (!password1) {
+        return;
+      }
+
+      const password2 = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "Password",
+        prompt: "Repeat the password",
+        password: true,
+      });
+
+      if (!password2) {
+        return;
+      }
+
+      if (password1 !== password2) {
+        vscode.window.showErrorMessage("Error: passwords are not the same");
+        return;
+      }
+
+      let detail = await vscode.window.withProgress(
+        {
+          title: "Registering",
+          cancellable: false,
+          location: vscode.ProgressLocation.Notification,
+        },
+        (progress, token) => {
+          let p = new Promise<string>(async (resolve, reject) => {
+            try {
+              const { data } = await axios.post(
+                "https://api.readable.so/api/v1/users/auth/register/",
+                {
+                  email: email,
+                  password1,
+                  password2,
+                }
+              );
+
+              resolve(data.detail);
+            } catch (err: any) {
+              console.log(err);
+              vscode.window.showErrorMessage(err);
+              reject();
+            }
+          });
+          return p;
+        }
+      );
+      vscode.window.showInformationMessage(
+        detail + " Check your inbox and try logging in."
+      );
+    }
   }
   catch(err: any) {
     console.log(err);
