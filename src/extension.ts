@@ -219,13 +219,13 @@ export async function activate(context: vscode.ExtensionContext) {
   if (!session) {
     const result = await vscode.window.showInformationMessage(
       "No account detected. Make an account or login to use Readable.",
-      "Log In With GitHub",
-      "Sign up with Email"
+      "Log In",
+      "Sign up"
     );
     if (!result) return;
-    if (result === "Log In With GitHub") {
+    if (result === "Log In") {
       await vscode.commands.executeCommand("readable.login");
-    } else if (result === "Sign up with Email") {
+    } else if (result === "Sign up") {
       await vscode.commands.executeCommand("readable.register");
     }
   }

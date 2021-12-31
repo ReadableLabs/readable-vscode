@@ -142,6 +142,7 @@ export class CodeCommentAuthenticationProvider
   }
 
   async createSession(_scopes: string[]): Promise<AuthenticationSession> {
+    // check for session already existing and throw error
     this.ensureInitialized();
 
     let loginChoice;
@@ -152,6 +153,8 @@ export class CodeCommentAuthenticationProvider
 
     if (_scopes[0] === "GitHub") {
       loginChoice = this.quickPickItems[0];
+    } else {
+      loginChoice = await window.showQuickPick(this.quickPickItems);
     }
 
     if (loginChoice === undefined) {

@@ -20,7 +20,7 @@ export const provideDocstring = async (
     );
 
     if (!session) {
-      vscode.window.showErrorMessage("Error: no session");
+      vscode.window.showErrorMessage("Error: Please log in");
       return;
     }
 
@@ -119,7 +119,7 @@ export const provideComments = async (
     );
 
     if (!session) {
-      vscode.window.showErrorMessage("Error: no session");
+      vscode.window.showErrorMessage("Error: Please log in");
       return;
     }
 
