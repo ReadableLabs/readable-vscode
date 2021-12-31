@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.2]
+
+- Fixed Python Docstring suggestion
+
 ## [1.2.1]
 
 - Pre select Readable docstring completion item
