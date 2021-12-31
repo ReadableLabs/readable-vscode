@@ -133,6 +133,39 @@ export async function activate(context: vscode.ExtensionContext) {
     "*"
   );
 
+  const pythonDocstringProvider =
+    vscode.languages.registerCompletionItemProvider(
+      [{ language: "python" }],
+      {
+        async provideCompletionItems(document, position, token, context) {
+          const isEnabled = vscode.workspace
+            .getConfiguration("readable")
+            .get<boolean>("enableAutoComplete");
+          if (!isEnabled) {
+            return;
+          }
+
+          const linePrefix = document
+            .lineAt(position)
+            .text.substring(0, position.character);
+
+          if (!linePrefix.endsWith('"""')) {
+            return;
+          }
+
+          try {
+            return await provideDocstring(position, document, "python");
+          } catch (err: any) {
+            console.log(err);
+            vscode.window.showErrorMessage(err);
+          }
+
+          return undefined;
+        },
+      },
+      '"'
+    );
+
   const codeEditor = new CodeEditor(editor);
   const textGenerator = new TextGenerator();
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);

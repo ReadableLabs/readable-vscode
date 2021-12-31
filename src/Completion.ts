@@ -3,6 +3,7 @@ import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider
 import CodeEditor from "./CodeEditor";
 import axios from "axios";
 import { posix } from "path";
+import { TextDecoder } from "util";
 
 const codeEditor = new CodeEditor();
 
@@ -37,6 +38,19 @@ export const provideDocstring = async (
       return undefined;
     }
 
+    const language = _language ? _language : "normal";
+
+    let functionName = "";
+    if (language === "python") {
+      functionName = document.lineAt(full_codeSymbol.range.start.line).text; // hacky solution for checking if there is a function or an attribute
+      if (!functionName.includes("def")) {
+        functionName = document.lineAt(
+          full_codeSymbol.range.start.line + 1
+        ).text;
+      }
+      console.log(functionName);
+    }
+
     let endLine = // get the end line
       full_codeSymbol.range.end.line > position.line + 16 &&
       position.line + 16 < document.lineCount
@@ -50,13 +64,12 @@ export const provideDocstring = async (
       )
     );
 
-    const language = _language ? _language : "normal";
-
-    const { data } = await axios.post(
+    let { data } = await axios.post(
       "https://api.readable.so/complete/right-click/",
       {
         full_code: fullCode,
         language: language,
+        python_functionName: functionName,
       },
       {
         headers: {
@@ -64,11 +77,20 @@ export const provideDocstring = async (
         },
       }
     );
+
     console.log(data);
 
     if (!data) {
       vscode.window.showWarningMessage("No docstring was able to be generated");
       return undefined;
+    }
+
+    if (language === "python") {
+      data = "\n" + data;
+    }
+
+    if (language === "python" && !data.endsWith('"""')) {
+      data += '"""';
     }
 
     let completionItem = new vscode.CompletionItem(
