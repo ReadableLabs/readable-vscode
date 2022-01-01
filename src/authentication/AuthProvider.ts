@@ -142,7 +142,6 @@ export class CodeCommentAuthenticationProvider
   }
 
   async createSession(_scopes: string[]): Promise<AuthenticationSession> {
-    // check for session already existing and throw error
     this.ensureInitialized();
 
     let loginChoice;
@@ -164,7 +163,6 @@ export class CodeCommentAuthenticationProvider
     const session = await this.loginWithProvider(loginChoice.label);
 
     await this.secretStorage.store(
-      // store the session in the secret storage
       CodeCommentAuthenticationProvider.secretKey,
       session
     );
@@ -227,7 +225,6 @@ export class CodeCommentAuthenticationProvider
               }
 
               const updatedAccount = await axios.post(
-                // post the updated account to the database
                 "https://api.readable.so/api/v1/users/finish/",
                 {
                   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -255,7 +252,6 @@ export class CodeCommentAuthenticationProvider
               // );
               console.log(data);
               resolve(data.key);
-              // return data.key;
             } catch (err: any) {
               console.log(err);
               vscode.window.showErrorMessage(err);
