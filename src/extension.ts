@@ -6,6 +6,8 @@ import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider
 import CodeEditor from "./CodeEditor";
 import TextGenerator from "./TextGenerator";
 import { provideComments, provideDocstring } from "./Completion";
+import { env } from "process";
+import TrialHelper from "./trial/TrialHelper";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -72,9 +74,11 @@ export async function activate(context: vscode.ExtensionContext) {
         let isEnabled = vscode.workspace // get the configuration
           .getConfiguration("readable")
           .get<boolean>("enableAutoComplete");
-        if (!isEnabled) {
+        if (!isEnabled || TrialHelper.TrialEnded) {
           return;
         }
+
+        console.log(TrialHelper.TrialEnded);
 
         console.log("it is working");
 
@@ -113,7 +117,7 @@ export async function activate(context: vscode.ExtensionContext) {
         let isEnabled = vscode.workspace // get the configuration
           .getConfiguration("readable")
           .get<boolean>("enableAutoComplete");
-        if (!isEnabled) {
+        if (!isEnabled || TrialHelper.TrialEnded) {
           return;
         }
 
@@ -141,7 +145,7 @@ export async function activate(context: vscode.ExtensionContext) {
           const isEnabled = vscode.workspace
             .getConfiguration("readable")
             .get<boolean>("enableAutoComplete");
-          if (!isEnabled) {
+          if (!isEnabled || TrialHelper.TrialEnded) {
             return;
           }
 
@@ -228,6 +232,9 @@ export async function activate(context: vscode.ExtensionContext) {
     } else if (result === "Sign up") {
       await vscode.commands.executeCommand("readable.register");
     }
+  } else {
+    let profile = await authProvider.getProfile(session.accessToken);
+    await TrialHelper.CheckTrial(profile);
   }
 
   // context.subscriptions.push(statusBarProvider.myStatusBar);

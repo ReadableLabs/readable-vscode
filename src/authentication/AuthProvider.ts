@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 const https = require("https");
 import * as vscode from "vscode";
+import { IProfile } from "./types";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class CodeCommentPatSession implements AuthenticationSession {
@@ -264,6 +265,25 @@ export class CodeCommentAuthenticationProvider
       return key;
     } else {
       throw new Error("Unable to authenticate with GitHub");
+    }
+  }
+
+  async getProfile(accessToken: string): Promise<IProfile> {
+    try {
+      const { data } = await axios.post<IProfile>(
+        "https://api.readable.so/api/v1/users/accountinfo/",
+        {},
+        {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        }
+      );
+      console.log(data);
+      return data;
+    } catch (err: any) {
+      console.log(err);
+      throw new Error(err.response);
     }
   }
 
