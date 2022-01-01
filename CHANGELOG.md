@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.3]
+
+- Added trial check
+
 ## [1.2.2]
 
 - Fixed Python Docstring suggestion
