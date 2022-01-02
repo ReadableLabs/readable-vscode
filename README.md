@@ -31,10 +31,6 @@ At Readable, we do not store your code, or use it to train any of our models.
 
 Note: As we use GPT-3, OpenAi may store your code, so make sure to read their privacy policy if you are unsure.
 
-## Accurate Comments
-
-Readable doesn't just generate comments off of a template, it uses GPT-3 to generate **detailed** comments. It uses GPT-3 Codex, a very powerful Ai which has been trained on millions of lines of code.
-
 ## Getting Set Up
 
 Thanks for trying out Readable!
