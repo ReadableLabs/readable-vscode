@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.4]
+
+- Added message on first login with account
+
 ## [1.2.3]
 
 - Added trial check
