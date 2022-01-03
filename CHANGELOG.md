@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.5]
+
+- Added check for logout
+
 ## [1.2.4]
 
 - Added message on first login with account

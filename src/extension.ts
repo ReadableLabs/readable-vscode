@@ -63,6 +63,8 @@ export async function activate(context: vscode.ExtensionContext) {
       { language: "csharp" },
       { language: "php" },
       { language: "java" },
+      { language: "javascriptreact" },
+      { language: "typescriptreact" },
     ],
     {
       async provideCompletionItems(
@@ -78,18 +80,13 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
 
-        console.log(TrialHelper.TrialEnded);
-
-        console.log("it is working");
-
         const linePrefix = document // get the line prefix
           .lineAt(position)
           .text.substring(0, position.character);
 
-        console.log(linePrefix);
-
         try {
           if (linePrefix.endsWith("//")) {
+            console.log(linePrefix);
             return await provideComments(position, document);
           } else {
             return undefined;

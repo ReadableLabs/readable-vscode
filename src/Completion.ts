@@ -251,7 +251,7 @@ export const provideComments = async (
     return [completion]; // return the completion list
   } catch (err: any) {
     // if there is an error, show the error message
-    vscode.window.showErrorMessage(err);
-    console.log(err);
+    vscode.window.showErrorMessage(err.response);
+    console.log(err.response);
   }
 };
