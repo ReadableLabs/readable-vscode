@@ -46,9 +46,11 @@ export default abstract class TrialHelper {
 
     let trialDate = this.numDaysBetween(parsedDate, currentDate);
 
-    if (trialDate < 3 && trialDate > 0) {
+    if (trialDate > 0) {
       let choice = await vscode.window.showInformationMessage(
-        "You have less than 3 days remaining in your Readable Trial.",
+        `You have ${trialDate.toPrecision(
+          2
+        )} days remaining in your Readable Trial.`,
         "Purchase Readable"
       );
       if (!choice) {

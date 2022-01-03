@@ -215,32 +215,7 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  const session = await vscode.authentication.getSession(
-    CodeCommentAuthenticationProvider.id,
-    [],
-    { createIfNone: false }
-  );
-  if (!session) {
-    const result = await vscode.window.showInformationMessage(
-      "No account detected. Make an account or login to use Readable.",
-      "Log In",
-      "Sign up"
-    );
-    if (!result) return;
-    if (result === "Log In") {
-      await vscode.commands.executeCommand("readable.login");
-    } else if (result === "Sign up") {
-      await vscode.commands.executeCommand("readable.register");
-    }
-  } else {
-    let profile = await authProvider.getProfile(session.accessToken);
-
-    if (profile.plan === "Premium") {
-      return;
-    }
-
-    await TrialHelper.showTrialNotification(profile.trial_end);
-  }
+  await authProvider.checkSession();
 
   // context.subscriptions.push(statusBarProvider.myStatusBar);
 }

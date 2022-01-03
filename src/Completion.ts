@@ -101,7 +101,7 @@ export const provideDocstring = async (
 
     return [completionItem];
   } catch (err: any) {
-    console.log(err);
+    console.log(err.response);
     vscode.window.showErrorMessage(err);
   }
 };

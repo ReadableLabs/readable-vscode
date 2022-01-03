@@ -73,6 +73,40 @@ export class CodeCommentAuthenticationProvider
     this.initializedDisposable?.dispose();
   }
 
+  public async checkSession(): Promise<void> {
+    const session = await vscode.authentication.getSession(
+      CodeCommentAuthenticationProvider.id,
+      [],
+      { createIfNone: false }
+    );
+    if (!session) {
+      const result = await vscode.window.showInformationMessage(
+        "No account detected. Make an account or login to use Readable.",
+        "Log In",
+        "Sign up"
+      );
+      if (!result) return;
+      if (result === "Log In") {
+        await vscode.commands.executeCommand("readable.login");
+      } else if (result === "Sign up") {
+        await vscode.commands.executeCommand("readable.register");
+      }
+    } else {
+      console.log(session);
+      let profile = await this.getProfile(session.accessToken);
+
+      if (!profile) {
+        return;
+      }
+
+      if (profile.plan === "Premium") {
+        return;
+      }
+
+      await TrialHelper.showTrialNotification(profile.trial_end);
+    }
+  }
+
   private ensureInitialized(): void {
     if (this.initializedDisposable === undefined) {
       void this.cacheTokenFromStorage();
@@ -275,7 +309,7 @@ export class CodeCommentAuthenticationProvider
     }
   }
 
-  async getProfile(accessToken: string): Promise<IProfile> {
+  async getProfile(accessToken: string): Promise<IProfile | undefined> {
     try {
       const { data } = await axios.post<IProfile>(
         "https://api.readable.so/api/v1/users/accountinfo/",
@@ -289,8 +323,13 @@ export class CodeCommentAuthenticationProvider
       console.log(data);
       return data;
     } catch (err: any) {
-      console.log(err);
-      throw new Error(err.response);
+      vscode.window.showErrorMessage(err.response);
+      if (err.response.status === 401) {
+        vscode.window.showErrorMessage(
+          "Error getting account details. Please log out and log in again to get a new access token."
+        );
+      }
+      console.log(err.response);
     }
   }
 
