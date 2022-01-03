@@ -234,7 +234,12 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   } else {
     let profile = await authProvider.getProfile(session.accessToken);
-    await TrialHelper.CheckTrial(profile);
+
+    if (profile.plan === "Premium") {
+      return;
+    }
+
+    await TrialHelper.showTrialNotification(profile.trial_end);
   }
 
   // context.subscriptions.push(statusBarProvider.myStatusBar);

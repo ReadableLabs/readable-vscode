@@ -14,6 +14,7 @@ import axios from "axios";
 const https = require("https");
 import * as vscode from "vscode";
 import { IProfile } from "./types";
+import TrialHelper from "../trial/TrialHelper";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class CodeCommentPatSession implements AuthenticationSession {
@@ -162,6 +163,12 @@ export class CodeCommentAuthenticationProvider
     }
 
     const session = await this.loginWithProvider(loginChoice.label);
+
+    console.log(session);
+
+    await TrialHelper.checkFirstLaunch(session);
+
+    console.log("got to store");
 
     await this.secretStorage.store(
       CodeCommentAuthenticationProvider.secretKey,

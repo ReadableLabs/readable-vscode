@@ -1,5 +1,8 @@
+import axios from "axios";
+const https = require("https");
 import * as vscode from "vscode";
 import { IProfile } from "../authentication/types";
+https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 export default abstract class TrialHelper {
   public static TrialEnded = false;
@@ -9,12 +12,36 @@ export default abstract class TrialHelper {
     return diff / (1000 * 60 * 60 * 24);
   }
 
-  public static async CheckTrial(profile: IProfile): Promise<void> {
-    if (profile.plan === "Premium") {
-      return;
-    }
+  public static async checkFirstLaunch(accessToken: string) {
+    const { data } = await axios.post(
+      "https://api.readable.so/api/v1/users/check-trial/",
+      {
+        place: "vscode",
+      },
+      {
+        headers: {
+          Authorization: `Token ${accessToken}`,
+        },
+      }
+    );
+    console.log(data);
 
-    let parsedDate = Date.parse(profile.trial_end);
+    if (data === false) {
+      let response = await vscode.window.showInformationMessage(
+        "Welcome to the Readable Trial! If you haven't already, check our website to see how Readable works.",
+        "Open Readable Website"
+      );
+      if (!response) {
+        return;
+      }
+      if (response === "Open Readable Website") {
+        vscode.env.openExternal(vscode.Uri.parse("https://readable.so"));
+      }
+    }
+  }
+
+  public static async showTrialNotification(trialEnd: string) {
+    let parsedDate = Date.parse(trialEnd);
     let currentDate = new Date().getTime();
 
     let trialDate = this.numDaysBetween(parsedDate, currentDate);
