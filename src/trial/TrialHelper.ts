@@ -12,6 +12,8 @@ export default abstract class TrialHelper {
     return diff / (1000 * 60 * 60 * 24);
   }
 
+  public static async checkTrial() {}
+
   public static async checkFirstLaunch(accessToken: string) {
     const { data } = await axios.post(
       "https://api.readable.so/api/v1/users/check-trial/",

@@ -2,8 +2,6 @@ import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
 import axios from "axios";
-import { posix } from "path";
-import { TextDecoder } from "util";
 
 const codeEditor = new CodeEditor();
 
@@ -25,6 +23,7 @@ export const provideDocstring = async (
     }
 
     let full_codeSymbol = await codeEditor.getSymbolUnderCusor(
+      // data.detail if 429
       new vscode.Position(
         position.line + 1 < document.lineCount
           ? position.line + 1

@@ -15,6 +15,7 @@ const https = require("https");
 import * as vscode from "vscode";
 import { IProfile } from "./types";
 import TrialHelper from "../trial/TrialHelper";
+import { loginOptions } from "./Prompts";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class CodeCommentPatSession implements AuthenticationSession {
@@ -73,12 +74,20 @@ export class CodeCommentAuthenticationProvider
     this.initializedDisposable?.dispose();
   }
 
-  public async checkSession(): Promise<void> {
-    const session = await vscode.authentication.getSession(
+  public async getSession(): Promise<AuthenticationSession | undefined> {
+    return await vscode.authentication.getSession(
       CodeCommentAuthenticationProvider.id,
       [],
       { createIfNone: false }
     );
+  }
+
+  /**
+   * Checks if the user has a session
+   * @returns true if there is a session
+   */
+  public async checkAccount(): Promise<void> {
+    const session = await this.getSession();
     if (!session) {
       const result = await vscode.window.showInformationMessage(
         "No account detected. Make an account or login to use Readable.",
@@ -92,8 +101,7 @@ export class CodeCommentAuthenticationProvider
         await vscode.commands.executeCommand("readable.register");
       }
     } else {
-      console.log(session);
-      let profile = await this.getProfile(session.accessToken);
+      let profile = await this.getProfile();
 
       if (!profile) {
         return;
@@ -167,53 +175,41 @@ export class CodeCommentAuthenticationProvider
     _scopes?: string[]
   ): Promise<readonly AuthenticationSession[]> {
     try {
-      console.log("get sessions");
       this.ensureInitialized();
       const token = await this.cacheTokenFromStorage();
       return token ? [new CodeCommentPatSession(token)] : []; // return a session
     } catch (err) {
       console.log(err);
-      throw new Error("hadsigoh");
+      throw new Error("Error: can't get sessions");
     }
   }
 
   async createSession(_scopes: string[]): Promise<AuthenticationSession> {
     this.ensureInitialized();
 
-    let loginChoice;
-
-    if (_scopes === []) {
-      loginChoice = await window.showQuickPick(this.quickPickItems);
+    if (!_scopes[0]) {
+      throw new Error("Error: no key");
     }
 
-    if (_scopes[0] === "GitHub") {
-      loginChoice = this.quickPickItems[0];
-    } else {
-      loginChoice = await window.showQuickPick(this.quickPickItems);
-    }
-
-    if (loginChoice === undefined) {
-      throw new Error("Please select a choice");
-    }
-
-    const session = await this.loginWithProvider(loginChoice.label);
-
-    console.log(session);
-
-    await TrialHelper.checkFirstLaunch(session);
-
-    console.log("got to store");
+    const session = _scopes[0];
 
     await this.secretStorage.store(
       CodeCommentAuthenticationProvider.secretKey,
       session
     );
 
-    window.showInformationMessage("Successfully logged into Readable!");
-
-    console.log("successfully logged into Code Comment");
-
     return new CodeCommentPatSession(session);
+  }
+
+  async storeKey(key: string) {
+    if (key === "") {
+      throw new Error("Error: empty key");
+    }
+    this.ensureInitialized();
+    await this.secretStorage.store(
+      CodeCommentAuthenticationProvider.secretKey,
+      key
+    );
   }
 
   async loginWithProvider(providerName: string): Promise<string> {
@@ -221,7 +217,8 @@ export class CodeCommentAuthenticationProvider
       return this.githubLogin();
     }
     if (providerName === "$(mail)  Email") {
-      return this.accountLogin();
+      // return this.accountLogin();
+      return "hello";
     } else {
       throw new Error("Invalid provider name");
     }
@@ -309,14 +306,18 @@ export class CodeCommentAuthenticationProvider
     }
   }
 
-  async getProfile(accessToken: string): Promise<IProfile | undefined> {
+  async getProfile(): Promise<IProfile | undefined> {
     try {
+      const session = await this.getSession();
+      if (!session) {
+        return;
+      }
       const { data } = await axios.post<IProfile>(
         "https://api.readable.so/api/v1/users/accountinfo/",
         {},
         {
           headers: {
-            Authorization: `Token ${accessToken}`,
+            Authorization: `Token ${session.accessToken}`,
           },
         }
       );
@@ -333,61 +334,23 @@ export class CodeCommentAuthenticationProvider
     }
   }
 
-  async accountLogin(): Promise<string> {
-    const email = await window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Email",
-      prompt: "Enter your email",
-    });
-
-    if (!email) {
-      throw new Error("Please enter in an email");
-    }
-
-    const password = await window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "Password",
-      prompt: "Please enter in your password",
-      password: true,
-    });
-
-    if (!password) {
-      throw new Error("Enter in a password");
-    }
-
-    let key = await vscode.window.withProgress(
+  static async accountLogin(
+    email: string,
+    password: string
+  ): Promise<string | undefined> {
+    const { data } = await axios.post(
+      "https://api.readable.so/api/v1/users/auth/login/",
       {
-        title: "Logging in",
-        cancellable: false,
-        location: vscode.ProgressLocation.Notification,
-      },
-      (progress, token) => {
-        let p = new Promise<string>(async (resolve, reject) => {
-          try {
-            const { data } = await axios.post(
-              "https://api.readable.so/api/v1/users/auth/login/",
-              {
-                email: email,
-                password: password,
-              }
-            );
-
-            if (!data.key) {
-              throw new Error(
-                "Error: unable to login. You can reset your password using the reset password command."
-              );
-            }
-            resolve(data.key);
-          } catch (err: any) {
-            console.log(err);
-            vscode.window.showErrorMessage("Error: failed to login");
-            reject();
-          }
-        });
-        return p;
+        email: email,
+        password: password,
       }
     );
-    return key;
+
+    if (!data.key) {
+      return;
+    }
+
+    return data.key;
   }
 
   async resetPassword(): Promise<void> {
