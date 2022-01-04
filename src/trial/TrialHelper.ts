@@ -15,29 +15,35 @@ export default abstract class TrialHelper {
   public static async checkTrial() {}
 
   public static async checkFirstLaunch(accessToken: string) {
-    const { data } = await axios.post(
-      "https://api.readable.so/api/v1/users/check-trial/",
-      {
-        place: "vscode",
-      },
-      {
-        headers: {
-          Authorization: `Token ${accessToken}`,
+    try {
+      const { data } = await axios.post(
+        "https://api.readable.so/api/v1/users/check-trial/",
+        {
+          place: "vscode",
         },
-      }
-    );
-    console.log(data);
-
-    if (data === false) {
-      let response = await vscode.window.showInformationMessage(
-        "Welcome to the Readable Trial! If you haven't already, check our website to see how Readable works.",
-        "Open Readable Website"
+        {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        }
       );
-      if (!response) {
-        return;
+      console.log(data);
+
+      if (data === false) {
+        let response = await vscode.window.showInformationMessage(
+          "Welcome to the Readable Trial! If you haven't already, check our website to see how Readable works.",
+          "Open Readable Website"
+        );
+        if (!response) {
+          return;
+        }
+        if (response === "Open Readable Website") {
+          vscode.env.openExternal(vscode.Uri.parse("https://readable.so"));
+        }
       }
-      if (response === "Open Readable Website") {
-        vscode.env.openExternal(vscode.Uri.parse("https://readable.so"));
+    } catch (err: any) {
+      if (err.response) {
+        vscode.window.showErrorMessage(err.response);
       }
     }
   }

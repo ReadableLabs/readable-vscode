@@ -80,25 +80,28 @@ export default class Account {
     }
   }
 
-  public async GetProfile(accessToken: string): Promise<IProfile | undefined> {
+  public static async GetProfile(
+    accessToken: string
+  ): Promise<IProfile | undefined> {
     try {
       const { data } = await axios.post(
         "https://api.readable.so/api/v1/users/accountinfo/",
         {},
         {
           headers: {
-            Token: `Token ${accessToken}`,
+            Authorization: `Token ${accessToken}`,
           },
         }
       );
-
-      if (!data.username) {
-        return;
-      }
-
       return data;
     } catch (err: any) {
-      vscode.window.showErrorMessage(err.response);
+      console.log(err);
+      await vscode.window.showErrorMessage(
+        "Error getting account info. Try logging out and back in."
+      );
+      if (err.response) {
+        await vscode.window.showErrorMessage(err.response);
+      }
     }
   }
 

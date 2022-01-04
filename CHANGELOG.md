@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.6]
+
+- Made login/register show reasons for failure
+
 ## [1.2.5]
 
 - Added check for logout

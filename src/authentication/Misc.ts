@@ -1,6 +1,43 @@
 import * as vscode from "vscode";
+import TrialHelper from "../trial/TrialHelper";
 import Account from "./api/Account";
+import { CodeCommentAuthenticationProvider } from "./AuthProvider";
 import { emailLogin } from "./EmailLogin";
+
+export const checkAccount = async () => {
+  try {
+    const session = await vscode.authentication.getSession(
+      CodeCommentAuthenticationProvider.id,
+      [],
+      { createIfNone: false }
+    );
+    console.log(session);
+    if (!session) {
+      const result = await vscode.window.showInformationMessage(
+        "No account detected. Make an account or login to use Readable.",
+        "Log In",
+        "Sign up"
+      );
+      if (!result) return;
+      if (result === "Log In") {
+        await vscode.commands.executeCommand("readable.login");
+      } else if (result === "Sign up") {
+        await vscode.commands.executeCommand("readable.register");
+      }
+    } else {
+      const profile = await Account.GetProfile(session.accessToken);
+      if (!profile) {
+        return;
+      }
+      if (profile.plan === "Premium") {
+        return;
+      }
+      await TrialHelper.showTrialNotification(profile.trial_end);
+    }
+  } catch (err: any) {
+    vscode.window.showErrorMessage(err);
+  }
+};
 
 export const register = async () => {
   try {

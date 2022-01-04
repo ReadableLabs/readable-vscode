@@ -12,7 +12,7 @@ import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
 import { LoginOption } from "./authentication/types";
 import { githubLogin } from "./authentication/GitHubLogin";
-import { register, resetPassword } from "./authentication/Misc";
+import { checkAccount, register, resetPassword } from "./authentication/Misc";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -272,6 +272,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  await checkAccount();
   // await authProvider.checkAccount();
 
   // context.subscriptions.push(statusBarProvider.myStatusBar);
