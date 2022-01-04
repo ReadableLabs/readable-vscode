@@ -238,6 +238,32 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
+  public async getOrCreateSymbolUnderCursor(
+    position: vscode.Position,
+    lineCount: number
+  ): Promise<vscode.DocumentSymbol> {
+    if (!this._activeEditor) {
+      throw new Error("Error");
+    }
+    let codeSymbol = await this.getSymbolUnderCusor(position);
+    if (!codeSymbol) {
+      codeSymbol = new vscode.DocumentSymbol(
+        "CurrentLineSymbol",
+        "The symbol of the current line",
+        vscode.SymbolKind.String,
+        new vscode.Range(
+          new vscode.Position(position.line - 1 > 0 ? position.line - 1 : 1, 0),
+          new vscode.Position(
+            position.line + 1 < lineCount ? position.line + 1 : position.line,
+            position.character
+          )
+        ),
+        new vscode.Range(new vscode.Position(position.line, 0), position)
+      );
+    }
+    return codeSymbol;
+  }
+
   public async getSymbolUnderCusor(
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {

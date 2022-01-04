@@ -1,6 +1,41 @@
 import * as vscode from "vscode";
 
-export const getSafeStartLine = () => {};
+export const getLineNumber = (code: string[], currentLine: string) => {
+  const lineNumber = code.findIndex((value) => {
+    if (value === currentLine) {
+      return true;
+    }
+  });
+  return lineNumber;
+};
+
+export const getFormattedCode = (
+  document: vscode.TextDocument,
+  position: vscode.Position,
+  code: string
+) => {
+  let fullCode = "";
+  const codeSplit = code.split("\n");
+  const currentLine = document.lineAt(position.line).text;
+
+  const lineNumber = getLineNumber(codeSplit, currentLine);
+
+  codeSplit[lineNumber] = codeSplit[lineNumber].slice(0, -2).trimRight();
+  codeSplit.map((item) => {
+    fullCode += item + "\n";
+  });
+  return fullCode;
+};
+
+export const getSafeStartPosition = (
+  position: number,
+  startLine: number,
+  lineCount: number
+) => {
+  return position - 16 > 0 && position - 16 > startLine
+    ? position - 16
+    : startLine;
+};
 
 export const getSafeEndPosition = (
   position: number,
@@ -12,7 +47,16 @@ export const getSafeEndPosition = (
     : endLine;
 };
 
-export const getSafeRange = () => {}; // { startLine, endLine }
+export const getSafeRange = (
+  position: number,
+  _startLine: number,
+  _endLine: number,
+  lineCount: number
+) => {
+  const startLine = getSafeStartPosition(position, _startLine, lineCount);
+  const endLine = getSafeEndPosition(position, _endLine, lineCount);
+  return { startLine, endLine };
+}; // { startLine, endLine }
 
 export const getFunctionName = (
   document: vscode.TextDocument,

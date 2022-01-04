@@ -4,11 +4,13 @@ import CodeEditor from "./CodeEditor";
 import axios from "axios";
 import { checkSession } from "./authentication/Misc";
 import {
+  getFormattedCode,
   getFunctionName,
   getSafeEndPosition,
   getSafeLine,
+  getSafeRange,
 } from "./completion/utils";
-import { generateDocstring } from "./completion/generate";
+import { generateAutoComplete, generateDocstring } from "./completion/generate";
 
 const codeEditor = new CodeEditor();
 
@@ -74,6 +76,10 @@ export const provideDocstring = async (
 
     if (language === "python") {
       generatedDocstring = "\n" + generatedDocstring;
+
+      if (!generatedDocstring.endsWith('"""')) {
+        generatedDocstring += '"""';
+      }
     }
 
     let completionItem = new vscode.CompletionItem(
@@ -92,7 +98,7 @@ export const provideDocstring = async (
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,
-  _language?: string
+  language: string = "normal"
 ) => {
   try {
     const session = await vscode.authentication.getSession(
@@ -106,48 +112,26 @@ export const provideComments = async (
       return;
     }
 
-    let full_codeSymbol = await codeEditor.getSymbolUnderCusor(position);
+    let codeSymbol = await codeEditor.getOrCreateSymbolUnderCursor(
+      position,
+      document.lineCount
+    );
 
-    if (!full_codeSymbol) {
-      full_codeSymbol = new vscode.DocumentSymbol(
-        "CurrentLineSymbol",
-        "The Symbol on the Current Line",
-        vscode.SymbolKind.String,
-        new vscode.Range(
-          new vscode.Position(position.line - 1 > 0 ? position.line - 1 : 1, 0),
-          new vscode.Position(
-            position.line + 1 < document.lineCount
-              ? position.line + 1
-              : position.line,
-            position.character
-          )
-        ),
-        new vscode.Range(new vscode.Position(position.line, 0), position)
-      );
-      // create new symbol
-      // throw new Error("Error: no symbol");
+    if (!codeSymbol) {
+      return;
     }
 
-    console.log(full_codeSymbol);
-
-    let startLine: number, endLine: number;
-
-    startLine = // get the start line
-      full_codeSymbol.range.start.line < position.line - 8 &&
-      position.line - 8 > 0
-        ? position.line - 8
-        : full_codeSymbol.range.start.line;
-
-    endLine = // get the end line
-      full_codeSymbol.range.end.line > position.line + 16 &&
-      position.line + 16 < document.lineCount
-        ? position.line + 16
-        : full_codeSymbol.range.end.line;
+    let { startLine, endLine } = getSafeRange(
+      position.line,
+      codeSymbol.range.start.line,
+      codeSymbol.range.end.line,
+      document.lineCount
+    );
 
     console.log(startLine);
     console.log(endLine);
 
-    let full_code = await codeEditor.getTextInRange(
+    let code = await codeEditor.getTextInRange(
       // get the full code
       new vscode.Range(
         new vscode.Position(startLine, 0),
@@ -155,58 +139,70 @@ export const provideComments = async (
       )
     );
 
-    let fullCodeSplit = full_code.split("\n");
+    const fullCode = getFormattedCode(document, position, code);
 
-    let currentLine = document.lineAt(position.line).text; // get the current line
-
-    const lineNumber = fullCodeSplit.findIndex((value) => {
-      // find the line number of the current line
-      if (value === currentLine) {
-        return true;
-      }
-    });
-
-    if (lineNumber < 0) {
-      // if the line number is not found
-      vscode.window.showErrorMessage("Error: could not find line number");
+    if (!fullCode) {
       return;
     }
 
-    console.log(lineNumber);
+    // let fullCodeSplit = code.split("\n");
 
-    fullCodeSplit[lineNumber] = fullCodeSplit[lineNumber]
-      .slice(0, -2)
-      .trimRight(); // remove the last two characters
-    full_code = "";
+    // let currentLine = document.lineAt(position.line).text; // get the current line
 
-    fullCodeSplit.map((item) => {
-      // create a new string with the new line
-      full_code += item + "\n";
-    });
+    // const lineNumber = fullCodeSplit.findIndex((value) => {
+    //   // find the line number of the current line
+    //   if (value === currentLine) {
+    //     return true;
+    //   }
+    // });
+
+    // if (lineNumber < 0) {
+    //   // if the line number is not found
+    //   vscode.window.showErrorMessage("Error: could not find line number");
+    //   return;
+    // }
+
+    // console.log(lineNumber);
+
+    // fullCodeSplit[lineNumber] = fullCodeSplit[lineNumber]
+    //   .slice(0, -2)
+    //   .trimRight(); // remove the last two characters
+    // full_code = "";
+
+    // fullCodeSplit.map((item) => {
+    //   // create a new string with the new line
+    //   full_code += item + "\n";
+    // });
 
     const autoCode = codeEditor
       .getTextInRange(
         new vscode.Range(new vscode.Position(startLine, 0), position)
       )
       .trimRight(); // get the code from the editor
+
     console.log(autoCode);
     console.log("ok----");
-    console.log(full_code);
-    const language = _language ? _language : "normal";
-    const { data } = await axios.post(
-      // send the code to the server
-      "https://api.readable.so/complete/autocomplete/",
-      {
-        full_code: full_code,
-        code: autoCode,
-        language: language,
-      },
-      {
-        headers: {
-          Authorization: `Token ${session.accessToken}`,
-        },
-      }
+    console.log(fullCode);
+    let data = await generateAutoComplete(
+      autoCode,
+      fullCode,
+      language,
+      session.accessToken
     );
+    // const { data } = await axios.post(
+    //   // send the code to the server
+    //   "https://api.readable.so/complete/autocomplete/",
+    //   {
+    //     full_code: full_code,
+    //     code: autoCode,
+    //     language: language,
+    //   },
+    //   {
+    //     headers: {
+    //       Authorization: `Token ${session.accessToken}`,
+    //     },
+    //   }
+    // );
     if (
       // if the comment is empty, return an empty completion item
       data === "" ||
@@ -220,6 +216,7 @@ export const provideComments = async (
       return [new vscode.CompletionItem("")];
     }
     console.log(data);
+
     let completion = new vscode.CompletionItem(
       data,
       vscode.CompletionItemKind.Text
