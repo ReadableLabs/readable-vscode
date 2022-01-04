@@ -3,13 +3,19 @@ import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider
 import CodeEditor from "./CodeEditor";
 import axios from "axios";
 import { checkSession } from "./authentication/Misc";
+import {
+  getFunctionName,
+  getSafeEndPosition,
+  getSafeLine,
+} from "./completion/utils";
+import { generateDocstring } from "./completion/generate";
 
 const codeEditor = new CodeEditor();
 
 export const provideDocstring = async (
   position: vscode.Position,
   document: vscode.TextDocument,
-  _language?: string
+  language: string = "normal"
 ) => {
   try {
     const session = await vscode.authentication.getSession(
@@ -21,78 +27,57 @@ export const provideDocstring = async (
       return undefined;
     }
 
-    let full_codeSymbol = await codeEditor.getSymbolUnderCusor(
+    let codeSymbol = await codeEditor.getSymbolUnderCusor(
       // data.detail if 429
       new vscode.Position(
-        position.line + 1 < document.lineCount
-          ? position.line + 1
-          : position.line,
+        getSafeLine(position.line, document.lineCount),
         position.character
       )
     );
 
-    if (!full_codeSymbol) {
-      vscode.window.showErrorMessage("Error: unable to find symbol");
-      return undefined;
+    if (!codeSymbol) {
+      vscode.window.showErrorMessage(
+        "Error: unable to find symbol under cursor"
+      );
+      return;
     }
-
-    const language = _language ? _language : "normal";
 
     let functionName = "";
+
     if (language === "python") {
-      functionName = document.lineAt(full_codeSymbol.range.start.line).text; // hacky solution for checking if there is a function or an attribute
-      if (!functionName.includes("def")) {
-        functionName = document.lineAt(
-          full_codeSymbol.range.start.line + 1
-        ).text;
-      }
-      console.log(functionName);
+      functionName = getFunctionName(document, codeSymbol);
     }
 
-    let endLine = // get the end line
-      full_codeSymbol.range.end.line > position.line + 16 &&
-      position.line + 16 < document.lineCount
-        ? position.line + 16
-        : full_codeSymbol.range.end.line;
+    let endLine = getSafeEndPosition(
+      position.line,
+      codeSymbol.range.end.line,
+      document.lineCount
+    );
 
     let fullCode = document.getText(
-      new vscode.Range(
-        full_codeSymbol.range.start,
-        new vscode.Position(endLine, 0)
-      )
+      new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0))
     );
 
-    let { data } = await axios.post(
-      "https://api.readable.so/complete/right-click/",
-      {
-        full_code: fullCode,
-        language: language,
-        python_functionName: functionName,
-      },
-      {
-        headers: {
-          Authorization: `Token ${session.accessToken}`,
-        },
-      }
+    let generatedDocstring = await generateDocstring(
+      fullCode,
+      language,
+      functionName,
+      session.accessToken
     );
 
-    console.log(data);
+    console.log(generatedDocstring);
 
-    if (!data) {
+    if (!generatedDocstring) {
       vscode.window.showWarningMessage("No docstring was able to be generated");
       return undefined;
     }
 
     if (language === "python") {
-      data = "\n" + data;
-    }
-
-    if (language === "python" && !data.endsWith('"""')) {
-      data += '"""';
+      generatedDocstring = "\n" + generatedDocstring;
     }
 
     let completionItem = new vscode.CompletionItem(
-      data,
+      generatedDocstring,
       vscode.CompletionItemKind.Text
     );
     completionItem.preselect = true;

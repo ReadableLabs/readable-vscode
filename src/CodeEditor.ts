@@ -275,9 +275,6 @@ export default class CodeEditor {
         }
       }
     }
-    // vscode.window.showErrorMessage("Error: Unable to find valid symbol");
-    console.log("Error: unable to find symbol under cursor");
-    // throw new Error("Error: Unable to find valid symbol");
     return null;
   }
 
