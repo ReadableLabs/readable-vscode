@@ -9,6 +9,8 @@ export interface IProfile {
   total_comments: number;
   time_saved: string;
   trial_end: string;
+  inline_comments: number;
+  docstring_comments: number;
 }
 
 export enum LoginOption {

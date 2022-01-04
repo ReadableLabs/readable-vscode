@@ -8,10 +8,11 @@ import TextGenerator from "./TextGenerator";
 import { provideComments, provideDocstring } from "./Completion";
 import { env } from "process";
 import TrialHelper from "./trial/TrialHelper";
-import { loginOptions } from "./authentication/Prompts";
+import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
 import { LoginOption } from "./authentication/types";
 import { githubLogin } from "./authentication/GitHubLogin";
+import { register, resetPassword } from "./authentication/Misc";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -219,10 +220,7 @@ export async function activate(context: vscode.ExtensionContext) {
       );
       vscode.window.showInformationMessage("Successfully Logged In!");
     }),
-    vscode.commands.registerCommand(
-      "readable.resetPassword",
-      authProvider.resetPassword
-    ),
+    vscode.commands.registerCommand("readable.resetPassword", resetPassword),
     vscode.commands.registerCommand("readable.enableAutoComplete", async () => {
       vscode.workspace
         .getConfiguration("readable")
@@ -237,10 +235,40 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     ),
 
-    vscode.commands.registerCommand(
-      "readable.register",
-      authProvider.registerAccount
-    )
+    vscode.commands.registerCommand("readable.register", async () => {
+      const session = await vscode.authentication.getSession(
+        CodeCommentAuthenticationProvider.id,
+        [],
+        { createIfNone: false }
+      );
+      if (session) {
+        vscode.window.showInformationMessage("You are already logged in!");
+        return;
+      }
+      let choice = await vscode.window.showQuickPick(registerOptions);
+
+      if (!choice) {
+        return;
+      }
+
+      if (choice === registerOptions[0]) {
+        const key = await githubLogin();
+
+        if (!key) {
+          return;
+        }
+
+        await vscode.authentication.getSession(
+          CodeCommentAuthenticationProvider.id,
+          [key],
+          { createIfNone: true }
+        );
+      } else if (choice === registerOptions[1]) {
+        await register();
+      } else {
+        return;
+      }
+    })
   );
 
   // await authProvider.checkAccount();
