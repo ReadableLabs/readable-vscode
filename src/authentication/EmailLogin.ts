@@ -41,12 +41,8 @@ export const emailLogin = async (): Promise<string | undefined> => {
     (progress, token) => {
       let p = new Promise<string>(async (resolve, reject) => {
         try {
-          const key = await Account.EmailLogin(data);
-          if (!key) {
-            reject();
-          } else {
-            resolve(key);
-          }
+          const _key = await Account.EmailLogin(data);
+          resolve(_key);
         } catch (err: any) {
           vscode.window.showErrorMessage(err);
           if (err.response) {

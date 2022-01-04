@@ -263,6 +263,7 @@ export async function activate(context: vscode.ExtensionContext) {
           [key],
           { createIfNone: true }
         );
+        await vscode.window.showInformationMessage("Logged in!");
       } else if (choice === registerOptions[1]) {
         await register();
       } else {

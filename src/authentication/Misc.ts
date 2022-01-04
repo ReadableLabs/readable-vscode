@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import Account from "./api/Account";
+import { emailLogin } from "./EmailLogin";
 
 export const register = async () => {
   try {
@@ -44,24 +45,20 @@ export const register = async () => {
       },
       (progress, token) => {
         const p = new Promise<string>(async (resolve, reject) => {
-          const detail = await Account.Register(email, password1, password2);
-          if (!detail) {
-            reject();
-            return;
-          }
-          resolve(detail);
+          const _detail = await Account.Register(email, password1, password2);
+          resolve(_detail);
         });
         return p;
       }
     );
+    if (!detail) {
+      return;
+    }
     vscode.window.showInformationMessage(
       detail + " Check your inbox and try logging in."
     );
   } catch (err: any) {
     vscode.window.showErrorMessage(err);
-    if (err.response) {
-      vscode.window.showErrorMessage(err.response);
-    }
   }
 };
 

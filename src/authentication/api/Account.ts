@@ -1,4 +1,6 @@
+import * as vscode from "vscode";
 import axios from "axios";
+import { getVSCodeDownloadUrl } from "vscode-test/out/util";
 import { ILoginCredentials, IProfile } from "../types";
 const https = require("https");
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
@@ -10,90 +12,115 @@ export default class Account {
    * @param password
    * @returns {string} key - access token
    */
-  public static async EmailLogin(
-    credentials: ILoginCredentials
-  ): Promise<string | undefined> {
-    const { data } = await axios.post(
-      "https://api.readable.so/api/v1/users/auth/login/",
-      {
-        email: credentials.email,
-        password: credentials.password,
+  public static async EmailLogin(credentials: ILoginCredentials) {
+    try {
+      const { data } = await axios.post(
+        "https://api.readable.so/api/v1/users/auth/login/",
+        {
+          email: credentials.email,
+          password: credentials.password,
+        }
+      );
+      return data.key;
+    } catch (err: any) {
+      if (err.response) {
+        let errors = "";
+        console.log(err.response);
+        if (err.response.data.email) {
+          for (let emailError of err.response.data.email) {
+            errors += emailError + " ";
+          }
+        }
+        if (err.response.data.non_field_errors) {
+          for (let error of err.response.data.non_field_errors) {
+            errors += error + " ";
+          }
+        }
+        vscode.window.showErrorMessage(errors);
       }
-    );
-
-    if (!data.key) {
       return;
+      vscode.window.showErrorMessage(err.response);
     }
-
-    return data.key;
   }
 
   public static async GitHubLogin(accessToken: string) {
-    const { data } = await axios.post(
-      "https://api.readable.so/api/v1/users/login/github/",
-      {
-        access_token: accessToken,
-      },
-      {
-        headers: {
-          "content-type": "application/json",
+    try {
+      const { data } = await axios.post(
+        "https://api.readable.so/api/v1/users/login/github/",
+        {
+          access_token: accessToken,
         },
-      }
-    );
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
 
-    if (!data.key) {
-      return;
+      if (!data.key) {
+        return;
+      }
+
+      await axios.post(
+        // update email for account
+        "https://api.readable.so/api/v1/users/finish/",
+        {
+          access_token: accessToken,
+        },
+        {
+          headers: {
+            Authorization: `Token ${data.key}`,
+          },
+        }
+      );
+
+      return data.key;
+    } catch (err: any) {
+      vscode.window.showErrorMessage(err.response);
     }
-
-    await axios.post(
-      // update email for account
-      "https://api.readable.so/api/v1/users/finish/",
-      {
-        access_token: accessToken,
-      },
-      {
-        headers: {
-          Authorization: `Token ${data.key}`,
-        },
-      }
-    );
-
-    return data.key;
   }
 
   public async GetProfile(accessToken: string): Promise<IProfile | undefined> {
-    const { data } = await axios.post(
-      "https://api.readable.so/api/v1/users/accountinfo/",
-      {},
-      {
-        headers: {
-          Token: `Token ${accessToken}`,
-        },
+    try {
+      const { data } = await axios.post(
+        "https://api.readable.so/api/v1/users/accountinfo/",
+        {},
+        {
+          headers: {
+            Token: `Token ${accessToken}`,
+          },
+        }
+      );
+
+      if (!data.username) {
+        return;
       }
-    );
 
-    if (!data.username) {
-      return;
+      return data;
+    } catch (err: any) {
+      vscode.window.showErrorMessage(err.response);
     }
-
-    return data;
   }
 
   public static async ResetPassword(
     email: string
   ): Promise<string | undefined> {
-    const { data } = await axios.post(
-      "https://api.readable.so/api/v1/users/password-reset/",
-      {
-        email: email,
+    try {
+      const { data } = await axios.post(
+        "https://api.readable.so/api/v1/users/password-reset/",
+        {
+          email: email,
+        }
+      );
+
+      if (!data.detail) {
+        return;
       }
-    );
 
-    if (!data.detail) {
-      return;
+      return data.detail;
+    } catch (err: any) {
+      vscode.window.showErrorMessage(err.response);
     }
-
-    return data.detail;
   }
 
   public static async Register(
@@ -101,18 +128,33 @@ export default class Account {
     password1: string,
     password2: string
   ) {
-    const { data } = await axios.post(
-      "https://api.readable.so/api/v1/users/register/",
-      {
-        email,
-        password1,
-        password2,
+    try {
+      const { data } = await axios.post(
+        "https://api.readable.so/api/v1/users/auth/register/",
+        {
+          email,
+          password1,
+          password2,
+        }
+      );
+      return data.detail;
+    } catch (err: any) {
+      if (err.response) {
+        let errors = "There were the following errors: ";
+        console.log(err.response);
+        if (err.response.data.email) {
+          for (let emailError of err.response.data.email) {
+            errors += emailError + " ";
+          }
+        }
+        if (err.response.data.password1) {
+          for (let error of err.response.data.password1) {
+            errors += error + " ";
+          }
+        }
+        vscode.window.showErrorMessage(errors);
       }
-    );
-
-    if (!data.detail) {
       return;
     }
-    return data.detail;
   }
 }
