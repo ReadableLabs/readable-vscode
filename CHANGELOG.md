@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.7]
+
+- Fixed couple of security issues
+
 ## [1.2.6]
 
 - Made login/register show reasons for failure

@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
 import axios from "axios";
+import { checkSession } from "./authentication/Misc";
 
 const codeEditor = new CodeEditor();
 
@@ -16,10 +17,8 @@ export const provideDocstring = async (
       [],
       { createIfNone: false }
     );
-
     if (!session) {
-      vscode.window.showErrorMessage("Error: Please log in");
-      return;
+      return undefined;
     }
 
     let full_codeSymbol = await codeEditor.getSymbolUnderCusor(
@@ -121,12 +120,6 @@ export const provideComments = async (
       vscode.window.showErrorMessage("Error: Please log in");
       return;
     }
-
-    console.log("something");
-
-    let allSymbols = await codeEditor.getAllSymbols(); // get all symbols
-
-    console.log(allSymbols);
 
     let full_codeSymbol = await codeEditor.getSymbolUnderCusor(position);
 
