@@ -4,7 +4,6 @@
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
-import TextGenerator from "./TextGenerator";
 import { provideComments, provideDocstring } from "./Completion";
 import { env } from "process";
 import TrialHelper from "./trial/TrialHelper";
@@ -93,7 +92,7 @@ export async function activate(context: vscode.ExtensionContext) {
           try {
             if (linePrefix.endsWith("//")) {
               console.log(linePrefix);
-              return await provideComments(position, document);
+              return await provideComments(position, document); // got some more comments
             } else {
               return undefined;
             }
@@ -174,7 +173,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const codeEditor = new CodeEditor(editor);
-  const textGenerator = new TextGenerator();
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
