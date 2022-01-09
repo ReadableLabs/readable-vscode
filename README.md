@@ -23,7 +23,6 @@ Readable generates both inline comments, as well as docstrings.
 - C++
 - Java
 - PHP
-  debug false
 
 ## Privacy
 

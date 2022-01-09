@@ -17,7 +17,7 @@ export const checkAccount = async () => {
     if (!session) {
       const result = await vscode.window.showInformationMessage(
         "No account detected. Make an account or login to use Readable.",
-        "Log In",
+        "Log in",
         "Sign up"
       );
       if (!result) return;

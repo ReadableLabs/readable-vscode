@@ -216,7 +216,7 @@ export async function activate(context: vscode.ExtensionContext) {
         [key],
         { createIfNone: true }
       );
-      vscode.window.showInformationMessage("Successfully Logged In!");
+      vscode.window.showInformationMessage("Successfully logged in!");
     }),
     vscode.commands.registerCommand("readable.resetPassword", resetPassword),
     vscode.commands.registerCommand("readable.enableAutoComplete", async () => {

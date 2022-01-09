@@ -5,7 +5,7 @@
   "icon": "logo.png",
   "description": "🚀 Instantly generate detailed comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
   "author": "Puri Chapman Software <support@readable.so> (https://readable.so)",
-  "license": "MIT",
+  "license": "Apache 2.0",
   "galleryBanner": {
     "color": "#041621",
     "theme": "dark"
