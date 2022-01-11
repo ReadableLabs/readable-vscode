@@ -14,6 +14,7 @@ import { generateAutoComplete, generateDocstring } from "./completion/generate";
 
 const codeEditor = new CodeEditor();
 
+// rewrite
 export const provideDocstring = async (
   position: vscode.Position,
   document: vscode.TextDocument,

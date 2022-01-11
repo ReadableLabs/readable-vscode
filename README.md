@@ -2,15 +2,13 @@
 
 Readable is a VSCode extension which writes comments for you. Using **GPT-3**, you're able to get detailed comment suggestions through intellisense.
 
-![Readable Demo](https://github.com/Nevin1901/Readable-Assets/blob/main/final_video.gif?raw=true)
+![Readable Demo](https://github.com/ReadableLabs/readable/blob/main/output.gif?raw=true)
 
 Just start writing a comment, and get a suggestion.
 
 #
 
 ## Ai Generated Comments and Docstrings
-
-![Docstring Demo](./assets/docstring_demo.gif)
 
 Readable generates both inline comments, as well as docstrings.
 

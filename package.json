@@ -16,12 +16,8 @@
   "engines": {
     "vscode": "^1.59.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Nevin1901/readable"
-  },
   "bugs": {
-    "url": "https://github.com/Nevin1901/issues",
+    "url": "https://github.com/ReadableLabs/readable/issues",
     "email": "support@readable.so"
   },
   "categories": [
