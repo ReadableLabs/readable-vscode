@@ -252,9 +252,9 @@ export default class CodeEditor {
         "The symbol of the current line",
         vscode.SymbolKind.String,
         new vscode.Range(
-          new vscode.Position(position.line - 1 > 0 ? position.line - 1 : 1, 0),
+          new vscode.Position(position.line - 8 > 0 ? position.line - 8 : 1, 0),
           new vscode.Position(
-            position.line + 1 < lineCount ? position.line + 1 : position.line,
+            position.line + 16 < lineCount ? position.line + 16 : position.line,
             position.character
           )
         ),
