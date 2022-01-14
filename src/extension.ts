@@ -53,7 +53,6 @@ export async function activate(context: vscode.ExtensionContext) {
             return await provideComments(position, document, "python");
           } catch (err: any) {
             console.log(err);
-            vscode.window.showErrorMessage(err);
           }
         },
       },

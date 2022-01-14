@@ -32,8 +32,8 @@ export const getSafeStartPosition = (
   startLine: number,
   lineCount: number
 ) => {
-  return position - 16 > 0 && position - 16 > startLine
-    ? position - 16
+  return position - 8 > 0 && position - 8 > startLine
+    ? position - 8
     : startLine;
 };
 
@@ -42,8 +42,8 @@ export const getSafeEndPosition = (
   endLine: number,
   lineCount: number
 ) => {
-  return position + 16 < endLine && position + 16 < lineCount
-    ? position + 16
+  return position + 8 < endLine && position + 8 < lineCount
+    ? position + 8
     : endLine;
 };
 

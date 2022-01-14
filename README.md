@@ -57,7 +57,9 @@ When pressing space after typing //, you do not get a comment suggestion. The wa
 
 ## Release Notes
 
-See [CHANGELOG.md](/CHANGELOG.md)
+## [1.2.8]
+
+- Made comment suggestions faster
 
 ### Contact
 

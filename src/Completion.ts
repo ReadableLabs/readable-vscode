@@ -14,7 +14,6 @@ import { generateAutoComplete, generateDocstring } from "./completion/generate";
 
 const codeEditor = new CodeEditor();
 
-// rewrite
 export const provideDocstring = async (
   position: vscode.Position,
   document: vscode.TextDocument,
@@ -22,6 +21,7 @@ export const provideDocstring = async (
 ) => {
   try {
     const session = await vscode.authentication.getSession(
+      // get session
       CodeCommentAuthenticationProvider.id,
       [],
       { createIfNone: false }
@@ -31,15 +31,16 @@ export const provideDocstring = async (
     }
 
     let codeSymbol = await codeEditor.getSymbolUnderCusor(
-      // data.detail if 429
       new vscode.Position(
-        getSafeLine(position.line, document.lineCount),
+        getSafeLine(position.line, document.lineCount), // +- 8 characters up or down from the symbol
         position.character
       )
     );
 
     if (!codeSymbol) {
+      // if there is no symbol under the cursor
       vscode.window.showErrorMessage(
+        // show an error message
         "Error: unable to find symbol under cursor"
       );
       return;
@@ -52,16 +53,19 @@ export const provideDocstring = async (
     }
 
     let endLine = getSafeEndPosition(
+      // get the end line of the code symbol
       position.line,
       codeSymbol.range.end.line,
       document.lineCount
     );
 
     let fullCode = document.getText(
+      // get the full code from the range
       new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0))
     );
 
     let generatedDocstring = await generateDocstring(
+      // generate the docstring
       fullCode,
       language,
       functionName,

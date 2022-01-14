@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.8]
+
+- Made comment suggestions faster
+
 ## [1.2.7]
 
 - Fixed couple of security issues
