@@ -9,7 +9,7 @@ export const generateAutoComplete = async (
 ) => {
   try {
     const { data } = await axios.post(
-      "http://127.0.0.1:8000/complete/autocomplete/",
+      "https://api.readable.so/complete/autocomplete/",
       {
         full_code: fullCode,
         code: code,

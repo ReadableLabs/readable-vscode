@@ -57,9 +57,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.4.0]
+## [1.4.1]
 
-- Added ability for more precise completions (complete after specific words)
+- Fixed network error
 
 ### Contact
 
