@@ -53,13 +53,13 @@ You can configure the following settings:
 
 ## Known Issues
 
-When pressing space after typing //, you do not get a comment suggestion. The way VSCode handles intellisense is the reason this happens.
+- If you type anything after pressing "/\*\*" to start a docstring comment, you will not get a docstring suggestion
 
 ## Release Notes
 
-## [1.2.8]
+## [1.4.0]
 
-- Made comment suggestions faster
+- Added ability for more precise completions (complete after specific words)
 
 ### Contact
 

@@ -74,7 +74,8 @@ export default abstract class TrialHelper {
     if (trialDate <= 0) {
       TrialHelper.TrialEnded = true;
       let choice = await vscode.window.showInformationMessage(
-        "Your Readable trial is over! Please purchase Readable to continue using it."
+        "Your Readable trial is over! Please purchase Readable to continue using it.",
+        "Purchase Readable"
       );
       if (!choice) {
         return;

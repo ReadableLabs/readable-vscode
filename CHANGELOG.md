@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.4.0]
+
+- Added ability for more precise completions (complete after specific words)
+
 ## [1.2.8]
 
 - Made comment suggestions faster

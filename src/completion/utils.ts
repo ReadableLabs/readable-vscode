@@ -20,11 +20,19 @@ export const getFormattedCode = (
 
   const lineNumber = getLineNumber(codeSplit, currentLine);
 
-  codeSplit[lineNumber] = codeSplit[lineNumber].slice(0, -2).trimRight();
+  codeSplit[lineNumber] = codeSplit[lineNumber].trimRight();
   codeSplit.map((item) => {
     fullCode += item + "\n";
   });
   return fullCode;
+};
+
+export const getSafePromptPosition = (startLine: number) => {
+  if (startLine - 2 < 0) {
+    return 0;
+  } else {
+    return startLine - 2;
+  }
 };
 
 export const getSafeStartPosition = (

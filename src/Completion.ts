@@ -8,6 +8,7 @@ import {
   getFunctionName,
   getSafeEndPosition,
   getSafeLine,
+  getSafePromptPosition,
   getSafeRange,
 } from "./completion/utils";
 import { generateAutoComplete, generateDocstring } from "./completion/generate";
@@ -95,6 +96,12 @@ export const provideDocstring = async (
   }
 };
 
+/**
+ * This function will provide the comments for the given position
+ * @param position The position to provide the comments for
+ * @param document The document to provide the comments for
+ * @returns The comments for the given position
+ */
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,
@@ -108,10 +115,12 @@ export const provideComments = async (
     );
 
     if (!session) {
+      // if there isn't a session, we can't do anything
       vscode.window.showErrorMessage("Error: Please log in");
       return;
     }
 
+    // needed for range
     let codeSymbol = await codeEditor.getOrCreateSymbolUnderCursor(
       position,
       document.lineCount
@@ -128,18 +137,17 @@ export const provideComments = async (
       document.lineCount
     );
 
-    console.log(startLine);
-    console.log(endLine);
-
     // get the range from startLine to endLine
     let code = await codeEditor.getTextInRange(
-      new vscode.Range(
-        new vscode.Position(startLine, 0),
+      new vscode.Range( // create a range
+        new vscode.Position(startLine, 0), // start at the beginning of the line
         new vscode.Position(endLine, 0)
       )
     );
 
-    const fullCode = getFormattedCode(document, position, code);
+    // const fullCode = getFormattedCode(document, position, code);
+
+    const fullCode = code;
 
     if (!fullCode) {
       return;
@@ -176,13 +184,13 @@ export const provideComments = async (
 
     const autoCode = codeEditor
       .getTextInRange(
-        new vscode.Range(new vscode.Position(startLine, 0), position)
+        new vscode.Range(
+          new vscode.Position(getSafePromptPosition(position.line), 0),
+          position
+        )
       )
-      .trimRight(); // get the code from the editor
+      .trimRight();
 
-    console.log(autoCode);
-    console.log("ok----");
-    console.log(fullCode);
     let data = await generateAutoComplete(
       autoCode,
       fullCode,
@@ -206,7 +214,6 @@ export const provideComments = async (
     if (
       // if the comment is empty, return an empty completion item
       data === "" ||
-      data.includes("comment") ||
       data.includes("<--") ||
       data.includes("TODO")
     ) {
@@ -215,10 +222,8 @@ export const provideComments = async (
       );
       return [new vscode.CompletionItem("")];
     }
-    console.log(data);
-
     let completion = new vscode.CompletionItem(
-      data,
+      data.trimLeft(),
       vscode.CompletionItemKind.Text
     );
     completion.detail = "Readable";

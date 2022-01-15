@@ -45,17 +45,44 @@ export async function activate(context: vscode.ExtensionContext) {
           const linePrefix = document
             .lineAt(position)
             .text.substring(0, position.character);
-          if (!linePrefix.endsWith("#")) {
-            return undefined;
-          }
+
+          const line = document.lineAt(position).text;
+
           try {
-            return await provideComments(position, document, "python");
+            if (
+              linePrefix.includes("#") &&
+              position.character > line.trimLeft().indexOf("#")
+            ) {
+              return new Promise<vscode.CompletionItem[] | undefined>(
+                (resolve, reject) => {
+                  setTimeout(async () => {
+                    let updatedText =
+                      vscode.window.activeTextEditor?.document.lineAt(
+                        position
+                      ).text;
+                    if (updatedText === line) {
+                      let comment = await provideComments(
+                        position,
+                        document,
+                        "python"
+                      );
+                      resolve(comment);
+                    } else {
+                      resolve(undefined);
+                    }
+                  }, 250);
+                }
+              );
+            } else {
+              return undefined;
+            }
           } catch (err: any) {
             console.log(err);
           }
         },
       },
-      "#"
+      " ",
+      ","
     ),
 
     vscode.languages.registerCompletionItemProvider(
@@ -87,10 +114,29 @@ export async function activate(context: vscode.ExtensionContext) {
             .lineAt(position)
             .text.substring(0, position.character);
 
+          const line = document.lineAt(position).text;
+
           try {
-            if (linePrefix.endsWith("//")) {
-              console.log(linePrefix);
-              return await provideComments(position, document); // got some more comments
+            if (
+              line.includes("//") &&
+              position.character > line.trimLeft().indexOf("//")
+            ) {
+              return new Promise<vscode.CompletionItem[] | undefined>(
+                (resolve, reject) => {
+                  setTimeout(async () => {
+                    let updatedText =
+                      vscode.window.activeTextEditor?.document.lineAt(
+                        position
+                      ).text;
+                    if (updatedText === line) {
+                      let comment = await provideComments(position, document);
+                      resolve(comment);
+                    } else {
+                      resolve(undefined);
+                    }
+                  }, 250);
+                }
+              );
             } else {
               return undefined;
             }
@@ -100,7 +146,8 @@ export async function activate(context: vscode.ExtensionContext) {
           }
         },
       },
-      "/"
+      " ",
+      ","
     ),
 
     vscode.languages.registerCompletionItemProvider(
@@ -111,6 +158,8 @@ export async function activate(context: vscode.ExtensionContext) {
         { language: "csharp" },
         { language: "php" },
         { language: "java" },
+        { language: "javascriptreact" },
+        { language: "typescriptreact" },
       ],
       {
         async provideCompletionItems(document, position, token, context) {
@@ -121,8 +170,6 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
           }
 
-          console.log("it is working");
-
           const linePrefix = document // get the line prefix
             .lineAt(position)
             .text.substring(0, position.character);
@@ -130,7 +177,6 @@ export async function activate(context: vscode.ExtensionContext) {
           if (!linePrefix.endsWith("/**")) {
             return undefined;
           }
-          console.log("working docstring things");
           return await provideDocstring(position, document);
         },
       },

@@ -9,7 +9,7 @@ export const generateAutoComplete = async (
 ) => {
   try {
     const { data } = await axios.post(
-      "https://api.readable.so/complete/autocomplete/",
+      "http://127.0.0.1:8000/complete/autocomplete/",
       {
         full_code: fullCode,
         code: code,
@@ -26,6 +26,7 @@ export const generateAutoComplete = async (
     vscode.window.showErrorMessage(
       "Error: network error in autocomplete http request"
     );
+    console.log(err);
     if (err.request.data) {
       vscode.window.showErrorMessage(err.request.data);
     }
