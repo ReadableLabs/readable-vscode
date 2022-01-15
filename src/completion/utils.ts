@@ -32,8 +32,8 @@ export const getSafeStartPosition = (
   startLine: number,
   lineCount: number
 ) => {
-  return position - 8 > 0 && position - 8 > startLine
-    ? position - 8
+  return position - 4 > 0 && position - 4 > startLine
+    ? position - 4
     : startLine;
 };
 
@@ -42,8 +42,8 @@ export const getSafeEndPosition = (
   endLine: number,
   lineCount: number
 ) => {
-  return position + 8 < endLine && position + 8 < lineCount
-    ? position + 8
+  return position + 4 < endLine && position + 4 < lineCount
+    ? position + 4
     : endLine;
 };
 
@@ -56,7 +56,7 @@ export const getSafeRange = (
   const startLine = getSafeStartPosition(position, _startLine, lineCount);
   const endLine = getSafeEndPosition(position, _endLine, lineCount);
   return { startLine, endLine };
-}; // { startLine, endLine }
+};
 
 export const getFunctionName = (
   document: vscode.TextDocument,

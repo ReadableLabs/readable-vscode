@@ -30,7 +30,6 @@ export async function activate(context: vscode.ExtensionContext) {
   };
 
   context.subscriptions.push(
-    // register the completion item provider
     vscode.languages.registerCompletionItemProvider(
       [{ language: "python" }],
       {

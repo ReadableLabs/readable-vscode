@@ -32,15 +32,13 @@ export const provideDocstring = async (
 
     let codeSymbol = await codeEditor.getSymbolUnderCusor(
       new vscode.Position(
-        getSafeLine(position.line, document.lineCount), // +- 8 characters up or down from the symbol
+        getSafeLine(position.line, document.lineCount),
         position.character
       )
     );
 
     if (!codeSymbol) {
-      // if there is no symbol under the cursor
       vscode.window.showErrorMessage(
-        // show an error message
         "Error: unable to find symbol under cursor"
       );
       return;
@@ -53,19 +51,16 @@ export const provideDocstring = async (
     }
 
     let endLine = getSafeEndPosition(
-      // get the end line of the code symbol
       position.line,
       codeSymbol.range.end.line,
       document.lineCount
     );
 
     let fullCode = document.getText(
-      // get the full code from the range
-      new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0))
+      new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0)) // get the full code
     );
 
     let generatedDocstring = await generateDocstring(
-      // generate the docstring
       fullCode,
       language,
       functionName,
@@ -136,8 +131,8 @@ export const provideComments = async (
     console.log(startLine);
     console.log(endLine);
 
+    // get the range from startLine to endLine
     let code = await codeEditor.getTextInRange(
-      // get the full code
       new vscode.Range(
         new vscode.Position(startLine, 0),
         new vscode.Position(endLine, 0)

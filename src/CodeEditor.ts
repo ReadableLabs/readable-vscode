@@ -16,13 +16,11 @@ export default class CodeEditor {
     this._activeEditor = vscode.window.activeTextEditor;
 
     if (editor) {
-      // if we have an editor, use it
       this._activeEditor = editor;
       console.log(editor.document);
     }
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
-      // if we change the active editor, update the active editor
       console.log("got editor");
       console.log(e);
       this._activeEditor = e;
@@ -238,6 +236,11 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
+  /**
+   * @param {vscode.Position} position
+   * @param {number} lineCount
+   * @returns {vscode.DocumentSymbol}
+   */
   public async getOrCreateSymbolUnderCursor(
     position: vscode.Position,
     lineCount: number
@@ -264,6 +267,11 @@ export default class CodeEditor {
     return codeSymbol;
   }
 
+  /**
+   * This function takes in a position and returns the symbol under the cursor.
+   * @param position The position of the cursor
+   * @returns The symbol under the cursor
+   */
   public async getSymbolUnderCusor(
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
@@ -304,6 +312,11 @@ export default class CodeEditor {
     return null;
   }
 
+  /**
+   * A docstring for the above function
+   * @param {vscode.TextDocument} document
+   * @returns {Promise<vscode.DocumentSymbol[]>}
+   */
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {
       return [];
@@ -315,7 +328,6 @@ export default class CodeEditor {
     );
 
     if (!symbols) {
-      // no symbols found
       return [];
     }
     return symbols;
