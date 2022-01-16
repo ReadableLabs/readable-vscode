@@ -34,7 +34,7 @@ Thanks for trying out Readable!
 
 When you first install Readable, you will be prompted to log in or create an account. Readable supports two forms of authentication: GitHub Login and Email.
 
-Once you log in with GitHub or create an account, comment autocomplete will be active. In order to get a comment suggestion, just type "//" on languages with C-Style comments, or "#" on Python.
+Once you log in with GitHub or create an account, comment autocomplete will be active. In order to get a comment suggestion, just type "// " on languages with C-Style comments, or "# " on Python.
 
 If you would like to enable/disable comment suggestions, then you can run "Readable: Enable Comment Suggestions", or "Readable: Disable Comment Suggestions" via the command palette.
 
@@ -65,4 +65,4 @@ You can configure the following settings:
 
 Please email support@readable.so for any questions you may have about the extension. We read all emails, and will get back to you as soon as possible.
 
-2021, Puri Chapman Software
+2022, Puri Chapman Software
