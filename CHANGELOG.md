@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.4.4]
+
+- Updated demo video and updated README
+
 ## [1.4.3]
 
 - Fixed log in button not working on first launch

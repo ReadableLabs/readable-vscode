@@ -59,9 +59,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.4.3]
+## [1.4.4]
 
-- Fixed log in button not working on first launch
+- Updated demo video and updated README
 
 ### Contact
 
