@@ -36,6 +36,8 @@ When you first install Readable, you will be prompted to log in or create an acc
 
 Once you log in with GitHub or create an account, comment autocomplete will be active. In order to get a comment suggestion, just type "// " on languages with C-Style comments, or "# " on Python.
 
+You can also start writing a couple of words, and then hit space to get a more specified comment suggestion.
+
 If you would like to enable/disable comment suggestions, then you can run "Readable: Enable Comment Suggestions", or "Readable: Disable Comment Suggestions" via the command palette.
 
 NOTE: Readable tries to mimick the style of your current comments, so if you want a specific "style" of comments, then all you have to do is document your code to give Readable examples to choose from.
