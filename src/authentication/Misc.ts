@@ -20,11 +20,13 @@ export const checkAccount = async () => {
         "Log in",
         "Sign up"
       );
-      if (!result) return;
-      if (result === "Log In") {
+      console.log(result);
+      if (result === "Log in") {
         await vscode.commands.executeCommand("readable.login");
       } else if (result === "Sign up") {
         await vscode.commands.executeCommand("readable.register");
+      } else {
+        return;
       }
     } else {
       const profile = await Account.GetProfile(session.accessToken);

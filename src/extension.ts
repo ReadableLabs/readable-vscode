@@ -279,7 +279,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand("readable.version", () => {
       vscode.window.showInformationMessage(
-        "Readable is currently on version 1.4.2"
+        "Readable is currently on version 1.4.3"
       );
     }),
 
@@ -320,7 +320,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  await checkAccount();
+  checkAccount();
   // await authProvider.checkAccount();
 
   // context.subscriptions.push(statusBarProvider.myStatusBar);

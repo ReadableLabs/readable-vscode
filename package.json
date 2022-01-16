@@ -1,6 +1,6 @@
 {
   "name": "readable",
-  "publisher": "Puri Chapman Software",
+  "publisher": "pcsoftware",
   "displayName": "Readable - Ai Generated Comments",
   "icon": "logo.png",
   "description": "🚀 Instantly generate detailed comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
@@ -12,7 +12,7 @@
   },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "engines": {
     "vscode": "^1.59.0"
   },

@@ -57,9 +57,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.4.2]
+## [1.4.3]
 
-- Added version command
+- Fixed log in button not working on first launch
 
 ### Contact
 
