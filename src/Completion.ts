@@ -96,12 +96,7 @@ export const provideDocstring = async (
   }
 };
 
-/**
- * This function will provide the comments for the given position
- * @param position The position to provide the comments for
- * @param document The document to provide the comments for
- * @returns The comments for the given position
- */
+// provides comments for the editor
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,
@@ -126,6 +121,8 @@ export const provideComments = async (
       document.lineCount
     );
 
+    console.log(codeSymbol);
+
     if (!codeSymbol) {
       return;
     }
@@ -141,9 +138,11 @@ export const provideComments = async (
     let code = await codeEditor.getTextInRange(
       new vscode.Range( // create a range
         new vscode.Position(startLine, 0), // start at the beginning of the line
-        new vscode.Position(endLine, 0)
+        new vscode.Position(endLine, position.character)
       )
     );
+
+    console.log(code);
 
     // const fullCode = getFormattedCode(document, position, code);
 

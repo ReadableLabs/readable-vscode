@@ -127,11 +127,7 @@ export default class CodeEditor {
     return formattedText;
   }
 
-  /**
-   * Gets the text from the active editor's selection
-   * @param selection The selection to get text from
-   * @returns The text from the selection
-   */
+  // Gets the text from the active editor's selection
   public getTextFromSelection(selection: vscode.Selection): string {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get active editor");
@@ -250,6 +246,7 @@ export default class CodeEditor {
     }
     let codeSymbol = await this.getSymbolUnderCusor(position);
     if (!codeSymbol) {
+      console.log("creating a new symbol");
       codeSymbol = new vscode.DocumentSymbol(
         "CurrentLineSymbol",
         "The symbol of the current line",
@@ -257,7 +254,7 @@ export default class CodeEditor {
         new vscode.Range(
           new vscode.Position(position.line - 8 > 0 ? position.line - 8 : 1, 0),
           new vscode.Position(
-            position.line + 16 < lineCount ? position.line + 16 : position.line,
+            position.line + 8 < lineCount ? position.line + 8 : lineCount,
             position.character
           )
         ),

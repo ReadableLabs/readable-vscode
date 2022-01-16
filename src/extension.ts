@@ -279,7 +279,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand("readable.version", () => {
       vscode.window.showInformationMessage(
-        "Readable is currently on version 1.4.4"
+        "Readable is currently on version 1.4.5"
       );
     }),
 

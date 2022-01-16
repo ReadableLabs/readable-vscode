@@ -59,9 +59,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.4.4]
+## [1.4.5]
 
-- Updated demo video and updated README
+- Allowed comments outside of functions
 
 ### Contact
 

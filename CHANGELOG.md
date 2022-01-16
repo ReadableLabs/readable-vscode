@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.4.5]
+
+- Allowed comments outside of functions
+
 ## [1.4.4]
 
 - Updated demo video and updated README
