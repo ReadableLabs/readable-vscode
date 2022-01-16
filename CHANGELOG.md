@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.4.2]
+
+- Added version command
+
 ## [1.4.1]
 
 - Fixed network error

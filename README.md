@@ -57,9 +57,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.4.1]
+## [1.4.2]
 
-- Fixed network error
+- Added version command
 
 ### Contact
 

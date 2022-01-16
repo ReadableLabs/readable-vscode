@@ -277,6 +277,12 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     ),
 
+    vscode.commands.registerCommand("readable.version", () => {
+      vscode.window.showInformationMessage(
+        "Readable is currently on version 1.4.2"
+      );
+    }),
+
     vscode.commands.registerCommand("readable.register", async () => {
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
