@@ -121,8 +121,6 @@ export const provideComments = async (
       document.lineCount
     );
 
-    console.log(codeSymbol);
-
     if (!codeSymbol) {
       return;
     }
