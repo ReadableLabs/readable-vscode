@@ -94,7 +94,9 @@ export class CodeCommentAuthenticationProvider
         "Log in",
         "Sign up"
       );
-      if (!result) return;
+      if (!result) {
+        return;
+      }
       if (result === "Log In") {
         await vscode.commands.executeCommand("readable.login");
       } else if (result === "Sign up") {
@@ -113,21 +115,25 @@ export class CodeCommentAuthenticationProvider
   }
 
   private ensureInitialized(): void {
-    if (this.initializedDisposable === undefined) {
-      void this.cacheTokenFromStorage();
+    try {
+      if (this.initializedDisposable === undefined) {
+        void this.cacheTokenFromStorage();
 
-      this.initializedDisposable = Disposable.from(
-        this.secretStorage.onDidChange((e) => {
-          if (e.key === CodeCommentAuthenticationProvider.secretKey) {
-            void this.checkForUpdates();
-          }
-        }),
-        authentication.onDidChangeSessions((e) => {
-          if (e.provider.id === CodeCommentAuthenticationProvider.id) {
-            void this.checkForUpdates();
-          }
-        })
-      );
+        this.initializedDisposable = Disposable.from(
+          this.secretStorage.onDidChange((e) => {
+            if (e.key === CodeCommentAuthenticationProvider.secretKey) {
+              void this.checkForUpdates();
+            }
+          }),
+          authentication.onDidChangeSessions((e) => {
+            if (e.provider.id === CodeCommentAuthenticationProvider.id) {
+              void this.checkForUpdates();
+            }
+          })
+        );
+      }
+    } catch (err: any) {
+      vscode.window.showErrorMessage(err);
     }
   }
 
@@ -175,8 +181,12 @@ export class CodeCommentAuthenticationProvider
       this.ensureInitialized();
       const token = await this.cacheTokenFromStorage();
       return token ? [new CodeCommentPatSession(token)] : []; // return a session
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      vscode.window.showErrorMessage(err.message);
+      vscode.window.showInformationMessage(
+        "Error: can't get sessions. Please try logging out and back in."
+      );
       throw new Error("Error: can't get sessions");
     }
   }

@@ -1,7 +1,7 @@
 {
   "name": "readable",
   "publisher": "pcsoftware",
-  "displayName": "Readable - Ai Generated Comments",
+  "displayName": "Readable - AI Generated Comments",
   "icon": "logo.png",
   "description": "🚀 Instantly generate detailed comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
   "author": "Puri Chapman Software <support@readable.so> (https://readable.so)",
