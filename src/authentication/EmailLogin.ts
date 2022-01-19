@@ -44,7 +44,7 @@ export const emailLogin = async (): Promise<string | undefined> => {
           const _key = await Account.EmailLogin(data);
           resolve(_key);
         } catch (err: any) {
-          vscode.window.showErrorMessage(err);
+          vscode.window.showErrorMessage(err.message);
           if (err.response) {
             vscode.window.showErrorMessage(err.response);
           }

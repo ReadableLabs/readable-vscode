@@ -142,7 +142,7 @@ export async function activate(context: vscode.ExtensionContext) {
             }
           } catch (err: any) {
             console.log(err);
-            vscode.window.showErrorMessage(err);
+            vscode.window.showErrorMessage(err.message);
           }
         },
       },
@@ -206,7 +206,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return await provideDocstring(position, document, "python");
           } catch (err: any) {
             console.log(err);
-            vscode.window.showErrorMessage(err);
+            vscode.window.showErrorMessage(err.message);
           }
 
           return undefined;

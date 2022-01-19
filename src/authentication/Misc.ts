@@ -39,7 +39,7 @@ export const checkAccount = async () => {
       await TrialHelper.showTrialNotification(profile.trial_end);
     }
   } catch (err: any) {
-    vscode.window.showErrorMessage(err);
+    vscode.window.showErrorMessage(err.message);
   }
 };
 
@@ -99,7 +99,7 @@ export const register = async () => {
       detail + " Check your inbox and try logging in."
     );
   } catch (err: any) {
-    vscode.window.showErrorMessage(err);
+    vscode.window.showErrorMessage(err.message);
   }
 };
 
@@ -130,7 +130,7 @@ export const resetPassword = async () => {
           }
           resolve(detail);
         } catch (err: any) {
-          vscode.window.showErrorMessage(err);
+          vscode.window.showErrorMessage(err.message);
           if (err.response) {
             vscode.window.showErrorMessage(err.response);
           }

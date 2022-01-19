@@ -25,7 +25,7 @@ export const githubLogin = async (): Promise<string | undefined> => {
           }
           resolve(key);
         } catch (err: any) {
-          vscode.window.showErrorMessage(err);
+          vscode.window.showErrorMessage(err.message);
           if (err.response) {
             vscode.window.showErrorMessage(err.response);
           }

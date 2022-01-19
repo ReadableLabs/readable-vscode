@@ -133,7 +133,7 @@ export class CodeCommentAuthenticationProvider
         );
       }
     } catch (err: any) {
-      vscode.window.showErrorMessage(err);
+      vscode.window.showErrorMessage(err.message);
     }
   }
 
@@ -185,7 +185,7 @@ export class CodeCommentAuthenticationProvider
       console.log(err);
       vscode.window.showErrorMessage(err.message);
       vscode.window.showInformationMessage(
-        "Error: can't get sessions. Please try logging out and back in."
+        "Error: can't get sessions. If you are on mac, open the 'keychain access' app, look for vscodepcsoftware.readable, and click delete. Then try logging in again."
       );
       throw new Error("Error: can't get sessions");
     }
