@@ -20,6 +20,10 @@ Readable generates both inline comments, as well as docstrings.
 - Java
 - PHP
 
+## Pricing
+
+You will get a free 14 day trial when you first use Readable. After that, Readable costs $30 per year to use.
+
 ## Privacy
 
 At Readable, we do not store your code, or use it to train any of our models.

@@ -207,6 +207,14 @@ export default class CodeEditor {
     return this._activeEditor.selection;
   }
 
+  public getCursor(): vscode.Position {
+    if (!this._activeEditor) {
+      throw new Error("Error: unable to get cursor position");
+    }
+
+    return this._activeEditor.selection.active;
+  }
+
   /**
    * Returns the current cursor position in the active editor
    * @returns {number}

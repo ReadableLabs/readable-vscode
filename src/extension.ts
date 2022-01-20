@@ -215,7 +215,14 @@ export async function activate(context: vscode.ExtensionContext) {
         },
       },
       '"'
-    )
+    ),
+
+    vscode.commands.registerCommand("readable.rightClickComment", async () => {
+      const position = codeEditor.getCursor();
+      const symbol = await codeEditor.getSymbolUnderCusor(position);
+      console.log(position);
+      console.log(symbol); // show generating text popup
+    })
   );
 
   const codeEditor = new CodeEditor(editor);
@@ -263,6 +270,11 @@ export async function activate(context: vscode.ExtensionContext) {
         { createIfNone: true }
       );
       vscode.window.showInformationMessage("Successfully logged in!");
+    }),
+    vscode.commands.registerCommand("readable.reportBug", async () => {
+      await vscode.env.openExternal(
+        vscode.Uri.parse("https://github.com/ReadableLabs/readable/issues")
+      );
     }),
     vscode.commands.registerCommand("readable.resetPassword", resetPassword),
     vscode.commands.registerCommand("readable.enableAutoComplete", () => {

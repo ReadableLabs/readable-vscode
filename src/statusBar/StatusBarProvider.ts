@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
 import { StatusBarUpdateEvent } from "../Events/StatusBarUpdateEvent";
 
 export class StatusBarProvider {
@@ -16,19 +17,30 @@ export class StatusBarProvider {
     this.updateStatusBar();
   }
 
-  public updateStatusBar() {
-    let status = this.getEnabled();
+  public async updateStatusBar() {
+    let status = await this.getEnabled();
     this.statusBarItem.text = status.text;
     this.statusBarItem.command = status.command;
   }
 
-  private getEnabled() {
+  private async getEnabled() {
     console.log(
       vscode.workspace
         .getConfiguration("readable")
         .get<boolean>("enableAutoComplete")
     );
     if (
+      !(await vscode.authentication.getSession(
+        CodeCommentAuthenticationProvider.id,
+        [],
+        { createIfNone: false }
+      ))
+    ) {
+      return {
+        text: "$(account)  Readable: Login",
+        command: "readable.login",
+      };
+    } else if (
       vscode.workspace
         .getConfiguration("readable")
         .get<boolean>("enableAutoComplete")
@@ -37,10 +49,19 @@ export class StatusBarProvider {
         text: "$(check)  Readable: Enabled",
         command: "readable.disableAutoComplete",
       };
-    } else {
+    } else if (
+      vscode.workspace
+        .getConfiguration("readable")
+        .get<boolean>("enableAutoComplete") === false
+    ) {
       return {
         text: "$(circle-slash)  Readable: Disabled",
         command: "readable.enableAutoComplete",
+      };
+    } else {
+      return {
+        text: "$(error)  Readable: Error",
+        command: "",
       };
     }
   }

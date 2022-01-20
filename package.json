@@ -55,7 +55,22 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "menus": {},
+    "menus": {
+      "editor/context": [
+        {
+          "command": "readable.rightClickComment",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "commentai.rightClickComment",
+        "key": "ctrl+shift+f8",
+        "mac": "cmd+shift+f8",
+        "when": "editorTextFocus"
+      }
+    ],
     "commands": [
       {
         "command": "readable.enableAutoComplete",
@@ -76,6 +91,14 @@
       {
         "command": "readable.resetPassword",
         "title": "Readable: Reset Password"
+      },
+      {
+        "command": "readable.rightClickComment",
+        "title": "Generate Docstring"
+      },
+      {
+        "command": "readable.reportBug",
+        "title": "Readable: Report a Bug"
       },
       {
         "command": "readable.version",
