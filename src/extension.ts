@@ -270,6 +270,9 @@ export async function activate(context: vscode.ExtensionContext) {
         { createIfNone: true }
       );
       vscode.window.showInformationMessage("Successfully logged in!");
+      setTimeout(() => {
+        status.updateStatusBar();
+      }, 500);
     }),
     vscode.commands.registerCommand("readable.reportBug", async () => {
       await vscode.env.openExternal(

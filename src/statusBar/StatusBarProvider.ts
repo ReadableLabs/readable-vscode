@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
-import { StatusBarUpdateEvent } from "../Events/StatusBarUpdateEvent";
 
 export class StatusBarProvider {
   private statusBarItem: vscode.StatusBarItem;
