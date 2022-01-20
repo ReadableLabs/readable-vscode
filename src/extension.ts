@@ -23,6 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
+  let pass = await context.secrets.get("readable:password");
 
   const isEnabled = () => {
     // check if the extension is enabled
@@ -298,8 +299,13 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand("readable.version", () => {
+      const version = context.extension.packageJSON.version;
+      if (!version) {
+        vscode.window.showInformationMessage("Unable to get version");
+        return;
+      }
       vscode.window.showInformationMessage(
-        "Readable is currently on version 1.4.5"
+        "Readable is currently on version " + version
       );
     }),
 
