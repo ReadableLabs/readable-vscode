@@ -12,6 +12,7 @@ import { emailLogin } from "./authentication/EmailLogin";
 import { LoginOption } from "./authentication/types";
 import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
+import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -20,6 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "commentai" is now active!');
 
+  const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
 
   const isEnabled = () => {
@@ -263,19 +265,22 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage("Successfully logged in!");
     }),
     vscode.commands.registerCommand("readable.resetPassword", resetPassword),
-    vscode.commands.registerCommand("readable.enableAutoComplete", async () => {
+    vscode.commands.registerCommand("readable.enableAutoComplete", () => {
       vscode.workspace
         .getConfiguration("readable")
         .update("enableAutoComplete", true, true);
+      setTimeout(() => {
+        status.updateStatusBar();
+      }, 500);
     }),
-    vscode.commands.registerCommand(
-      "readable.disableAutoComplete",
-      async () => {
-        vscode.workspace
-          .getConfiguration("readable")
-          .update("enableAutoComplete", false, true);
-      }
-    ),
+    vscode.commands.registerCommand("readable.disableAutoComplete", () => {
+      vscode.workspace
+        .getConfiguration("readable")
+        .update("enableAutoComplete", false, true);
+      setTimeout(() => {
+        status.updateStatusBar();
+      }, 500);
+    }),
 
     vscode.commands.registerCommand("readable.version", () => {
       vscode.window.showInformationMessage(

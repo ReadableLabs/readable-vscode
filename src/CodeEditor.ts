@@ -179,10 +179,10 @@ export default class CodeEditor {
     }
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
-
   /**
+   * Returns true if the active text editor has a selection.
+   *
    * @returns {boolean}
-   * @description Returns true if the active text editor has a selection
    */
   public hasSelection(): boolean {
     if (!this._activeEditor) {
@@ -200,11 +200,6 @@ export default class CodeEditor {
     }
   }
 
-  /**
-   * Returns the current selection of the active editor.
-   *
-   * @returns {Selection} The current selection of the active editor.
-   */
   public getSelection() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -265,9 +260,9 @@ export default class CodeEditor {
   }
 
   /**
-   * This function takes in a position and returns the symbol under the cursor.
-   * @param position The position of the cursor
-   * @returns The symbol under the cursor
+   * @param {vscode.Position} position
+   * @returns {vscode.DocumentSymbol | null}
+   * @description Returns the symbol under the cursor
    */
   public async getSymbolUnderCusor(
     position: vscode.Position
@@ -278,25 +273,27 @@ export default class CodeEditor {
     }
     for (let i = 0; i < symbols.length; i++) {
       if (
+        // if the current symbol is a letter
         symbols[i].range.start.line <= position.line &&
         symbols[i].range.end.line >= position.line
       ) {
+        // if the symbol is in the range of the position
         console.log("found symbol");
         if (
           symbols[i].kind === vscode.SymbolKind.Class &&
           symbols[i].range.start.line !== position.line
         ) {
-          console.log("symbol is class");
+          console.log("symbol is class"); // logs the symbol
           for (let k = 0; k < symbols[i].children.length; k++) {
             console.log("going through symbols");
             if (
-              (symbols[i].children[k].kind === vscode.SymbolKind.Method ||
+              (symbols[i].children[k].kind === vscode.SymbolKind.Method || // if the symbol is a method
                 symbols[i].children[k].kind === vscode.SymbolKind.Function ||
-                symbols[i].children[k].kind === vscode.SymbolKind.Constant) &&
+                symbols[i].children[k].kind === vscode.SymbolKind.Constant) && // or a constant
               symbols[i].children[k].range.start.line <= position.line &&
               symbols[i].children[k].range.end.line >= position.line
             ) {
-              console.log("found symbol");
+              console.log("found symbol"); // explain what the code does
               return symbols[i].children[k];
             }
           }
@@ -320,8 +317,8 @@ export default class CodeEditor {
     }
 
     let symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
-      "vscode.executeDocumentSymbolProvider",
-      this._activeEditor.document.uri
+      "vscode.executeDocumentSymbolProvider", // command name
+      this._activeEditor.document.uri // command arguments
     );
 
     if (!symbols) {
