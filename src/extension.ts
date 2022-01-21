@@ -24,6 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
   let pass = await context.secrets.get("readable:password");
+  console.log(pass);
 
   const isEnabled = () => {
     // check if the extension is enabled
