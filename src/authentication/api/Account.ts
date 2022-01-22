@@ -140,7 +140,7 @@ export default class Account {
           password2,
         }
       );
-      return data.detail;
+      return;
     } catch (err: any) {
       if (err.response) {
         let errors = "There were the following errors: ";
