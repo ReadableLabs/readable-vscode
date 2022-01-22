@@ -23,10 +23,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
-<<<<<<< HEAD
-=======
-  let pass = await context.secrets.get("readable:password");
->>>>>>> parent of 1c8cfb8... started getting key
 
   const isEnabled = () => {
     // check if the extension is enabled
