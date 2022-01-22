@@ -92,9 +92,7 @@ export const register = async () => {
         return p;
       }
     );
-    vscode.window.showInformationMessage(
-      "Success! Check your inbox and try logging in."
-    );
+    vscode.window.showInformationMessage("Success! Try logging in.");
   } catch (err: any) {
     vscode.window.showErrorMessage(err.message);
   }
