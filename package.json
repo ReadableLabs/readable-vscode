@@ -65,9 +65,9 @@
     },
     "keybindings": [
       {
-        "command": "commentai.rightClickComment",
-        "key": "ctrl+shift+f8",
-        "mac": "cmd+shift+f8",
+        "command": "readable.rightClickComment",
+        "key": "ctrl+'",
+        "mac": "cmd+'",
         "when": "editorTextFocus"
       }
     ],

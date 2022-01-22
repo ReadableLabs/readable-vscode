@@ -27,10 +27,32 @@ export default class CodeEditor {
     });
   }
 
+  public getSpacesFromLine(lineNumber: number): number {
+    if (!this._activeEditor) {
+      throw new Error("Error: no active text editor");
+    }
+
+    return this.getSpaces(this.getLine(lineNumber));
+  }
   /**
-   * Returns the language id of the active editor
-   * @returns {string}
-   */
+   *
+   * * Returns the text of the current line.
+   * *
+   * * @returns {string} The text of the current line.
+  /**
+  
+  * Gets the text of the line at the given line number
+  * @param {number} lineNumber The line number to get the text of
+  * @returns {string} The text of the line at the given line number
+ */
+  public getLine(lineNumber: number): string {
+    if (!this._activeEditor) {
+      throw new Error("Error: No active text editor");
+    }
+
+    return this._activeEditor.document.lineAt(lineNumber).text;
+  }
+
   public getLanguageId() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -100,8 +122,7 @@ export default class CodeEditor {
     for (let k = 0; k < formattedArray.length; k++) {
       // formattedArray[k] = formattedArray[k].trim();
       if (!/^\s+$/.test(formattedArray[k])) {
-        formattedText +=
-          " ".repeat(spaces) + " * " + formattedArray[k].trim() + "\n";
+        formattedText += " ".repeat(spaces) + formattedArray[k].trim() + "\n";
       }
     }
 
@@ -109,11 +130,11 @@ export default class CodeEditor {
 
     console.log(formattedText);
 
-    let languageIndex = this.languages.indexOf(currentLanguage);
+    // let languageIndex = this.languages.indexOf(currentLanguage);
 
-    if (languageIndex === -1) {
-      throw new Error("Error: unsupported language."); // send axios request here for language
-    }
+    // if (languageIndex === -1) {
+    //   throw new Error("Error: unsupported language."); // send axios request here for language
+    // }
 
     // this.languageInfo[languageIndex].replace.map((item) => {
     //   formattedText = formattedText.replace(item.start, item.end);
