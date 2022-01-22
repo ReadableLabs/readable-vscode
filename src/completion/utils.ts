@@ -86,3 +86,14 @@ export const getFunctionName = (
 export const getSafeLine = (line: number, lineCount: number): number => {
   return line + 1 < lineCount ? line + 1 : line;
 };
+
+export const newFormatText = (code: string, spaces: number = 0) => {
+  let fullCode = "";
+  let codeSplit = code.split("\n");
+  codeSplit.map((code) => {
+    if (!/^\s+$/.test(code)) {
+      fullCode += " ".repeat(spaces) + code + "\n";
+    }
+  });
+  return fullCode;
+};

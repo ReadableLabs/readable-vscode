@@ -14,6 +14,7 @@ import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateDocstring } from "./completion/generate";
+import { newFormatText } from "./completion/utils";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -256,15 +257,16 @@ export async function activate(context: vscode.ExtensionContext) {
         "",
         session.accessToken
       );
-      codeEditor.getSpaces(fullCode);
-      let formattedDocstring = await codeEditor.formatText(
-        docstring,
-        codeSpaces,
-        "normal"
-      );
-      console.log(formattedDocstring);
+      console.log(docstring);
+      // let formattedDocstring = await codeEditor.formatText(
+      //   docstring,
+      //   codeSpaces,
+      //   "normal"
+      // );
+      // console.log(formattedDocstring);
+      console.log(newFormatText(docstring, codeSpaces));
       codeEditor.insertTextAtPosition(
-        formattedDocstring,
+        docstring,
         new vscode.Position(_position, 0)
       );
       // console.log(fullCode);

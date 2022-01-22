@@ -27,6 +27,18 @@ export default class CodeEditor {
     });
   }
 
+  /**
+   * Returns the number of spaces at the beginning of a line
+   * @param {string} line - The line to check
+   * @returns {number} - The number of spaces at the beginning of the line
+
+  /**  
+  * Gets the number of spaces from the beginning of a line.
+  *
+  * @param {string} line The line to get the number of spaces from.
+  * @returns {number} The number of spaces from the beginning of the line.
+  */
+
   public getSpacesFromLine(lineNumber: number): number {
     if (!this._activeEditor) {
       throw new Error("Error: no active text editor");
@@ -35,16 +47,9 @@ export default class CodeEditor {
     return this.getSpaces(this.getLine(lineNumber));
   }
   /**
-   *
-   * * Returns the text of the current line.
-   * *
-   * * @returns {string} The text of the current line.
-  /**
-  
-  * Gets the text of the line at the given line number
-  * @param {number} lineNumber The line number to get the text of
-  * @returns {string} The text of the line at the given line number
- */
+   * Get the text of the current line
+   * @returns {string}
+   */
   public getLine(lineNumber: number): string {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -111,24 +116,26 @@ export default class CodeEditor {
     if (_spaces < 0) {
       spaces = 0;
     } else {
-      spaces = _spaces;
+      spaces = _spaces + 1;
     }
 
     // check if \n is at end to not insert comment into text which will clip
     let formattedText = "";
 
-    // formattedText = formattedText.trim();
+    formattedText = formattedText.trim();
     let formattedArray = comment.split("\n");
     for (let k = 0; k < formattedArray.length; k++) {
-      // formattedArray[k] = formattedArray[k].trim();
+      formattedArray[k] = formattedArray[k].trim();
       if (!/^\s+$/.test(formattedArray[k])) {
-        formattedText += " ".repeat(spaces) + formattedArray[k].trim() + "\n";
+        // if the line is not empty
+        formattedText += " ".repeat(spaces) + formattedArray[k].trim();
+        if (k !== formattedArray[k].length) {
+          formattedText += "\n";
+        }
       }
     }
 
-    formattedText = formattedText.replace(/\*\//, "");
-
-    console.log(formattedText);
+    // formattedText = formattedText.replace(/\*\//, "");
 
     // let languageIndex = this.languages.indexOf(currentLanguage);
 
@@ -143,8 +150,17 @@ export default class CodeEditor {
     // formattedText = this.wrap(formattedText, 110, spaces); // 38
     // stop writing mundane comments
 
-    formattedText = " ".repeat(spaces) + "/**\n" + formattedText + " */\n"; // whenever there is a ., append new line to separate the comments better
+    if (!formattedText.trimLeft().startsWith("/*")) {
+      formattedText = " ".repeat(spaces) + "/**" + formattedText;
+    }
 
+    if (!formattedText.trimRight().endsWith("*/")) {
+      formattedText += " ".repeat(spaces) + "*/";
+    }
+
+    // formattedText = " ".repeat(spaces) + "/**\n" + formattedText + " */\n"; // whenever there is a ., append new line to separate the comments better
+
+    formattedText = "\n" + formattedText;
     return formattedText;
   }
 
