@@ -298,13 +298,8 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand("readable.version", () => {
-      const version = context.extension.packageJSON.version;
-      if (!version) {
-        vscode.window.showInformationMessage("Unable to get version");
-        return;
-      }
       vscode.window.showInformationMessage(
-        "Readable is currently on version " + version
+        "Readable is currently on version 1.4.5"
       );
     }),
 

@@ -119,21 +119,26 @@ export const register = async () => {
       return;
     }
 
-    await vscode.window.withProgress(
+    let detail = await vscode.window.withProgress(
       {
         title: "Registering",
         cancellable: false,
         location: vscode.ProgressLocation.Notification,
       },
       (progress, token) => {
-        const p = new Promise<void>(async (resolve, reject) => {
+        const p = new Promise<string>(async (resolve, reject) => {
           const _detail = await Account.Register(email, password1, password2);
-          resolve();
+          resolve(_detail);
         });
         return p;
       }
     );
-    vscode.window.showInformationMessage("Success! Try logging in.");
+    if (!detail) {
+      return;
+    }
+    vscode.window.showInformationMessage(
+      detail + " Check your inbox and try logging in."
+    );
   } catch (err: any) {
     vscode.window.showErrorMessage(err.message);
   }
