@@ -232,46 +232,62 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.window.showErrorMessage("Error: Please log in");
         return;
       }
-      vscode.window.showInformationMessage("ok");
-      let _position = 0;
-      let codeSpaces = 0;
-      let fullCode;
-      if (codeEditor.hasSelection()) {
-        fullCode = codeEditor.getSelectedText(); // split by \n and then check for out of range, and make codeSpaces the first line of the selection
-      } else {
-        const position = codeEditor.getCursor();
-        const symbol = await codeEditor.getSymbolUnderCusor(position);
-        if (!symbol) {
-          vscode.window.showErrorMessage("failed to find symbol");
-          return;
+      vscode.window.withProgress(
+        {
+          title: "Generating Docstring",
+          location: vscode.ProgressLocation.Notification,
+          cancellable: false,
+        },
+        (progress, token) => {
+          let p = new Promise<void>(async (resolve, reject) => {
+            try {
+              let _position = 0;
+              let codeSpaces = 0;
+              let fullCode;
+              if (codeEditor.hasSelection()) {
+                fullCode = codeEditor.getSelectedText(); // split by \n and then check for out of range, and make codeSpaces the first line of the selection
+                const selection = codeEditor.getSelection();
+                _position = selection.start.line - 1;
+                codeSpaces = codeEditor.getSpacesFromLine(selection.start.line);
+              } else {
+                const position = codeEditor.getCursor();
+                const symbol = await codeEditor.getSymbolUnderCusor(position);
+                if (!symbol) {
+                  vscode.window.showErrorMessage("failed to find symbol");
+                  return;
+                }
+                codeSpaces = codeEditor.getSpacesFromLine(
+                  symbol.range.start.line
+                );
+                _position = symbol.range.start.line - 1; // TODO: check for line count
+                console.log(codeSpaces);
+                fullCode = await codeEditor.getTextFromSymbol(symbol);
+                // console.log(fullCode);
+              }
+              let docstring = await generateDocstring(
+                fullCode,
+                "normal",
+                "",
+                session.accessToken
+              );
+              console.log(docstring);
+              let newFormattedText = newFormatText(docstring, codeSpaces);
+              console.log(newFormattedText);
+              codeEditor.insertTextAtPosition(
+                newFormattedText,
+                new vscode.Position(_position + 1, 0)
+              );
+              resolve();
+            } catch (err: any) {
+              if (err.message) {
+                vscode.window.showErrorMessage(err.message);
+              }
+              reject();
+            }
+          });
+          return p;
         }
-        codeSpaces = codeEditor.getSpacesFromLine(symbol.range.start.line);
-        _position = symbol.range.start.line - 1; // TODO: check for line count
-        console.log(codeSpaces);
-        fullCode = await codeEditor.getTextFromSymbol(symbol);
-        // console.log(fullCode);
-      }
-      let docstring = await generateDocstring(
-        fullCode,
-        "normal",
-        "",
-        session.accessToken
       );
-      console.log(docstring);
-      // let formattedDocstring = await codeEditor.formatText(
-      //   docstring,
-      //   codeSpaces,
-      //   "normal"
-      // );
-      // console.log(formattedDocstring);
-      // console.log(newFormatText(docstring, codeSpaces));
-      let newFormattedText = newFormatText(docstring, codeSpaces);
-      console.log(newFormattedText);
-      codeEditor.insertTextAtPosition(
-        newFormattedText,
-        new vscode.Position(_position + 1, 0)
-      );
-      // console.log(fullCode);
     })
   );
 

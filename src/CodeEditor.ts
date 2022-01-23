@@ -25,6 +25,7 @@ export default class CodeEditor {
       console.log(e);
       this._activeEditor = e;
     });
+
     /**
      * Returns the number of spaces at the beginning of a line
      * @param {string} line - the line to check
