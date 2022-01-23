@@ -234,7 +234,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }
       vscode.window.withProgress(
         {
-          title: "Generating Docstring",
+          title: "Readable: Generating Docstring...",
           location: vscode.ProgressLocation.Notification,
           cancellable: false,
         },
