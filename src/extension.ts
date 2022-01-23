@@ -134,8 +134,13 @@ export async function activate(context: vscode.ExtensionContext) {
                       vscode.window.activeTextEditor?.document.lineAt(
                         position
                       ).text;
+                    let language = codeEditor.getLanguageId();
                     if (updatedText === line) {
-                      let comment = await provideComments(position, document);
+                      let comment = await provideComments(
+                        position,
+                        document,
+                        language
+                      );
                       resolve(comment);
                     } else {
                       resolve(undefined);
@@ -184,7 +189,8 @@ export async function activate(context: vscode.ExtensionContext) {
           if (!linePrefix.endsWith("/**")) {
             return undefined;
           }
-          return await provideDocstring(position, document);
+          let language = codeEditor.getLanguageId();
+          return await provideDocstring(position, document, language);
         },
       },
       "*"
@@ -244,6 +250,7 @@ export async function activate(context: vscode.ExtensionContext) {
               let _position = 0;
               let codeSpaces = 0;
               let fullCode;
+              let language = codeEditor.getLanguageId();
               if (codeEditor.hasSelection()) {
                 fullCode = codeEditor.getSelectedText(); // split by \n and then check for out of range, and make codeSpaces the first line of the selection
                 const selection = codeEditor.getSelection();
@@ -266,7 +273,7 @@ export async function activate(context: vscode.ExtensionContext) {
               }
               let docstring = await generateDocstring(
                 fullCode,
-                "normal",
+                language,
                 "",
                 session.accessToken
               );
