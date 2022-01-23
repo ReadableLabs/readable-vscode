@@ -44,6 +44,16 @@ export default class CodeEditor {
    * @param {number} lineNumber The line number to get
    * @returns {string} The line at the given line number
    */
+  /**
+   * Get the line at the given line number.
+   * @param {number} lineNumber - The line number to get the line from.
+   * @returns The line at the given line number.
+   */
+  /**
+   * Return the text of the line at the given line number.
+   * @param {number} lineNumber - The line number to get the text of.
+   * @returns The text of the line at the given line number.
+   */
   public getLine(lineNumber: number): string {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -66,6 +76,11 @@ export default class CodeEditor {
    * Returns the number of spaces in the given text.
    * @param text The text to count spaces in.
    * @returns The number of spaces in the given text.
+   */
+  /**
+   * Return the number of spaces in a string.
+   * @param {string} text - The string to get the number of spaces in.
+   * @returns The number of spaces in the string.
    */
   public getSpaces(text: string): number {
     return text.search(/\S/);
@@ -96,6 +111,13 @@ export default class CodeEditor {
    * @param {number} _spaces
    * @param {string} language
    * @returns {string}
+   */
+  /**
+   * Return a formatted string with the given comment and spaces.
+   * @param {string} comment - The comment to format.
+   * @param {number} spaces - The number of spaces to use.
+   * @param {string} language - The language to format for.
+   * @returns The formatted comment.
    */
   public formatText(
     comment: string,
@@ -241,6 +263,10 @@ export default class CodeEditor {
     }
   }
 
+  /**
+   * Return the selection of the active text editor.
+   * @returns The selection of the active text editor.
+   */
   public getSelection() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -248,6 +274,10 @@ export default class CodeEditor {
     return this._activeEditor.selection;
   }
 
+  /**
+   * Return the cursor position in the active editor.
+   * @returns The cursor position.
+   */
   public getCursor(): vscode.Position {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get cursor position");
@@ -280,6 +310,16 @@ export default class CodeEditor {
    * @param {vscode.Position} position
    * @param {number} lineCount
    * @returns {vscode.DocumentSymbol}
+   */
+  /**
+   * Return the symbol under the cursor.
+   * @param {vscode.Position} position - The position of the cursor.
+   * @returns The symbol under the cursor.
+   */
+  /**
+   * Return the symbol under the cursor.
+   * @param {vscode.Position} position - The position of the cursor.
+   * @returns The symbol under the cursor.
    */
   public async getOrCreateSymbolUnderCursor(
     position: vscode.Position,
@@ -359,6 +399,10 @@ export default class CodeEditor {
    * A docstring for the above function
    * @param {vscode.TextDocument} document
    * @returns {Promise<vscode.DocumentSymbol[]>}
+   */
+  /**
+   * Return the symbols for the current editor.
+   * @returns The symbols for the current editor.
    */
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {

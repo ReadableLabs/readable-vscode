@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import axios from "axios";
 import { getVSCodeDownloadUrl } from "vscode-test/out/util";
 import { ILoginCredentials, IProfile } from "../types";
+import { BASE_URL } from "../../globals";
 const https = require("https");
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
@@ -15,7 +16,7 @@ export default class Account {
   public static async EmailLogin(credentials: ILoginCredentials) {
     try {
       const { data } = await axios.post(
-        "https://api.readable.so/api/v1/users/auth/login/",
+        BASE_URL + "/api/v1/users/auth/login/",
         {
           email: credentials.email,
           password: credentials.password,
@@ -46,7 +47,7 @@ export default class Account {
   public static async GitHubLogin(accessToken: string) {
     try {
       const { data } = await axios.post(
-        "https://api.readable.so/api/v1/users/login/github/",
+        BASE_URL + "/api/v1/users/login/github/",
         {
           access_token: accessToken,
         },
@@ -63,7 +64,7 @@ export default class Account {
 
       await axios.post(
         // update email for account
-        "https://api.readable.so/api/v1/users/finish/",
+        BASE_URL + "/api/v1/users/finish/",
         {
           access_token: accessToken,
         },
@@ -85,7 +86,7 @@ export default class Account {
   ): Promise<IProfile | undefined> {
     try {
       const { data } = await axios.post(
-        "https://api.readable.so/api/v1/users/accountinfo/",
+        BASE_URL + "/api/v1/users/accountinfo/",
         {},
         {
           headers: {
@@ -110,7 +111,7 @@ export default class Account {
   ): Promise<string | undefined> {
     try {
       const { data } = await axios.post(
-        "https://api.readable.so/api/v1/users/password-reset/",
+        BASE_URL + "/api/v1/users/password-reset/",
         {
           email: email,
         }
@@ -133,7 +134,7 @@ export default class Account {
   ) {
     try {
       const { data } = await axios.post(
-        "https://api.readable.so/api/v1/users/auth/register/",
+        BASE_URL + "/api/v1/users/auth/register/",
         {
           email,
           password1,

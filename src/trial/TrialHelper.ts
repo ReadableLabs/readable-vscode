@@ -2,6 +2,7 @@ import axios from "axios";
 const https = require("https");
 import * as vscode from "vscode";
 import { IProfile } from "../authentication/types";
+import { BASE_URL } from "../globals";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 export default abstract class TrialHelper {
@@ -17,7 +18,7 @@ export default abstract class TrialHelper {
   public static async checkFirstLaunch(accessToken: string) {
     try {
       const { data } = await axios.post(
-        "https://api.readable.so/api/v1/users/check-trial/",
+        BASE_URL + "/api/v1/users/check-trial/",
         {
           place: "vscode",
         },

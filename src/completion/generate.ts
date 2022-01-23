@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import axios from "axios";
+import { BASE_URL } from "../globals";
 
 export const generateAutoComplete = async (
   code: string,
@@ -9,7 +10,7 @@ export const generateAutoComplete = async (
 ) => {
   try {
     const { data } = await axios.post(
-      "https://api.readable.so/complete/autocomplete/",
+      BASE_URL + "/complete/autocomplete/",
       {
         full_code: fullCode,
         code: code,
@@ -41,7 +42,7 @@ export const generateDocstring = async (
 ) => {
   try {
     const { data } = await axios.post(
-      "https://api.readable.so/complete/right-click/",
+      BASE_URL + "/complete/right-click/",
       {
         full_code: code,
         language: language,
