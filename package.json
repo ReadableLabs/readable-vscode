@@ -94,7 +94,7 @@
       },
       {
         "command": "readable.rightClickComment",
-        "title": "Generate Docstring"
+        "title": "Readable: Generate Docstring"
       },
       {
         "command": "readable.reportBug",
