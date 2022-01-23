@@ -25,20 +25,12 @@ export default class CodeEditor {
       console.log(e);
       this._activeEditor = e;
     });
+    /**
+     * Returns the number of spaces at the beginning of a line
+     * @param {string} line - the line to check
+     * @return {number} the number of spaces at the beginning of a line
+     */
   }
-
-  /**
-   * Returns the number of spaces at the beginning of a line
-   * @param {string} line - The line to check
-   * @returns {number} - The number of spaces at the beginning of the line
-
-  /**  
-  * Gets the number of spaces from the beginning of a line.
-  *
-  * @param {string} line The line to get the number of spaces from.
-  * @returns {number} The number of spaces from the beginning of the line.
-  */
-
   public getSpacesFromLine(lineNumber: number): number {
     if (!this._activeEditor) {
       throw new Error("Error: no active text editor");
@@ -47,8 +39,9 @@ export default class CodeEditor {
     return this.getSpaces(this.getLine(lineNumber));
   }
   /**
-   * Get the text of the current line
-   * @returns {string}
+   * Gets the line at the given line number
+   * @param {number} lineNumber The line number to get
+   * @returns {string} The line at the given line number
    */
   public getLine(lineNumber: number): string {
     if (!this._activeEditor) {
@@ -57,7 +50,10 @@ export default class CodeEditor {
 
     return this._activeEditor.document.lineAt(lineNumber).text;
   }
-
+  /**
+   * Gets the language id of the active editor
+   * @returns {string} The language id of the active editor
+   */
   public getLanguageId() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -195,14 +191,21 @@ export default class CodeEditor {
   public async insertTextAtPosition(
     text: string,
     position: vscode.Position
-  ): Promise<boolean> {
-    let snippet = new vscode.SnippetString(text); // create a snippet
-    let result = await this._activeEditor?.insertSnippet(snippet, position); // insert the snippet
-    if (!result) {
-      // if the snippet failed to insert
-      throw new Error("Error: unable to insert text");
+  ): Promise<void> {
+    if (!this._activeEditor) {
+      throw new Error("Error: No active text editor");
     }
-    return result;
+
+    this._activeEditor.edit((editBuilder) => {
+      editBuilder.insert(position, text);
+    });
+    // let snippet = new vscode.SnippetString(text); // create a snippet
+    // let result = await this._activeEditor?.insertSnippet(snippet, position); // insert the snippet
+    // if (!result) {
+    // if the snippet failed to insert
+    // throw new Error("Error: unable to insert text");
+    // }
+    // return result;
   }
 
   /**

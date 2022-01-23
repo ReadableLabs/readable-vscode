@@ -91,9 +91,15 @@ export const newFormatText = (code: string, spaces: number = 0) => {
   let fullCode = "";
   let codeSplit = code.split("\n");
   codeSplit.map((code) => {
-    if (!/^\s+$/.test(code)) {
+    if (code.trim() !== "") {
       fullCode += " ".repeat(spaces) + code + "\n";
     }
   });
+  if (!codeSplit[0].includes("/**")) {
+    fullCode = " ".repeat(spaces) + "/**\n" + fullCode;
+  }
+  if (!codeSplit[codeSplit.length - 1].includes("*/")) {
+    fullCode += " ".repeat(spaces + 1) + "*/\n";
+  }
   return fullCode;
 };

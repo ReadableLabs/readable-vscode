@@ -264,10 +264,12 @@ export async function activate(context: vscode.ExtensionContext) {
       //   "normal"
       // );
       // console.log(formattedDocstring);
-      console.log(newFormatText(docstring, codeSpaces));
+      // console.log(newFormatText(docstring, codeSpaces));
+      let newFormattedText = newFormatText(docstring, codeSpaces);
+      console.log(newFormattedText);
       codeEditor.insertTextAtPosition(
-        docstring,
-        new vscode.Position(_position, 0)
+        newFormattedText,
+        new vscode.Position(_position + 1, 0)
       );
       // console.log(fullCode);
     })
