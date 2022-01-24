@@ -7,7 +7,7 @@ const promptEmail = async (): Promise<ILoginCredentials | undefined> => {
   const email = await vscode.window.showInputBox({
     ignoreFocusOut: true,
     placeHolder: "Email",
-    prompt: "Enter your email",
+    prompt: "Enter Email:",
   });
 
   if (!email) {

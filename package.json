@@ -101,6 +101,10 @@
         "title": "Readable: Report a Bug"
       },
       {
+        "command": "readable.giveFeedback",
+        "title": "Readable: Give Feedback"
+      },
+      {
         "command": "readable.version",
         "title": "Readable: Version"
       }
