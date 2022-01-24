@@ -89,28 +89,10 @@ export const getFunctionName = (
   return functionName;
 };
 
-/**
- * Return a random integer between min (inclusive) and max (inclusive).
- * @param {number} min - The minimum number.
- * @param {number} max - The maximum number.
- * @returns The random integer.
- */
-/**
- * Generate a docstring for the above function.
- * @param {number} line - The line of the code that is being documented.
- * @param {number} lineCount - The total number of lines in the code.
- * @returns The docstring for the function.
- */
 export const getSafeLine = (line: number, lineCount: number): number => {
   return line + 1 < lineCount ? line + 1 : line;
 };
 
-/**
- * Return a string with the new format of the code.
- * @param {string} code - The code to format.
- * @param {number} spaces - The number of spaces to add to the beginning of each line.
- * @returns The formatted code.
- */
 export const newFormatText = (code: string, spaces: number = 0) => {
   let fullCode = "";
   let codeSplit = code.split("\n");

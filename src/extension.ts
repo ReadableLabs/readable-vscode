@@ -265,12 +265,14 @@ export async function activate(context: vscode.ExtensionContext) {
                   );
                   return;
                 }
+
+                fullCode = await codeEditor.getFirstAndLastText(symbol);
                 codeSpaces = codeEditor.getSpacesFromLine(
                   symbol.range.start.line
                 );
                 _position = symbol.range.start.line - 1; // TODO: check for line count
                 console.log(codeSpaces);
-                fullCode = await codeEditor.getTextFromSymbol(symbol);
+                // fullCode = await codeEditor.getTextFromSymbol(symbol);
                 // console.log(fullCode);
               }
               let docstring = await generateDocstring(

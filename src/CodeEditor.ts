@@ -1,5 +1,7 @@
 import { privateEncrypt } from "crypto";
 import * as vscode from "vscode";
+import { emailLogin } from "./authentication/EmailLogin";
+import { getLineNumber, getSafeStartPosition } from "./completion/utils";
 export default class CodeEditor {
   private languages = [
     "typescript",
@@ -25,12 +27,6 @@ export default class CodeEditor {
       console.log(e);
       this._activeEditor = e;
     });
-
-    /**
-     * Returns the number of spaces at the beginning of a line
-     * @param {string} line - the line to check
-     * @return {number} the number of spaces at the beginning of a line
-     */
   }
   public getSpacesFromLine(lineNumber: number): number {
     if (!this._activeEditor) {
@@ -39,21 +35,7 @@ export default class CodeEditor {
 
     return this.getSpaces(this.getLine(lineNumber));
   }
-  /**
-   * Gets the line at the given line number
-   * @param {number} lineNumber The line number to get
-   * @returns {string} The line at the given line number
-   */
-  /**
-   * Get the line at the given line number.
-   * @param {number} lineNumber - The line number to get the line from.
-   * @returns The line at the given line number.
-   */
-  /**
-   * Return the text of the line at the given line number.
-   * @param {number} lineNumber - The line number to get the text of.
-   * @returns The text of the line at the given line number.
-   */
+
   public getLine(lineNumber: number): string {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -61,10 +43,7 @@ export default class CodeEditor {
 
     return this._activeEditor.document.lineAt(lineNumber).text;
   }
-  /**
-   * Gets the language id of the active editor
-   * @returns {string} The language id of the active editor
-   */
+
   public getLanguageId() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -72,16 +51,6 @@ export default class CodeEditor {
     return this._activeEditor.document.languageId; //returns the language id of the active editor
   }
 
-  /**
-   * Returns the number of spaces in the given text.
-   * @param text The text to count spaces in.
-   * @returns The number of spaces in the given text.
-   */
-  /**
-   * Return the number of spaces in a string.
-   * @param {string} text - The string to get the number of spaces in.
-   * @returns The number of spaces in the string.
-   */
   public getSpaces(text: string): number {
     return text.search(/\S/);
   }
@@ -106,19 +75,6 @@ export default class CodeEditor {
     return s;
   };
 
-  /**
-   * @param {string} comment
-   * @param {number} _spaces
-   * @param {string} language
-   * @returns {string}
-   */
-  /**
-   * Return a formatted string with the given comment and spaces.
-   * @param {string} comment - The comment to format.
-   * @param {number} spaces - The number of spaces to use.
-   * @param {string} language - The language to format for.
-   * @returns The formatted comment.
-   */
   public formatText(
     comment: string,
     _spaces: number,
@@ -193,11 +149,6 @@ export default class CodeEditor {
     );
   }
 
-  /**
-   * Gets the text of a symbol from the active editor
-   * @param {vscode.DocumentSymbol} symbol - The symbol to get the text from
-   * @returns {string} The text of the symbol
-   */
   public getTextFromSymbol(symbol: vscode.DocumentSymbol) {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get active editor");
@@ -205,12 +156,6 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(symbol.range);
   }
 
-  /**
-   * Inserts text at the given position in the active editor
-   * @param text The text to insert
-   * @param position The position to insert the text
-   * @returns A boolean indicating if the text was inserted
-   */
   public async insertTextAtPosition(
     text: string,
     position: vscode.Position
@@ -231,22 +176,13 @@ export default class CodeEditor {
     // return result;
   }
 
-  /**
-   * Returns the selected text in the active editor.
-   *
-   * @returns {string} The selected text.
-   */
   public getSelectedText(): string {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
     }
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
-  /**
-   * Returns true if the active text editor has a selection.
-   *
-   * @returns {boolean}
-   */
+
   public hasSelection(): boolean {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -263,10 +199,6 @@ export default class CodeEditor {
     }
   }
 
-  /**
-   * Return the selection of the active text editor.
-   * @returns The selection of the active text editor.
-   */
   public getSelection() {
     if (!this._activeEditor) {
       throw new Error("Error: No active text editor");
@@ -274,10 +206,6 @@ export default class CodeEditor {
     return this._activeEditor.selection;
   }
 
-  /**
-   * Return the cursor position in the active editor.
-   * @returns The cursor position.
-   */
   public getCursor(): vscode.Position {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get cursor position");
@@ -286,10 +214,6 @@ export default class CodeEditor {
     return this._activeEditor.selection.active;
   }
 
-  /**
-   * Returns the current cursor position in the active editor
-   * @returns {number}
-   */
   public getCursorPosition(): number {
     if (!this._activeEditor) {
       throw new Error("Error: unable to get cursor position");
@@ -306,21 +230,51 @@ export default class CodeEditor {
     return this._activeEditor.document.getText(range);
   }
 
-  /**
-   * @param {vscode.Position} position
-   * @param {number} lineCount
-   * @returns {vscode.DocumentSymbol}
-   */
-  /**
-   * Return the symbol under the cursor.
-   * @param {vscode.Position} position - The position of the cursor.
-   * @returns The symbol under the cursor.
-   */
-  /**
-   * Return the symbol under the cursor.
-   * @param {vscode.Position} position - The position of the cursor.
-   * @returns The symbol under the cursor.
-   */
+  // Two scenarios.
+  // 1st: The function is less than 20 lines
+  // 2nd: THe function is greater than 20 lines
+
+  public async getFirstAndLastText(symbol: vscode.DocumentSymbol) {
+    if (!this._activeEditor) {
+      throw new Error("Error: unable to get active editor");
+    }
+    let startLine = 0,
+      endLine = 0;
+    // scenario 2
+    if (symbol.range.start.line + 20 <= symbol.range.end.line) {
+      // first 10 lines at the start
+      let startStart = symbol.range.start.line;
+      let startEnd = symbol.range.start.line + 10;
+
+      // last 10 lines at the end
+      let endStart = symbol.range.end.line - 10;
+      let endEnd = symbol.range.end.line;
+
+      const first10Lines = this._activeEditor.document.getText(
+        new vscode.Range(
+          new vscode.Position(startStart, 0),
+          new vscode.Position(startEnd, 0) // maybe only 9 lines since character 0
+        )
+      );
+      const last10Lines = this._activeEditor.document.getText(
+        new vscode.Range(
+          new vscode.Position(endStart, 0),
+          new vscode.Position(endEnd, 0)
+        )
+      );
+      return first10Lines + "\n" + last10Lines;
+    } else {
+      // console.log(this._activeEditor.document.getText(symbol.range));
+      return this._activeEditor.document.getText(symbol.range);
+    }
+
+    // if (symbol.range.end.line - 10 <= symbol.range.start.line) {
+    //   endLine = symbol.range.start.line;
+    // } else {
+    //   endLine = symbol.range.end.line - 11;
+    // }
+  }
+
   public async getOrCreateSymbolUnderCursor(
     position: vscode.Position,
     lineCount: number
@@ -348,11 +302,6 @@ export default class CodeEditor {
     return codeSymbol;
   }
 
-  /**
-   * @param {vscode.Position} position
-   * @returns {vscode.DocumentSymbol | null}
-   * @description Returns the symbol under the cursor
-   */
   public async getSymbolUnderCusor(
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
@@ -395,15 +344,6 @@ export default class CodeEditor {
     return null;
   }
 
-  /**
-   * A docstring for the above function
-   * @param {vscode.TextDocument} document
-   * @returns {Promise<vscode.DocumentSymbol[]>}
-   */
-  /**
-   * Return the symbols for the current editor.
-   * @returns The symbols for the current editor.
-   */
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
     if (!this._activeEditor) {
       return [];
