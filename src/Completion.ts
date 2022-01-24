@@ -40,7 +40,7 @@ export const provideDocstring = async (
 
     if (!codeSymbol) {
       vscode.window.showErrorMessage(
-        "Error: unable to find symbol under cursor"
+        "Readable: (Error) Unable to find symbol under cursor"
       );
       return;
     }
@@ -111,7 +111,7 @@ export const provideComments = async (
 
     if (!session) {
       // if there isn't a session, we can't do anything
-      vscode.window.showErrorMessage("Error: Please log in");
+      vscode.window.showErrorMessage("Readable: (Error) Please log in");
       return;
     }
 

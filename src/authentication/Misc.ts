@@ -16,7 +16,7 @@ export const checkAccount = async () => {
     console.log(session);
     if (!session) {
       const result = await vscode.window.showInformationMessage(
-        "No account detected. Make an account or login to use Readable.",
+        "Readable: No account detected. Make an account or login to continue.",
         "Log in",
         "Sign up"
       );
@@ -48,7 +48,7 @@ export const register = async () => {
     const email = await vscode.window.showInputBox({
       ignoreFocusOut: true,
       placeHolder: "Email",
-      prompt: "Enter an email",
+      prompt: "Enter in an email",
     });
 
     if (!email) {
@@ -74,7 +74,9 @@ export const register = async () => {
     });
 
     if (password1 !== password2) {
-      vscode.window.showErrorMessage("Error: Passwords do not match");
+      vscode.window.showErrorMessage(
+        "Readable: (Error) Passwords do not match"
+      );
       return;
     }
 
@@ -102,7 +104,7 @@ export const resetPassword = async () => {
   const email = await vscode.window.showInputBox({
     ignoreFocusOut: true,
     placeHolder: "Email",
-    prompt: "Enter your email",
+    prompt: "Enter in your email",
   });
 
   if (!email) {

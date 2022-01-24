@@ -32,7 +32,7 @@ export default abstract class TrialHelper {
 
       if (data === false) {
         let response = await vscode.window.showInformationMessage(
-          "Welcome to the Readable trial! If you haven't already, check our website to see how Readable works.",
+          "Thanks for using Readable! Your trial has started. If you haven't already, check our website to see how Readable works.",
           "Open Readable Website"
         );
         if (!response) {
@@ -57,9 +57,9 @@ export default abstract class TrialHelper {
 
     if (trialDate > 0) {
       let choice = await vscode.window.showInformationMessage(
-        `You have ${trialDate.toPrecision(
+        `Readable: You have ${trialDate.toPrecision(
           2
-        )} days remaining in your Readable trial.`,
+        )} days remaining in your trial.`,
         "Purchase Readable"
       );
       if (!choice) {
@@ -75,7 +75,7 @@ export default abstract class TrialHelper {
     if (trialDate <= 0) {
       TrialHelper.TrialEnded = true;
       let choice = await vscode.window.showInformationMessage(
-        "Your Readable trial is over! Please purchase Readable to continue using it.",
+        "Readable: Your trial is over! Please purchase to continue.",
         "Purchase Readable"
       );
       if (!choice) {
