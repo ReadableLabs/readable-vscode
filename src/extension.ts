@@ -21,7 +21,7 @@ import { newFormatText } from "./completion/utils";
 export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "commentai" is now active!');
+  console.log('Congratulations, your extension "Readable" is now active!');
 
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
@@ -235,7 +235,7 @@ export async function activate(context: vscode.ExtensionContext) {
         { createIfNone: false }
       );
       if (!session) {
-        vscode.window.showErrorMessage("Error: Please log in");
+        vscode.window.showErrorMessage("Readable: (Error) Please log in");
         return;
       }
       vscode.window.withProgress(
@@ -260,7 +260,9 @@ export async function activate(context: vscode.ExtensionContext) {
                 const position = codeEditor.getCursor();
                 const symbol = await codeEditor.getSymbolUnderCusor(position);
                 if (!symbol) {
-                  vscode.window.showErrorMessage("failed to find symbol");
+                  vscode.window.showErrorMessage(
+                    "Readable: (Error) Failed to find symbol"
+                  );
                   return;
                 }
                 codeSpaces = codeEditor.getSpacesFromLine(
@@ -312,7 +314,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("readable.login", async () => {
       if (await authProvider.getSession()) {
-        vscode.window.showInformationMessage("Already logged in!");
+        vscode.window.showInformationMessage("Readable: Already logged in!");
         return;
       }
 
@@ -342,7 +344,7 @@ export async function activate(context: vscode.ExtensionContext) {
         [key],
         { createIfNone: true }
       );
-      vscode.window.showInformationMessage("Successfully logged in!");
+      vscode.window.showInformationMessage("Readable: Successfully logged in!");
       setTimeout(() => {
         status.updateStatusBar();
       }, 500);
@@ -372,7 +374,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("readable.giveFeedback", async () => {
       let choice = await vscode.window.showInformationMessage(
         "Notice something wrong about Readable? Tell us!",
-        "Send Feedback"
+        "Write Feedback"
       );
       if (!choice) {
         return;
@@ -392,7 +394,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("readable.version", () => {
       const version = context.extension.packageJSON.version;
       if (!version) {
-        vscode.window.showInformationMessage("Unable to get version");
+        vscode.window.showInformationMessage("Readable: Unable to get version");
         return;
       }
       vscode.window.showInformationMessage(
@@ -407,7 +409,9 @@ export async function activate(context: vscode.ExtensionContext) {
         { createIfNone: false }
       );
       if (session) {
-        vscode.window.showInformationMessage("You are already logged in!");
+        vscode.window.showInformationMessage(
+          "Readable: You are already logged in!"
+        );
         return;
       }
       let choice = await vscode.window.showQuickPick(registerOptions);
@@ -428,7 +432,7 @@ export async function activate(context: vscode.ExtensionContext) {
           [key],
           { createIfNone: true }
         );
-        await vscode.window.showInformationMessage("Logged in!");
+        await vscode.window.showInformationMessage("Readable: Logged in!");
       } else if (choice === registerOptions[1]) {
         await register();
       } else {

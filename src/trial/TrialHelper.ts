@@ -33,7 +33,7 @@ export default abstract class TrialHelper {
       if (data === false) {
         let response = await vscode.window.showInformationMessage(
           "Welcome to the Readable trial! If you haven't already, check our website to see how Readable works.",
-          "Open Readable website"
+          "Open Readable Website"
         );
         if (!response) {
           return;

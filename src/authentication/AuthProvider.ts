@@ -41,7 +41,7 @@ export class CodeCommentAuthenticationProvider
   private quickPickItems: QuickPickItem[] = [
     {
       label: "$(mark-github)  GitHub",
-      detail: "Log in with GitHub.",
+      detail: "Log in with GitHub",
       picked: true,
     },
     {
@@ -90,7 +90,7 @@ export class CodeCommentAuthenticationProvider
     const session = await this.getSession();
     if (!session) {
       const result = await vscode.window.showInformationMessage(
-        "No account detected. Make an account or login to use Readable.",
+        "No account detected. Make an account or log in to use Readable.",
         "Log in",
         "Sign up"
       );
@@ -185,9 +185,9 @@ export class CodeCommentAuthenticationProvider
       console.log(err);
       vscode.window.showErrorMessage(err.message);
       vscode.window.showInformationMessage(
-        "Error: can't get sessions. If you are on mac, open the 'keychain access' app, look for vscodepcsoftware.readable, and click delete. Then try logging in again."
+        "Readable: (Error) Can't get sessions. If you are on mac, open the 'keychain access' app, look for vscodepcsoftware.readable, and click delete. Then try logging in again."
       );
-      throw new Error("Error: can't get sessions");
+      throw new Error("Readable: (Error) Can't get sessions");
     }
   }
 
@@ -195,7 +195,7 @@ export class CodeCommentAuthenticationProvider
     this.ensureInitialized();
 
     if (!_scopes[0]) {
-      throw new Error("Error: no key");
+      throw new Error("Readable: (Error) No key");
     }
 
     const session = _scopes[0];
