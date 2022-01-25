@@ -375,14 +375,14 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("readable.giveFeedback", async () => {
       let choice = await vscode.window.showInformationMessage(
-        "Readable: Found a bug or have a feature request?",
+        "Readable: Found a bug or have a feature request? Tell us.",
         // "Notice something wrong about Readable? Tell us!",
-        "Tell Us"
+        "Send Feedback"
       );
       if (!choice) {
         return;
       }
-      if (choice === "Tell Us") {
+      if (choice === "Send Feedback") {
         const feedback = await vscode.window.showInputBox({
           ignoreFocusOut: true,
           placeHolder: "Feedback",
