@@ -323,11 +323,13 @@ export default class CodeEditor {
         ) {
           console.log("symbol is class"); // logs the symbol
           for (let k = 0; k < symbols[i].children.length; k++) {
+            console.log(symbols[i].children[k].kind + " ok :D");
             console.log("going through symbols");
             if (
               (symbols[i].children[k].kind === vscode.SymbolKind.Method || // if the symbol is a method
                 symbols[i].children[k].kind === vscode.SymbolKind.Function ||
-                symbols[i].children[k].kind === vscode.SymbolKind.Constant) && // or a constant
+                symbols[i].children[k].kind === vscode.SymbolKind.Constant ||
+                symbols[i].children[k].kind === vscode.SymbolKind.Property) && // or a constant
               symbols[i].children[k].range.start.line <= position.line &&
               symbols[i].children[k].range.end.line >= position.line
             ) {

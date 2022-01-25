@@ -15,6 +15,7 @@ import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateDocstring } from "./completion/generate";
 import { newFormatText } from "./completion/utils";
+import DatabaseTools from "./database/databaseTools";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -270,6 +271,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 codeSpaces = codeEditor.getSpacesFromLine(
                   symbol.range.start.line
                 );
+                console.log(codeSpaces);
                 _position = symbol.range.start.line - 1; // TODO: check for line count
                 console.log(codeSpaces);
                 // fullCode = await codeEditor.getTextFromSymbol(symbol);
@@ -282,18 +284,25 @@ export async function activate(context: vscode.ExtensionContext) {
                 session.accessToken
               );
               console.log(docstring);
-              let newFormattedText = newFormatText(docstring, codeSpaces);
+              let newFormattedText = newFormatText(
+                docstring,
+                codeSpaces,
+                language
+              );
               console.log(newFormattedText);
               codeEditor.insertTextAtPosition(
                 newFormattedText,
-                new vscode.Position(_position + 1, 0)
+                new vscode.Position(
+                  language === "python" ? _position + 2 : _position + 1,
+                  0
+                )
               );
               resolve();
             } catch (err: any) {
               if (err.message) {
                 vscode.window.showErrorMessage(err.message);
               }
-              reject();
+              resolve();
             }
           });
           return p;
@@ -303,6 +312,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const codeEditor = new CodeEditor(editor);
+  const dbTools = new DatabaseTools(context.globalStorageUri.fsPath);
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
@@ -395,6 +405,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand("readable.version", () => {
+      console.log(context.globalStorageUri.fsPath);
       const version = context.extension.packageJSON.version;
       if (!version) {
         vscode.window.showInformationMessage("Readable: Unable to get version");
