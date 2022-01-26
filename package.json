@@ -12,7 +12,7 @@
   },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "1.4.5",
+  "version": "1.5.1",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -141,7 +141,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "14.x",
     "@types/sqlite3": "^3.1.8",
-    "@types/vscode": "^1.59.0",
+    "@types/vscode": "1.59.0",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
     "eslint": "^7.27.0",

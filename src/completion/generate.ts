@@ -25,7 +25,7 @@ export const generateAutoComplete = async (
     return data;
   } catch (err: any) {
     vscode.window.showErrorMessage(
-      "Readable: (Error) Network error in autocomplete http request"
+      "Error: Network error in autocomplete http request"
     );
     console.log(err);
     if (err.request.data) {
@@ -57,7 +57,7 @@ export const generateDocstring = async (
     return data;
   } catch (err: any) {
     vscode.window.showErrorMessage(
-      "Readable: (Error) Network error in docstring http request"
+      "Error: Network error in docstring http request"
     );
     if (err.request.data) {
       vscode.window.showErrorMessage(err.request.data);

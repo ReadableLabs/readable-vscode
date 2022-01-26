@@ -128,7 +128,7 @@ export const newFormatText = (
     .getConfiguration("editor")
     .get<number>("tabSize");
   if (!tabSize) {
-    throw new Error("Readable (Error): Unable to get tabSize from editor");
+    throw new Error("Error: Unable to get tab size from editor");
   }
   if (language === "python") {
     spaces = tabSize + _spaces;
@@ -147,8 +147,7 @@ export const newFormatText = (
     if (!codeSplit[codeSplit.length - 1].includes('"""')) {
       fullCode += " ".repeat(spaces === tabSize ? spaces : spaces) + '"""\n';
     }
-  }
-  if (language === "csharp") {
+  } else if (language === "csharp") {
     if (!codeSplit[0].includes("///")) {
       fullCode = " ".repeat(spaces) + "/// " + fullCode.trimLeft();
     }

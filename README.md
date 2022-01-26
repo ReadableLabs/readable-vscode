@@ -62,9 +62,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.4.5]
+## [1.5.1]
 
-- Allowed comments outside of functions
+- Fixed formatting
 
 ### Contact
 

@@ -237,7 +237,7 @@ export async function activate(context: vscode.ExtensionContext) {
         { createIfNone: false }
       );
       if (!session) {
-        vscode.window.showErrorMessage("Readable: (Error) Please log in");
+        vscode.window.showErrorMessage("Readable: Please log in");
         return;
       }
       vscode.window.withProgress(
@@ -263,7 +263,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 const symbol = await codeEditor.getSymbolUnderCusor(position);
                 if (!symbol) {
                   vscode.window.showErrorMessage(
-                    "Readable: (Error) Failed to find symbol"
+                    "Error: Failed to find function. Highlight function instead."
                   );
                   resolve();
                   return;
@@ -410,7 +410,7 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log(context.globalStorageUri.fsPath);
       const version = context.extension.packageJSON.version;
       if (!version) {
-        vscode.window.showInformationMessage("Readable: Unable to get version");
+        vscode.window.showInformationMessage("Error: Unable to get version");
         return;
       }
       vscode.window.showInformationMessage(

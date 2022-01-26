@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.5.1]
+
+- Fixed formatting
+
+## [1.5.0]
+
+- Made Readable Great Again
+
 ## [1.4.5]
 
 - Allowed comments outside of functions

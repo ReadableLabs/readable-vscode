@@ -74,9 +74,7 @@ export const register = async () => {
     });
 
     if (password1 !== password2) {
-      vscode.window.showErrorMessage(
-        "Readable: (Error) Passwords do not match"
-      );
+      vscode.window.showErrorMessage("Error: Passwords do not match");
       return;
     }
 

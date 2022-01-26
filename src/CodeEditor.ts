@@ -30,7 +30,7 @@ export default class CodeEditor {
   }
   public getSpacesFromLine(lineNumber: number): number {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) no active text editor");
+      throw new Error("Error: No active text editor");
     }
 
     return this.getSpaces(this.getLine(lineNumber));
@@ -38,7 +38,7 @@ export default class CodeEditor {
 
   public getLine(lineNumber: number): string {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
 
     return this._activeEditor.document.lineAt(lineNumber).text;
@@ -46,7 +46,7 @@ export default class CodeEditor {
 
   public getLanguageId() {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
     return this._activeEditor.document.languageId; //returns the language id of the active editor
   }
@@ -85,7 +85,7 @@ export default class CodeEditor {
       ? language
       : this._activeEditor?.document.languageId;
     if (!currentLanguage) {
-      throw new Error("Readable: (Error) unable to retrieve language");
+      throw new Error("Error: Unable to retrieve language");
     }
 
     if (_spaces < 0) {
@@ -142,7 +142,7 @@ export default class CodeEditor {
   // Gets the text from the active editor's selection
   public getTextFromSelection(selection: vscode.Selection): string {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) unable to get active editor");
+      throw new Error("Error: Unable to get active editor");
     }
     return this._activeEditor?.document.getText(
       new vscode.Range(selection.start, selection.end)
@@ -151,7 +151,7 @@ export default class CodeEditor {
 
   public getTextFromSymbol(symbol: vscode.DocumentSymbol) {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) unable to get active editor");
+      throw new Error("Error: Unable to get active editor");
     }
     return this._activeEditor.document.getText(symbol.range);
   }
@@ -161,7 +161,7 @@ export default class CodeEditor {
     position: vscode.Position
   ): Promise<void> {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
 
     this._activeEditor.edit((editBuilder) => {
@@ -178,14 +178,14 @@ export default class CodeEditor {
 
   public getSelectedText(): string {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
     return this._activeEditor.document.getText(this._activeEditor.selection);
   }
 
   public hasSelection(): boolean {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
     if (
       this._activeEditor.selection.start.line ===
@@ -201,14 +201,14 @@ export default class CodeEditor {
 
   public getSelection() {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
     return this._activeEditor.selection;
   }
 
   public getCursor(): vscode.Position {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) unable to get cursor position");
+      throw new Error("Error: Unable to get cursor position");
     }
 
     return this._activeEditor.selection.active;
@@ -216,7 +216,7 @@ export default class CodeEditor {
 
   public getCursorPosition(): number {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) unable to get cursor position");
+      throw new Error("Error: Unable to get cursor position");
     }
 
     return this._activeEditor.selection.active.line;
@@ -224,7 +224,7 @@ export default class CodeEditor {
 
   public getTextInRange(range: vscode.Range): string {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) unable to get active editor");
+      throw new Error("Error: Unable to get active editor");
     }
 
     return this._activeEditor.document.getText(range);
@@ -236,7 +236,7 @@ export default class CodeEditor {
 
   public async getFirstAndLastText(symbol: vscode.DocumentSymbol) {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) unable to get active editor");
+      throw new Error("Error: Unable to get active editor");
     }
     let startLine = 0,
       endLine = 0;
@@ -280,7 +280,7 @@ export default class CodeEditor {
     lineCount: number
   ): Promise<vscode.DocumentSymbol> {
     if (!this._activeEditor) {
-      throw new Error("Readable: (Error) No active text editor");
+      throw new Error("Error: No active text editor");
     }
     let codeSymbol = await this.getSymbolUnderCusor(position);
     if (!codeSymbol) {
@@ -308,7 +308,7 @@ export default class CodeEditor {
     let symbols = await this.getAllSymbols();
     console.log(symbols);
     if (symbols === []) {
-      throw new Error("Readable: (Error) no symbols");
+      throw new Error("Error: No symbols");
     }
     for (let i = 0; i < symbols.length; i++) {
       if (
