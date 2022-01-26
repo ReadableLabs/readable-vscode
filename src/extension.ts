@@ -361,6 +361,9 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage("Readable: Successfully logged in!");
       setTimeout(() => {
         status.updateStatusBar();
+        vscode.window.showInformationMessage(
+          "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is over any function OR if the function is highlighted."
+        );
       }, 500);
     }),
     vscode.commands.registerCommand("readable.reportBug", async () => {
