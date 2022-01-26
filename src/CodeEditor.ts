@@ -306,6 +306,7 @@ export default class CodeEditor {
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
+    console.log(symbols);
     if (symbols === []) {
       throw new Error("Readable: (Error) no symbols");
     }
@@ -323,7 +324,6 @@ export default class CodeEditor {
         ) {
           console.log("symbol is class"); // logs the symbol
           for (let k = 0; k < symbols[i].children.length; k++) {
-            console.log(symbols[i].children[k].kind + " ok :D");
             console.log("going through symbols");
             if (
               (symbols[i].children[k].kind === vscode.SymbolKind.Method || // if the symbol is a method

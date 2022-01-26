@@ -10,10 +10,11 @@ Just start writing a comment, and get a suggestion.
 
 Readable generates both inline comments, as well as docstrings.
 
-## Works in 7 Languages
+## Works in 9 Languages
 
 - Typescript
 - Javascript
+- JSX/TSX
 - Python
 - C#
 - C++
@@ -57,7 +58,7 @@ You can configure the following settings:
 
 ## Known Issues
 
-- If you type anything after pressing "/\*\*" to start a docstring comment, you will not get a docstring suggestion
+- If you try the quick generate (ctrl + ') on c#, even with the extension installed, it fails. This is because the c# extension for vscode has not been updated to work with the latest dotnet.
 
 ## Release Notes
 

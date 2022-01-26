@@ -16,6 +16,7 @@ import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateDocstring } from "./completion/generate";
 import { newFormatText } from "./completion/utils";
 import DatabaseTools from "./database/databaseTools";
+import { resolve } from "path";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -264,6 +265,7 @@ export async function activate(context: vscode.ExtensionContext) {
                   vscode.window.showErrorMessage(
                     "Readable: (Error) Failed to find symbol"
                   );
+                  resolve();
                   return;
                 }
 

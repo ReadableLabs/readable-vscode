@@ -147,6 +147,11 @@ export const newFormatText = (
     if (!codeSplit[codeSplit.length - 1].includes('"""')) {
       fullCode += " ".repeat(spaces === tabSize ? spaces : spaces) + '"""\n';
     }
+  }
+  if (language === "csharp") {
+    if (!codeSplit[0].includes("///")) {
+      fullCode = " ".repeat(spaces) + "/// " + fullCode.trimLeft();
+    }
   } else {
     if (!codeSplit[0].includes("/**")) {
       fullCode = " ".repeat(spaces) + "/**\n" + fullCode;
@@ -155,6 +160,5 @@ export const newFormatText = (
       fullCode += " ".repeat(spaces + 1) + "*/\n";
     }
   }
-
   return fullCode;
 };
