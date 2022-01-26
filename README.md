@@ -62,9 +62,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [1.5.1]
+## [1.5.2]
 
-- Fixed formatting
+- Added login message showing how to use docstrings
 
 ### Contact
 

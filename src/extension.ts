@@ -314,7 +314,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const codeEditor = new CodeEditor(editor);
-  const dbTools = new DatabaseTools(context.globalStorageUri.fsPath);
+  const dbTools = new DatabaseTools(context.globalStorageUri.fsPath, "1.5.1");
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
@@ -362,7 +362,7 @@ export async function activate(context: vscode.ExtensionContext) {
       setTimeout(() => {
         status.updateStatusBar();
         vscode.window.showInformationMessage(
-          "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is over any function OR if the function is highlighted."
+          "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is in any function OR if the function is highlighted."
         );
       }, 500);
     }),

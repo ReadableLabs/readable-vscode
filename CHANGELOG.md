@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.5.2]
+
+- Added login message showing how to use docstrings
+
 ## [1.5.1]
 
 - Fixed formatting

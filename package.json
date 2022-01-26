@@ -12,7 +12,7 @@
   },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "engines": {
     "vscode": "^1.59.0"
   },
