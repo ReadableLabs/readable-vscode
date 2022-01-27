@@ -182,14 +182,15 @@ export const provideComments = async (
     console.log(fullCode);
 
     const comments = document.lineAt(position).text.split("//");
-    const comment = comments.length > 1 ? comments[1].trim() : null;
+    let comment = comments.length > 1 ? comments[1].trim() : null;
     if (!comment) {
-      return;
+      comment = "";
     }
-    console.log(comment.trim());
+    console.log(comment);
 
-    const autoCode = codeEditor
+    const autoCode = codeEditor // Get the position of the prompt.
       .getTextInRange(
+        // the text in the range of the prompt and the current position.
         new vscode.Range(
           new vscode.Position(getSafePromptPosition(position.line), 0),
           position
@@ -197,6 +198,7 @@ export const provideComments = async (
       )
       .trimRight();
 
+    // generate AutoComplete function is used to generate the auto complete list for the given code.
     let data = await generateAutoComplete(
       fullCode,
       comment,
@@ -223,11 +225,13 @@ export const provideComments = async (
       data.includes("<--") ||
       data.includes("TODO")
     ) {
+      // If no comment was generated, show a warning message.
       let result = vscode.window.showWarningMessage(
         "No comment was able to be generated."
       );
       return [new vscode.CompletionItem("")];
     }
+    // create a completion item from the data received from the server
     let completion = new vscode.CompletionItem(
       data.trimLeft(),
       vscode.CompletionItemKind.Text
