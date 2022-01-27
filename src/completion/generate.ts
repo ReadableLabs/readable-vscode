@@ -3,8 +3,8 @@ import axios from "axios";
 import { BASE_URL } from "../globals";
 
 export const generateAutoComplete = async (
-  code: string,
   fullCode: string,
+  comment: string,
   language: string,
   accessToken: string
 ) => {
@@ -13,7 +13,7 @@ export const generateAutoComplete = async (
       BASE_URL + "/complete/autocomplete/",
       {
         full_code: fullCode,
-        code: code,
+        comment: comment,
         language: language,
       },
       {

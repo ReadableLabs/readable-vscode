@@ -179,6 +179,15 @@ export const provideComments = async (
     //   full_code += item + "\n";
     // });
 
+    console.log(fullCode);
+
+    const comments = document.lineAt(position).text.split("//");
+    const comment = comments.length > 1 ? comments[1].trim() : null;
+    if (!comment) {
+      return;
+    }
+    console.log(comment.trim());
+
     const autoCode = codeEditor
       .getTextInRange(
         new vscode.Range(
@@ -189,8 +198,8 @@ export const provideComments = async (
       .trimRight();
 
     let data = await generateAutoComplete(
-      autoCode,
       fullCode,
+      comment,
       language,
       session.accessToken
     );

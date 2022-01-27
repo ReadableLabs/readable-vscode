@@ -48,9 +48,6 @@ export const getFormattedCode = (
  */
 
 export const getSafePromptPosition = (startLine: number) => {
-  const testFunction2 = (a: number, b: number) => {
-    return a + b;
-  };
   if (startLine - 2 < 0) {
     return 0;
   } else {
@@ -63,8 +60,8 @@ export const getSafeStartPosition = (
   startLine: number,
   lineCount: number
 ) => {
-  return position - 4 > 0 && position - 4 > startLine
-    ? position - 4
+  return position - 1 > 0 && position - 1 > startLine
+    ? position - 1
     : startLine;
 };
 
