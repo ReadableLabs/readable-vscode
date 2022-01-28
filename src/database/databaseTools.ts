@@ -15,9 +15,16 @@ export default class DatabaseTools {
   ) {
     vscode.window.onDidChangeActiveTextEditor(
       async (e: vscode.TextEditor | undefined) => {
+        // regex match and then call function with workspace
         if (!e) {
           return;
         }
+        e.document.getText(
+          new vscode.Range(
+            new vscode.Position(0, 0),
+            new vscode.Position(e.document.lineCount, 0)
+          )
+        );
       }
     );
     this._state = state;
