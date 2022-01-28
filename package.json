@@ -5,7 +5,7 @@
   "icon": "logo.png",
   "description": "🚀 Instantly generate detailed comments for your code using Ai. Supports Javascript, TypeScript, Python, C#, C++, Java, and PHP",
   "author": "Puri Chapman Software <support@readable.so> (https://readable.so)",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "galleryBanner": {
     "color": "#041621",
     "theme": "dark"
@@ -51,7 +51,7 @@
     }
   },
   "activationEvents": [
-    "onStartupFinished"
+    "*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -156,7 +156,6 @@
   "dependencies": {
     "axios": "^0.21.4",
     "https": "^1.0.0",
-    "isomorphic-fetch": "^3.0.0",
-    "sqlite3": "^5.0.2"
+    "isomorphic-fetch": "^3.0.0"
   }
 }

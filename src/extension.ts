@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
+import * as path from "path";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
 import { provideComments, provideDocstring } from "./Completion";
@@ -314,7 +315,12 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const codeEditor = new CodeEditor(editor);
-  const dbTools = new DatabaseTools(context.globalStorageUri.fsPath, "1.5.1");
+  if (vscode.workspace.name) {
+    const dbTools = new DatabaseTools(
+      context.globalState,
+      vscode.workspace.name
+    );
+  }
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
@@ -410,7 +416,6 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand("readable.version", () => {
-      console.log(context.globalStorageUri.fsPath);
       const version = context.extension.packageJSON.version;
       if (!version) {
         vscode.window.showInformationMessage("Error: Unable to get version");
