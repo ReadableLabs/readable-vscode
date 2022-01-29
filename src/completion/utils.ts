@@ -70,8 +70,8 @@ export const getSafeEndPosition = (
   endLine: number,
   lineCount: number
 ) => {
-  return position + 4 < endLine && position + 4 < lineCount
-    ? position + 4
+  return position + 3 < endLine && position + 3 < lineCount
+    ? position + 3
     : endLine;
 };
 

@@ -2,22 +2,17 @@
 // Import the module and reference it with the alias vscode in your code below
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
-import * as path from "path";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
 import { provideComments, provideDocstring } from "./Completion";
-import { env } from "process";
 import TrialHelper from "./trial/TrialHelper";
 import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
-import { LoginOption } from "./authentication/types";
 import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateDocstring } from "./completion/generate";
 import { newFormatText } from "./completion/utils";
-import DatabaseTools from "./database/databaseTools";
-import { resolve } from "path";
 import { createSelection, removeSelections } from "./selectionTools";
 
 // this method is called when your extension is activated
@@ -320,12 +315,12 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const codeEditor = new CodeEditor(editor);
-  if (vscode.workspace.name) {
-    const dbTools = new DatabaseTools(
-      context.globalState,
-      vscode.workspace.name
-    );
-  }
+  // if (vscode.workspace.name) {
+  //   const dbTools = new DatabaseTools(
+  //     context.globalState,
+  //     vscode.workspace.name
+  //   );
+  // }
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(

@@ -2,6 +2,10 @@ import { privateEncrypt } from "crypto";
 import * as vscode from "vscode";
 import { emailLogin } from "./authentication/EmailLogin";
 import { getLineNumber, getSafeStartPosition } from "./completion/utils";
+/**
+ * Gets the symbols for the current document.
+ * @returns {Promise<vscode.DocumentSymbol[]>}
+ */
 export default class CodeEditor {
   private languages = [
     "typescript",
