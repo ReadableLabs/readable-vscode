@@ -1,20 +1,16 @@
 import * as vscode from "vscode";
 
-export const createSelection = (range: vscode.Range) => {
-  const selectionColor = new vscode.ThemeColor("editor.selectionBackground");
-  const smallDecorator = vscode.window.createTextEditorDecorationType({
-    // borderWidth: "1px",
-    // borderStyle: "solid",
-    overviewRulerColor: selectionColor,
-    backgroundColor: selectionColor,
-    overviewRulerLane: vscode.OverviewRulerLane.Right,
-    // light: {
-    //   borderColor: "darkblue",
-    // },
-    // dark: {
-    //   borderColor: "lightblue",
-    // },
-  });
+const selectionColor = new vscode.ThemeColor("editor.selectionBackground");
+const smallDecorator = vscode.window.createTextEditorDecorationType({
+  overviewRulerColor: selectionColor,
+  backgroundColor: selectionColor,
+  overviewRulerLane: vscode.OverviewRulerLane.Left,
+});
+
+export const createSelection = async (range: vscode.Range) => {
+  await vscode.window.activeTextEditor?.setDecorations(smallDecorator, [range]);
 };
 
-export const removeSelections = async () => {};
+export const removeSelections = async () => {
+  await vscode.window.activeTextEditor?.setDecorations(smallDecorator, []);
+};

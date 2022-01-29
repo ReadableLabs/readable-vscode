@@ -18,6 +18,7 @@ import { generateDocstring } from "./completion/generate";
 import { newFormatText } from "./completion/utils";
 import DatabaseTools from "./database/databaseTools";
 import { resolve } from "path";
+import { createSelection, removeSelections } from "./selectionTools";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -270,6 +271,10 @@ export async function activate(context: vscode.ExtensionContext) {
                   return;
                 }
 
+                await createSelection(symbol.range);
+                setTimeout(async () => {
+                  await removeSelections();
+                }, 850);
                 fullCode = await codeEditor.getFirstAndLastText(symbol);
                 codeSpaces = codeEditor.getSpacesFromLine(
                   symbol.range.start.line
@@ -416,9 +421,12 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand("readable.version", async () => {
-      await vscode.window.activeTextEditor?.setDecorations(smallDecorator, [
-        new vscode.Range(new vscode.Position(0, 0), new vscode.Position(20, 0)),
-      ]);
+      await createSelection(
+        new vscode.Range(new vscode.Position(0, 0), new vscode.Position(20, 0))
+      );
+      setTimeout(async () => {
+        await removeSelections();
+      }, 750);
       const version = context.extension.packageJSON.version;
       if (!version) {
         vscode.window.showInformationMessage("Error: Unable to get version");
