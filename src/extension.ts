@@ -415,7 +415,10 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }),
 
-    vscode.commands.registerCommand("readable.version", () => {
+    vscode.commands.registerCommand("readable.version", async () => {
+      await vscode.window.activeTextEditor?.setDecorations(smallDecorator, [
+        new vscode.Range(new vscode.Position(0, 0), new vscode.Position(20, 0)),
+      ]);
       const version = context.extension.packageJSON.version;
       if (!version) {
         vscode.window.showInformationMessage("Error: Unable to get version");
