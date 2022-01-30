@@ -30,7 +30,7 @@ export const provideDocstring = async (
       return undefined;
     }
 
-    // Get the line number of the pattern.
+    // Get the line number of the cursor position, and make sure it's not out of range.
     let codeSymbol = await codeEditor.getSymbolUnderCusor(
       new vscode.Position(
         getSafeLine(position.line, document.lineCount),
@@ -38,7 +38,7 @@ export const provideDocstring = async (
       )
     );
 
-    // if there is no code symbol, then we can't scan it.
+    // No symbol under cursor, try to find the first symbol in the document.
     if (!codeSymbol) {
       vscode.window.showErrorMessage(
         "Error: Unable to find symbol under cursor"
@@ -48,10 +48,12 @@ export const provideDocstring = async (
 
     let functionName = "";
 
+    // Get the function name for the language.
     if (language === "python") {
       functionName = getFunctionName(document, codeSymbol);
     }
 
+    // Get the end line of the code block
     let endLine = getSafeEndPosition(
       position.line,
       codeSymbol.range.end.line,
@@ -62,6 +64,7 @@ export const provideDocstring = async (
       new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0))
     );
 
+    // Generate the docstring for the code
     let generatedDocstring = await generateDocstring(
       fullCode,
       language,
@@ -77,6 +80,7 @@ export const provideDocstring = async (
     }
 
     if (language === "python") {
+      // If it is not properly formatted, then we will not add the comment to the code.
       generatedDocstring = "\n" + generatedDocstring;
 
       // check if comment is formatted properly
@@ -85,7 +89,6 @@ export const provideDocstring = async (
       }
     }
 
-    // create a new completion item with the docstring
     let completionItem = new vscode.CompletionItem(
       generatedDocstring,
       vscode.CompletionItemKind.Text
@@ -125,7 +128,6 @@ export const provideComments = async (
       return;
     }
 
-    // get a couple of lines above and below the position for context
     let { startLine, endLine } = getSafeRange(
       position.line,
       codeSymbol.range.start.line,
@@ -133,7 +135,6 @@ export const provideComments = async (
       document.lineCount
     );
 
-    // get the actual code with the range
     let code = await codeEditor.getTextInRange(
       new vscode.Range(
         new vscode.Position(startLine, 0),
@@ -183,14 +184,14 @@ export const provideComments = async (
 
     console.log(fullCode);
 
-    // get any characters the user might have typed with the comment
-    const comments = document.lineAt(position).text.split("//");
-    let comment = comments.length > 1 ? comments[1].trim() : null;
+    const comments = document.lineAt(position).text.split("//"); // split into code and comment
+    let comment = comments.length > 1 ? comments[1].trim() : null; // gets the comment from the line of code, if any
     if (!comment) {
-      comment = ""; // set default value
+      comment = "";
     }
     console.log(comment);
 
+    // get the code up to the cursors position
     const autoCode = codeEditor
       .getTextInRange(
         new vscode.Range(
@@ -221,13 +222,15 @@ export const provideComments = async (
     //   }
     // );
     if (data === "" || data.includes("<--") || data.includes("TODO")) {
+      // No comment was generated.
       let result = vscode.window.showWarningMessage(
         "No comment was able to be generated."
       );
       return [new vscode.CompletionItem("")];
     }
+
     let completion = new vscode.CompletionItem(
-      data.trim(),
+      data.trim(), // without spaces
       vscode.CompletionItemKind.Text
     );
     completion.detail = "Readable";
