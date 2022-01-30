@@ -33,7 +33,7 @@ export const generateAutoComplete = async (
     return data;
   } catch (err: any) {
     vscode.window.showErrorMessage(
-      "Error: Network error in autocomplete http request"
+      "Error: You are most likely being rate limited. We are working on fixing this."
     );
     console.log(err);
     if (err.request.data) {

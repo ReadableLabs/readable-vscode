@@ -143,7 +143,11 @@ export default class CodeEditor {
     return formattedText;
   }
 
-  // Gets the text from the active editor's selection
+  /**
+   * Gets the text from the current selection.
+   * @param {vscode.Selection} selection - the current selection.
+   * @returns {string} the text from the current selection.
+   */
   public getTextFromSelection(selection: vscode.Selection): string {
     if (!this._activeEditor) {
       throw new Error("Error: Unable to get active editor");
@@ -153,8 +157,14 @@ export default class CodeEditor {
     );
   }
 
+  /**
+   * Gets the text from the given symbol.
+   * @param {vscode.DocumentSymbol} symbol - the symbol to get the text from.
+   * @returns {string} the text from the given symbol.
+   */
   public getTextFromSymbol(symbol: vscode.DocumentSymbol) {
     if (!this._activeEditor) {
+      // if there's no active editor, throw an error
       throw new Error("Error: Unable to get active editor");
     }
     return this._activeEditor.document.getText(symbol.range);
@@ -169,6 +179,7 @@ export default class CodeEditor {
     }
 
     this._activeEditor.edit((editBuilder) => {
+      // insert the snippet
       editBuilder.insert(position, text);
     });
     // let snippet = new vscode.SnippetString(text); // create a snippet
@@ -244,20 +255,19 @@ export default class CodeEditor {
     }
     let startLine = 0,
       endLine = 0;
-    // scenario 2
     if (symbol.range.start.line + 20 <= symbol.range.end.line) {
-      // first 10 lines at the start
+      // get the first 10 lines of the symbol's range.
       let startStart = symbol.range.start.line;
       let startEnd = symbol.range.start.line + 10;
 
-      // last 10 lines at the end
+      // get the end line of the symbol
       let endStart = symbol.range.end.line - 10;
       let endEnd = symbol.range.end.line;
 
       const first10Lines = this._activeEditor.document.getText(
         new vscode.Range(
           new vscode.Position(startStart, 0),
-          new vscode.Position(startEnd, 0) // maybe only 9 lines since character 0
+          new vscode.Position(startEnd, 0)
         )
       );
       const last10Lines = this._activeEditor.document.getText(
@@ -288,6 +298,7 @@ export default class CodeEditor {
     }
     let codeSymbol = await this.getSymbolUnderCusor(position);
     if (!codeSymbol) {
+      // if no symbol is found, create a new symbol
       console.log("creating a new symbol");
       codeSymbol = new vscode.DocumentSymbol(
         "CurrentLineSymbol",
@@ -316,28 +327,28 @@ export default class CodeEditor {
     }
     for (let i = 0; i < symbols.length; i++) {
       if (
-        // if the current symbol is a letter
+        // if the symbol is in the current line
         symbols[i].range.start.line <= position.line &&
         symbols[i].range.end.line >= position.line
       ) {
-        // if the symbol is in the range of the position
         console.log("found symbol");
         if (
+          // if the symbol is a class and it is not on the same line as the cursor, then skip it.
           symbols[i].kind === vscode.SymbolKind.Class &&
           symbols[i].range.start.line !== position.line
         ) {
-          console.log("symbol is class"); // logs the symbol
+          console.log("symbol is class");
           for (let k = 0; k < symbols[i].children.length; k++) {
             console.log("going through symbols");
             if (
-              (symbols[i].children[k].kind === vscode.SymbolKind.Method || // if the symbol is a method
+              (symbols[i].children[k].kind === vscode.SymbolKind.Method ||
                 symbols[i].children[k].kind === vscode.SymbolKind.Function ||
                 symbols[i].children[k].kind === vscode.SymbolKind.Constant ||
-                symbols[i].children[k].kind === vscode.SymbolKind.Property) && // or a constant
+                symbols[i].children[k].kind === vscode.SymbolKind.Property) &&
               symbols[i].children[k].range.start.line <= position.line &&
               symbols[i].children[k].range.end.line >= position.line
             ) {
-              console.log("found symbol"); // explain what the code does
+              console.log("found symbol");
               return symbols[i].children[k];
             }
           }

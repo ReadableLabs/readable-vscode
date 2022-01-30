@@ -99,6 +99,8 @@ export const getFunctionName = (
   let functionName = "";
   let offset = 0;
   let currentLine = "";
+
+  // Find the function name.
   for (let i = 0; i <= symbol.range.end.line - symbol.range.start.line; i++) {
     currentLine = document.lineAt(symbol.range.start.line + i).text;
     if (currentLine.includes("def")) {
@@ -132,11 +134,15 @@ export const newFormatText = (
   } else {
     spaces = _spaces;
   }
+
+  // if the code is not empty, add it to the full code string.
   codeSplit.map((code) => {
     if (code.trim() !== "") {
       fullCode += " ".repeat(spaces) + code + "\n";
     }
   });
+
+  // Add a triple-quoted comment to the beginning of the code.
   if (language === "python") {
     if (!codeSplit[0].includes('"""')) {
       fullCode = " ".repeat(spaces) + '"""\n' + fullCode;
@@ -145,6 +151,7 @@ export const newFormatText = (
       fullCode += " ".repeat(spaces === tabSize ? spaces : spaces) + '"""\n';
     }
   } else if (language === "csharp") {
+    // Add a comment for the next pattern.
     if (!codeSplit[0].includes("///")) {
       fullCode = " ".repeat(spaces) + "/// " + fullCode.trimLeft();
     }

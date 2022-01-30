@@ -22,7 +22,6 @@ export const provideDocstring = async (
 ) => {
   try {
     const session = await vscode.authentication.getSession(
-      // get session
       CodeCommentAuthenticationProvider.id,
       [],
       { createIfNone: false }
@@ -31,6 +30,7 @@ export const provideDocstring = async (
       return undefined;
     }
 
+    // Get the line number of the pattern.
     let codeSymbol = await codeEditor.getSymbolUnderCusor(
       new vscode.Position(
         getSafeLine(position.line, document.lineCount),
@@ -38,6 +38,7 @@ export const provideDocstring = async (
       )
     );
 
+    // if there is no code symbol, then we can't scan it.
     if (!codeSymbol) {
       vscode.window.showErrorMessage(
         "Error: Unable to find symbol under cursor"
@@ -58,7 +59,7 @@ export const provideDocstring = async (
     );
 
     let fullCode = document.getText(
-      new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0)) // get the full code
+      new vscode.Range(codeSymbol.range.start, new vscode.Position(endLine, 0))
     );
 
     let generatedDocstring = await generateDocstring(
@@ -78,11 +79,13 @@ export const provideDocstring = async (
     if (language === "python") {
       generatedDocstring = "\n" + generatedDocstring;
 
+      // check if comment is formatted properly
       if (!generatedDocstring.endsWith('"""')) {
         generatedDocstring += '"""';
       }
     }
 
+    // create a new completion item with the docstring
     let completionItem = new vscode.CompletionItem(
       generatedDocstring,
       vscode.CompletionItemKind.Text
@@ -96,7 +99,6 @@ export const provideDocstring = async (
   }
 };
 
-// provides comments for the editor
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,
@@ -110,12 +112,10 @@ export const provideComments = async (
     );
 
     if (!session) {
-      // if there isn't a session, we can't do anything
       vscode.window.showErrorMessage("Readable: Please log in");
       return;
     }
 
-    // needed for range
     let codeSymbol = await codeEditor.getOrCreateSymbolUnderCursor(
       position,
       document.lineCount
@@ -125,6 +125,7 @@ export const provideComments = async (
       return;
     }
 
+    // get a couple of lines above and below the position for context
     let { startLine, endLine } = getSafeRange(
       position.line,
       codeSymbol.range.start.line,
@@ -132,17 +133,18 @@ export const provideComments = async (
       document.lineCount
     );
 
-    // get the range from startLine to endLine
+    // get the actual code with the range
     let code = await codeEditor.getTextInRange(
-      new vscode.Range( // create a range
-        new vscode.Position(startLine, 0), // start at the beginning of the line
-        new vscode.Position(endLine, position.character)
+      new vscode.Range(
+        new vscode.Position(startLine, 0),
+        new vscode.Position(
+          endLine,
+          document.lineAt(endLine).range.end.character
+        )
       )
     );
 
     console.log(code);
-
-    // const fullCode = getFormattedCode(document, position, code);
 
     const fullCode = code;
 
@@ -181,16 +183,16 @@ export const provideComments = async (
 
     console.log(fullCode);
 
+    // get any characters the user might have typed with the comment
     const comments = document.lineAt(position).text.split("//");
     let comment = comments.length > 1 ? comments[1].trim() : null;
     if (!comment) {
-      comment = "";
+      comment = ""; // set default value
     }
     console.log(comment);
 
-    const autoCode = codeEditor // Get the position of the prompt.
+    const autoCode = codeEditor
       .getTextInRange(
-        // the text in the range of the prompt and the current position.
         new vscode.Range(
           new vscode.Position(getSafePromptPosition(position.line), 0),
           position
@@ -198,7 +200,6 @@ export const provideComments = async (
       )
       .trimRight();
 
-    // generate AutoComplete function is used to generate the auto complete list for the given code.
     let data = await generateAutoComplete(
       fullCode,
       comment,
@@ -219,27 +220,19 @@ export const provideComments = async (
     //     },
     //   }
     // );
-    if (
-      // if the comment is empty, return an empty completion item
-      data === "" ||
-      data.includes("<--") ||
-      data.includes("TODO")
-    ) {
-      // If no comment was generated, show a warning message.
+    if (data === "" || data.includes("<--") || data.includes("TODO")) {
       let result = vscode.window.showWarningMessage(
         "No comment was able to be generated."
       );
       return [new vscode.CompletionItem("")];
     }
-    // create a completion item from the data received from the server
     let completion = new vscode.CompletionItem(
-      data.trimLeft(),
+      data.trim(),
       vscode.CompletionItemKind.Text
     );
     completion.detail = "Readable";
-    return [completion]; // return the completion list
+    return [completion];
   } catch (err: any) {
-    // if there is an error, show the error message
     vscode.window.showErrorMessage(err.response);
     console.log(err.response);
   }
