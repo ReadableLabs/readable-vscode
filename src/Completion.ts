@@ -102,6 +102,13 @@ export const provideDocstring = async (
   }
 };
 
+/**
+ * Provides comments for the given position in the given document.
+ * @param {vscode.Position} position - the position to provide comments for.
+ * @param {vscode.TextDocument} document - the document to provide comments for.
+ * @param {string} language - the language of the document.
+ * @returns {vscode.CompletionItem[]} - the array of completion items.
+ */
 export const provideComments = async (
   position: vscode.Position,
   document: vscode.TextDocument,
@@ -184,14 +191,14 @@ export const provideComments = async (
 
     console.log(fullCode);
 
-    const comments = document.lineAt(position).text.split("//"); // split into code and comment
-    let comment = comments.length > 1 ? comments[1].trim() : null; // gets the comment from the line of code, if any
+    const comments = document.lineAt(position).text.split("//"); // split into code and comments
+    let comment = comments.length > 1 ? comments[1].trim() : null; // Get the first comment from the line of code, if there is any
     if (!comment) {
       comment = "";
     }
     console.log(comment);
 
-    // get the code up to the cursors position
+    // get the code up until the cursor
     const autoCode = codeEditor
       .getTextInRange(
         new vscode.Range(
@@ -229,6 +236,7 @@ export const provideComments = async (
       return [new vscode.CompletionItem("")];
     }
 
+    // create a completion item for the completion
     let completion = new vscode.CompletionItem(
       data.trim(), // without spaces
       vscode.CompletionItemKind.Text

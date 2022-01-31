@@ -142,20 +142,21 @@ export const newFormatText = (
     }
   });
 
-  // Add a triple-quoted comment to the beginning of the code.
+  // add """ to the beginning of the code if it is not already there
   if (language === "python") {
     if (!codeSplit[0].includes('"""')) {
       fullCode = " ".repeat(spaces) + '"""\n' + fullCode;
     }
+    // do the same for the end
     if (!codeSplit[codeSplit.length - 1].includes('"""')) {
       fullCode += " ".repeat(spaces === tabSize ? spaces : spaces) + '"""\n';
     }
   } else if (language === "csharp") {
-    // Add a comment for the next pattern.
     if (!codeSplit[0].includes("///")) {
       fullCode = " ".repeat(spaces) + "/// " + fullCode.trimLeft();
     }
   } else {
+    // format the code with the correct indentation and add the comment header if needed.
     if (!codeSplit[0].includes("/**")) {
       fullCode = " ".repeat(spaces) + "/**\n" + fullCode;
     }

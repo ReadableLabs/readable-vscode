@@ -56,6 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (
               linePrefix.includes("#") &&
               position.character > line.trimLeft().indexOf("#")
+              // if the cursor is after the # character, then generate a comment.
             ) {
               return new Promise<vscode.CompletionItem[] | undefined>(
                 (resolve, reject) => {
@@ -64,6 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
                       vscode.window.activeTextEditor?.document.lineAt(
                         position
                       ).text;
+                    // make sure the line is still the same
                     if (updatedText === line) {
                       let comment = await provideComments(
                         position,
@@ -144,7 +146,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     } else {
                       resolve(undefined);
                     }
-                  }, 250);
+                  }, 350);
                 }
               );
             } else {
