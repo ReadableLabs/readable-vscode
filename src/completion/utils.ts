@@ -1,5 +1,11 @@
 import * as vscode from "vscode";
 
+/**
+ * Gets the line number of the given line of code.
+ * @param {string[]} code - the code to search for the line number of
+ * @param {string} currentLine - the line of code to search for
+ * @returns {number} the line number of the given line of code
+ */
 export const getLineNumber = (code: string[], currentLine: string) => {
   const lineNumber = code.findIndex((value) => {
     if (value === currentLine) {
@@ -9,6 +15,12 @@ export const getLineNumber = (code: string[], currentLine: string) => {
   return lineNumber;
 };
 
+/**
+ * Takes in a string of code and returns the line number that the cursor is on.
+ * @param {string[]} code - the code to format
+ * @param {string} currentLine - the current line that the cursor is on
+ * @returns {number} the line number that the cursor is on
+ */
 export const getFormattedCode = (
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -47,6 +59,11 @@ export const getFormattedCode = (
  * @returns None
  */
 
+/**
+ * Gets the line number of the first line of the prompt.
+ * @param {number} startLine - the line number of the first line of the prompt.
+ * @returns {number} the line number of the first line of the prompt.
+ */
 export const getSafePromptPosition = (startLine: number) => {
   if (startLine - 2 < 0) {
     return 0;
@@ -75,6 +92,14 @@ export const getSafeEndPosition = (
     : endLine;
 };
 
+/**
+ * Gets the safe start and end positions for a given position.
+ * @param {number} position - the position to get the safe range for.
+ * @param {number} _startLine - the start line of the range.
+ * @param {number} _endLine - the end line of the range.
+ * @param {number} lineCount - the number of lines in the file.
+ * @returns {number} - the start and end positions of the safe range.
+ */
 export const getSafeRange = (
   position: number,
   _startLine: number,

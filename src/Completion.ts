@@ -192,7 +192,8 @@ export const provideComments = async (
     console.log(fullCode);
 
     const comments = document.lineAt(position).text.split("//"); // split into code and comments
-    let comment = comments.length > 1 ? comments[1].trim() : null; // Get the first comment from the line of code, if there is any
+    let comment =
+      comments.length > 1 ? comments[comments.length - 1].trim() : null; // Get the first comment from the line of code, if there is any
     if (!comment) {
       comment = "";
     }
