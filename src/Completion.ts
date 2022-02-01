@@ -191,15 +191,15 @@ export const provideComments = async (
 
     console.log(fullCode);
 
-    const comments = document.lineAt(position).text.split("//"); // split into code and comments
+    const comments = document.lineAt(position).text.split("//");
     let comment =
-      comments.length > 1 ? comments[comments.length - 1].trim() : null; // Get the first comment from the line of code, if there is any
+      comments.length > 1 ? comments[comments.length - 1].trim() : null;
     if (!comment) {
       comment = "";
     }
     console.log(comment);
 
-    // get the code up until the cursor
+    // get the range of the code editor
     const autoCode = codeEditor
       .getTextInRange(
         new vscode.Range(

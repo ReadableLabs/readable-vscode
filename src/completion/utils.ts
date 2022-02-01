@@ -160,7 +160,6 @@ export const newFormatText = (
     spaces = _spaces;
   }
 
-  // if the code is not empty, add it to the full code string.
   codeSplit.map((code) => {
     if (code.trim() !== "") {
       fullCode += " ".repeat(spaces) + code + "\n";
