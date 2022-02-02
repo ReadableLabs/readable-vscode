@@ -334,10 +334,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("readable.login", async () => {
-      if (await authProvider.getSession()) {
-        vscode.window.showInformationMessage("Readable: Already logged in!");
-        return;
-      }
+      // if (await authProvider.getSession()) {
+      //   vscode.window.showInformationMessage("Readable: Already logged in!");
+      //   return;
+      // }
 
       let key: string | undefined;
       const selection = await vscode.window.showQuickPick(loginOptions);
@@ -363,7 +363,7 @@ export async function activate(context: vscode.ExtensionContext) {
       await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
         [key],
-        { createIfNone: true }
+        { createIfNone: true, forceNewSession: true }
       );
       vscode.window.showInformationMessage("Readable: Successfully logged in!");
       setTimeout(() => {
