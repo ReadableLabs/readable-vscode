@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as Git from "nodegit";
 import * as path from "path";
 
 export default class CommentSyncProvider {
