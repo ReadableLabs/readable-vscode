@@ -3,6 +3,7 @@
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
+import CommentSyncProvider from "./commentSyncProvider";
 import CodeEditor from "./CodeEditor";
 import { provideComments, provideDocstring } from "./Completion";
 import TrialHelper from "./trial/TrialHelper";
@@ -363,7 +364,7 @@ export async function activate(context: vscode.ExtensionContext) {
       await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
         [key],
-        { createIfNone: true, forceNewSession: true }
+        { createIfNone: true }
       );
       vscode.window.showInformationMessage("Readable: Successfully logged in!");
       setTimeout(() => {
@@ -472,6 +473,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  const commenetProvider = new CommentSyncProvider();
   checkAccount();
   // await authProvider.checkAccount();
 

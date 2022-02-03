@@ -97,13 +97,9 @@ export default class Account {
       return data;
     } catch (err: any) {
       console.log(err);
-      let choice = await vscode.window.showErrorMessage(
-        "Error: Could not get account info. Try logging out and back in.",
-        "Log in"
+      await vscode.window.showErrorMessage(
+        "Error: Could not get account info. Try logging out and back in."
       );
-      if (choice === "Log in") {
-        await vscode.commands.executeCommand("readable.login");
-      }
       if (err.response) {
         await vscode.window.showErrorMessage(err.response);
       }
