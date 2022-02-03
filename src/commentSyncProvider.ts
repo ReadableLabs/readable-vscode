@@ -13,6 +13,5 @@ export default class CommentSyncProvider {
     });
   }
 
-  public checkGit() {
-  }
+  public checkGit() {}
 }
