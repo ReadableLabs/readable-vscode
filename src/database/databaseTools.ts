@@ -31,6 +31,7 @@ export default class DatabaseTools {
     this._workspace = workspace;
   }
   public async addCode(workspace: string, codeSnippet: string) {
+    // this is a test comment
     try {
       let items = this._state.get<string>(workspace);
       if (!items) {
