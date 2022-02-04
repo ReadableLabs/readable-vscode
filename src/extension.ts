@@ -230,6 +230,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
 
     vscode.commands.registerCommand("readable.rightClickComment", async () => {
+      // a test comment
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
         [],
