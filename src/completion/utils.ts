@@ -155,7 +155,7 @@ export const newFormatText = (
     throw new Error("Error: Unable to get tab size from editor");
   }
   if (language === "python") {
-    spaces = tabSize + _spaces;
+    spaces = tabSize + _spaces; // ok
   } else {
     spaces = _spaces;
   }

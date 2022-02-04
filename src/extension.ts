@@ -23,6 +23,8 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "Readable" is now active!');
 
+  const sync = new CommentSyncProvider();
+
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
   let pass = await context.secrets.get("readable:password");
@@ -474,7 +476,6 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  const commenetProvider = new CommentSyncProvider();
   checkAccount();
   // await authProvider.checkAccount();
 
