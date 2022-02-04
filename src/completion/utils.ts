@@ -12,6 +12,7 @@ export const getLineNumber = (code: string[], currentLine: string) => {
       return true;
     }
   });
+  // this is a freaking line number
   return lineNumber;
 };
 

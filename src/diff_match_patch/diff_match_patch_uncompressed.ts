@@ -72,8 +72,7 @@ var DIFF_EQUAL = 0;
  */
 class Diff {
   public length = 2;
-  constructor(public op: any, public text: any) {
-  }
+  constructor(public op: any, public text: any) {}
 }
 
 //  diff_match_patch.Diff = function (op, text) {
@@ -104,10 +103,10 @@ class Diff {
  *     instead.
  * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
  */
- export const diff_main = function (
+export const diff_main = function (
   text1: string,
   text2: string,
-  opt_checklines: boolean,
+  opt_checklines?: boolean,
   opt_deadline?: number
 ) {
   // Set a deadline by which time the diff must be complete.
@@ -177,7 +176,7 @@ class Diff {
  * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
  * @private
  */
- export const diff_compute_ = function (
+export const diff_compute_ = function (
   text1: string,
   text2: string,
   checklines: boolean,
@@ -203,10 +202,7 @@ class Diff {
     diffs = [
       new Diff(DIFF_INSERT, longtext.substring(0, i)),
       new Diff(DIFF_EQUAL, shorttext),
-      new Diff(
-        DIFF_INSERT,
-        longtext.substring(i + shorttext.length)
-      ),
+      new Diff(DIFF_INSERT, longtext.substring(i + shorttext.length)),
     ];
     // Swap insertions for deletions if diff is reversed.
     if (text1.length > text2.length) {
@@ -218,10 +214,7 @@ class Diff {
   if (shorttext.length == 1) {
     // Single character string.
     // After the previous speedup, the character can't be an equality.
-    return [
-      new Diff(DIFF_DELETE, text1),
-      new Diff(DIFF_INSERT, text2),
-    ];
+    return [new Diff(DIFF_DELETE, text1), new Diff(DIFF_INSERT, text2)];
   }
 
   // Check to see if the problem can be split in two.
@@ -237,10 +230,7 @@ class Diff {
     var diffs_a = diff_main(text1_a, text2_a, checklines, deadline);
     var diffs_b = diff_main(text1_b, text2_b, checklines, deadline);
     // Merge the results.
-    return diffs_a.concat(
-      [new Diff(DIFF_EQUAL, mid_common)],
-      diffs_b
-    );
+    return diffs_a.concat([new Diff(DIFF_EQUAL, mid_common)], diffs_b);
   }
 
   if (checklines && text1.length > 100 && text2.length > 100) {
@@ -305,12 +295,7 @@ export const diff_lineMode_ = function (
             count_delete + count_insert
           );
           pointer = pointer - count_delete - count_insert;
-          var subDiff = diff_main(
-            text_delete,
-            text_insert,
-            false,
-            deadline
-          );
+          var subDiff = diff_main(text_delete, text_insert, false, deadline);
           for (var j = subDiff.length - 1; j >= 0; j--) {
             diffs.splice(pointer, 0, subDiff[j]);
           }
@@ -339,7 +324,11 @@ export const diff_lineMode_ = function (
  * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
  * @private
  */
-export const diff_bisect_ = function (text1: string, text2: string, deadline: number) {
+export const diff_bisect_ = function (
+  text1: string,
+  text2: string,
+  deadline: number
+) {
   // Cache the text lengths to prevent multiple calls.
   var text1_length = text1.length;
   var text2_length = text2.length;
@@ -453,10 +442,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
   }
   // Diff took too long and hit the deadline or
   // number of diffs equals number of characters, no commonality at all.
-  return [
-    new Diff(DIFF_DELETE, text1),
-    new Diff(DIFF_INSERT, text2),
-  ];
+  return [new Diff(DIFF_DELETE, text1), new Diff(DIFF_INSERT, text2)];
 };
 
 /**
@@ -470,7 +456,13 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
  * @private
  */
- export const diff_bisectSplit_ = function (text1: string, text2: string, x: number, y: number, deadline: number) {
+export const diff_bisectSplit_ = function (
+  text1: string,
+  text2: string,
+  x: number,
+  y: number,
+  deadline: number
+) {
   var text1a = text1.substring(0, x);
   var text2a = text2.substring(0, y);
   var text1b = text1.substring(x);
@@ -494,7 +486,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  *     The zeroth element of the array of unique strings is intentionally blank.
  * @private
  */
-  export const diff_linesToChars_ = function (text1: string, text2: string) {
+export const diff_linesToChars_ = function (text1: string, text2: string) {
   var lineArray = []; // e.g. lineArray[4] == 'Hello\n'
   var lineHash: any = {}; // e.g. lineHash['Hello\n'] == 4
 
@@ -562,7 +554,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<string>} lineArray Array of unique strings.
  * @private
  */
-  export const diff_charsToLines_ = function (diffs: Diff[], lineArray: string[]) {
+export const diff_charsToLines_ = function (
+  diffs: Diff[],
+  lineArray: string[]
+) {
   for (var i = 0; i < diffs.length; i++) {
     var chars = diffs[i].text;
     var text = [];
@@ -571,6 +566,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
     }
     diffs[i].text = text.join("");
   }
+  return diffs;
 };
 
 /**
@@ -580,7 +576,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {number} The number of characters common to the start of each
  *     string.
  */
-  export const diff_commonPrefix = function (text1: string, text2: string): number {
+export const diff_commonPrefix = function (
+  text1: string,
+  text2: string
+): number {
   // Quick check for common null cases.
   if (!text1 || !text2 || text1.charAt(0) != text2.charAt(0)) {
     return 0;
@@ -612,7 +611,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {string} text2 Second string.
  * @return {number} The number of characters common to the end of each string.
  */
-  export const diff_commonSuffix = function (text1: string, text2: string): number {
+export const diff_commonSuffix = function (
+  text1: string,
+  text2: string
+): number {
   // Quick check for common null cases.
   if (
     !text1 ||
@@ -650,7 +652,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  *     string and the start of the second string.
  * @private
  */
-  export const diff_commonOverlap_ = function (text1: string, text2: string): number {
+export const diff_commonOverlap_ = function (
+  text1: string,
+  text2: string
+): number {
   // Cache the text lengths to prevent multiple calls.
   var text1_length = text1.length;
   var text2_length = text2.length;
@@ -703,7 +708,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  *     text2 and the common middle.  Or null if there was no match.
  * @private
  */
-  export const diff_halfMatch_ = function (text1: string, text2: string): string[] | null {
+export const diff_halfMatch_ = function (
+  text1: string,
+  text2: string
+): string[] | null {
   if (diff_match_patch_defaults.Diff_Timeout <= 0) {
     // Don't risk returning a non-optimal diff if we have unlimited time.
     return null;
@@ -810,7 +818,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * Reduce the number of edits by eliminating semantically trivial equalities.
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  */
-  export const diff_cleanupSemantic = function (diffs: Diff[]) {
+export const diff_cleanupSemantic = function (diffs: Diff[]) {
   var changes = false;
   var equalities = []; // Stack of indices where equalities are found.
   var equalitiesLength = 0; // Keeping our own length var is faster in JS.
@@ -903,10 +911,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
           diffs.splice(
             pointer,
             0,
-            new Diff(
-              DIFF_EQUAL,
-              insertion.substring(0, overlap_length1)
-            )
+            new Diff(DIFF_EQUAL, insertion.substring(0, overlap_length1))
           );
           diffs[pointer - 1].text = deletion.substring(
             0,
@@ -925,10 +930,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
           diffs.splice(
             pointer,
             0,
-            new Diff(
-              DIFF_EQUAL,
-              deletion.substring(0, overlap_length2)
-            )
+            new Diff(DIFF_EQUAL, deletion.substring(0, overlap_length2))
           );
           diffs[pointer - 1].op = DIFF_INSERT;
           diffs[pointer - 1].text = insertion.substring(
@@ -952,7 +954,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  */
-  export const diff_cleanupSemanticLossless = function (diffs: Diff[]) {
+export const diff_cleanupSemanticLossless = function (diffs: Diff[]) {
   /**
    * Given two strings, compute a score representing whether the internal
    * boundary falls on logical boundaries.
@@ -978,18 +980,12 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
     var char2 = two.charAt(0);
     var nonAlphaNumeric1 = char1.match(nonAlphaNumericRegex_);
     var nonAlphaNumeric2 = char2.match(nonAlphaNumericRegex_);
-    var whitespace1 =
-      nonAlphaNumeric1 && char1.match(whitespaceRegex_);
-    var whitespace2 =
-      nonAlphaNumeric2 && char2.match(whitespaceRegex_);
-    var lineBreak1 =
-      whitespace1 && char1.match(linebreakRegex_);
-    var lineBreak2 =
-      whitespace2 && char2.match(linebreakRegex_);
-    var blankLine1 =
-      lineBreak1 && one.match(blanklineEndRegex_);
-    var blankLine2 =
-      lineBreak2 && two.match(blanklineStartRegex_);
+    var whitespace1 = nonAlphaNumeric1 && char1.match(whitespaceRegex_);
+    var whitespace2 = nonAlphaNumeric2 && char2.match(whitespaceRegex_);
+    var lineBreak1 = whitespace1 && char1.match(linebreakRegex_);
+    var lineBreak2 = whitespace2 && char2.match(linebreakRegex_);
+    var blankLine1 = lineBreak1 && one.match(blanklineEndRegex_);
+    var blankLine2 = lineBreak2 && two.match(blanklineStartRegex_);
 
     if (blankLine1 || blankLine2) {
       // Five points for blank lines.
@@ -1076,17 +1072,17 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
 };
 
 // Define some regex patterns for matching boundaries.
-  export const nonAlphaNumericRegex_ = /[^a-zA-Z0-9]/;
-   export const whitespaceRegex_ = /\s/;
- export const linebreakRegex_ = /[\r\n]/;
-  export const blanklineEndRegex_ = /\n\r?\n$/;
-  export const blanklineStartRegex_ = /^\r?\n\r?\n/;
+export const nonAlphaNumericRegex_ = /[^a-zA-Z0-9]/;
+export const whitespaceRegex_ = /\s/;
+export const linebreakRegex_ = /[\r\n]/;
+export const blanklineEndRegex_ = /\n\r?\n$/;
+export const blanklineStartRegex_ = /^\r?\n\r?\n/;
 
 /**
  * Reduce the number of edits by eliminating operationally trivial equalities.
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  */
-  export const diff_cleanupEfficiency = function (diffs: Diff[]) {
+export const diff_cleanupEfficiency = function (diffs: Diff[]) {
   var changes = false;
   var equalities = []; // Stack of indices where equalities are found.
   var equalitiesLength = 0; // Keeping our own length var is faster in JS.
@@ -1177,7 +1173,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * Any edit section can move as long as it doesn't cross an equality.
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  */
-  export const diff_cleanupMerge = function (diffs: Diff[]) {
+export const diff_cleanupMerge = function (diffs: Diff[]) {
   // Add a dummy entry at the end.
   diffs.push(new Diff(DIFF_EQUAL, ""));
   var pointer = 0;
@@ -1216,10 +1212,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
                 diffs.splice(
                   0,
                   0,
-                  new Diff(
-                    DIFF_EQUAL,
-                    text_insert.substring(0, commonlength)
-                  )
+                  new Diff(DIFF_EQUAL, text_insert.substring(0, commonlength))
                 );
                 pointer++;
               }
@@ -1246,19 +1239,11 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
           pointer -= count_delete + count_insert;
           diffs.splice(pointer, count_delete + count_insert);
           if (text_delete.length) {
-            diffs.splice(
-              pointer,
-              0,
-              new Diff(DIFF_DELETE, text_delete)
-            );
+            diffs.splice(pointer, 0, new Diff(DIFF_DELETE, text_delete));
             pointer++;
           }
           if (text_insert.length) {
-            diffs.splice(
-              pointer,
-              0,
-              new Diff(DIFF_INSERT, text_insert)
-            );
+            diffs.splice(pointer, 0, new Diff(DIFF_INSERT, text_insert));
             pointer++;
           }
           pointer++;
@@ -1304,7 +1289,8 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
             0,
             diffs[pointer].text.length - diffs[pointer - 1].text.length
           );
-        diffs[pointer + 1].text = diffs[pointer - 1].text + diffs[pointer + 1].text;
+        diffs[pointer + 1].text =
+          diffs[pointer - 1].text + diffs[pointer + 1].text;
         diffs.splice(pointer - 1, 1);
         changes = true;
       } else if (
@@ -1336,7 +1322,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {number} loc Location within text1.
  * @return {number} Location within text2.
  */
-  export const diff_xIndex = function (diffs: Diff[], loc: number): number {
+export const diff_xIndex = function (diffs: Diff[], loc: number): number {
   var chars1 = 0;
   var chars2 = 0;
   var last_chars1 = 0;
@@ -1371,7 +1357,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  * @return {string} HTML representation.
  */
-  export const diff_prettyHtml = function (diffs: Diff[]): string {
+export const diff_prettyHtml = function (diffs: Diff[]): string {
   var html = [];
   var pattern_amp = /&/g;
   var pattern_lt = /</g;
@@ -1405,10 +1391,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  * @return {string} Source text.
  */
-  export const diff_text1 = function (diffs: Diff[] | undefined): string {
-   if (!diffs) {
-     throw Error("Undefined")
-   }
+export const diff_text1 = function (diffs: Diff[] | undefined): string {
+  if (!diffs) {
+    throw Error("Undefined");
+  }
   var text = [];
   for (var x = 0; x < diffs.length; x++) {
     if (diffs[x].op !== DIFF_INSERT) {
@@ -1423,10 +1409,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  * @return {string} Destination text.
  */
-  export const diff_text2 = function (diffs: Diff[] | undefined): string {
-   if (!diffs) {
-     throw new Error("Undefined")
-   }
+export const diff_text2 = function (diffs: Diff[] | undefined): string {
+  if (!diffs) {
+    throw new Error("Undefined");
+  }
   var text = [];
   for (var x = 0; x < diffs.length; x++) {
     if (diffs[x].op !== DIFF_DELETE) {
@@ -1442,7 +1428,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  * @return {number} Number of changes.
  */
-  export const diff_levenshtein = function (diffs: Diff[]) {
+export const diff_levenshtein = function (diffs: Diff[]) {
   var levenshtein = 0;
   var insertions = 0;
   var deletions = 0;
@@ -1476,7 +1462,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  * @return {string} Delta text.
  */
-  export const diff_toDelta = function (diffs: Diff[]) {
+export const diff_toDelta = function (diffs: Diff[]) {
   var text = [];
   for (var x = 0; x < diffs.length; x++) {
     switch (diffs[x].op) {
@@ -1502,7 +1488,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
  * @throws {!Error} If invalid input.
  */
-  export const diff_fromDelta = function (text1: string, delta: string): Diff[] {
+export const diff_fromDelta = function (text1: string, delta: string): Diff[] {
   var diffs = [];
   var diffsLength = 0; // Keeping our own length var is faster in JS.
   var pointer = 0; // Cursor in text1
@@ -1514,10 +1500,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
     switch (tokens[x].charAt(0)) {
       case "+":
         try {
-          diffs[diffsLength++] = new Diff(
-            DIFF_INSERT,
-            decodeURI(param)
-          );
+          diffs[diffsLength++] = new Diff(DIFF_INSERT, decodeURI(param));
         } catch (ex) {
           // Malformed URI sequence.
           throw new Error("Illegal escape in diff_fromDelta: " + param);
@@ -1568,7 +1551,11 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {number} loc The location to search around.
  * @return {number} Best match index or -1.
  */
-  export const match_main = function (text: string, pattern: string, loc: number): number {
+export const match_main = function (
+  text: string,
+  pattern: string,
+  loc: number
+): number {
   // Check for null inputs.
   if (text == null || pattern == null || loc == null) {
     throw new Error("Null input. (match_main)");
@@ -1599,7 +1586,11 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {number} Best match index or -1.
  * @private
  */
-  export const match_bitap_ = function (text: string, pattern: string, loc: number): number {
+export const match_bitap_ = function (
+  text: string,
+  pattern: string,
+  loc: number
+): number {
   if (pattern.length > diff_match_patch_defaults.Match_MaxBits) {
     throw new Error("Pattern too long for this browser.");
   }
@@ -1718,7 +1709,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {!Object} Hash of character locations.
  * @private
  */
-  export const match_alphabet_ = function (pattern: string) {
+export const match_alphabet_ = function (pattern: string) {
   var s: any = {};
   for (var i = 0; i < pattern.length; i++) {
     s[pattern.charAt(i)] = 0;
@@ -1738,7 +1729,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {string} text Source text.
  * @private
  */
-  export const patch_addContext_ = function (patch: any, text: string) {
+export const patch_addContext_ = function (patch: any, text: string) {
   if (text.length == 0) {
     return;
   }
@@ -1752,7 +1743,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
   // matches are found, increase the pattern length.
   while (
     text.indexOf(pattern) != text.lastIndexOf(pattern) &&
-    pattern.length < diff_match_patch_defaults.Match_MaxBits - diff_match_patch_defaults.Patch_Margin - diff_match_patch_defaults.Patch_Margin
+    pattern.length <
+      diff_match_patch_defaults.Match_MaxBits -
+        diff_match_patch_defaults.Patch_Margin -
+        diff_match_patch_defaults.Patch_Margin
   ) {
     padding += diff_match_patch_defaults.Patch_Margin;
     pattern = text.substring(
@@ -1807,7 +1801,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * for text1 to text2 (method 4) or undefined (methods 1,2,3).
  * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
  */
-  export const patch_make = function (a: any, opt_b: any, opt_c: any) {
+export const patch_make = function (a: any, opt_b: any, opt_c: any) {
   var text1, diffs;
   if (
     typeof a == "string" &&
@@ -1881,7 +1875,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
     switch (diff_type) {
       case DIFF_INSERT:
         if (!patch.diffs) {
-          throw Error("Out of range")
+          throw Error("Out of range");
         }
         patch.diffs[patchDiffLength++] = diffs[x];
         patch.length2 += diff_text.length;
@@ -1892,7 +1886,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
         break;
       case DIFF_DELETE:
         if (!patch.diffs) {
-          throw Error("Out of range")
+          throw Error("Out of range");
         }
         patch.length1 += diff_text.length;
         patch.diffs[patchDiffLength++] = diffs[x];
@@ -1902,7 +1896,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
         break;
       case DIFF_EQUAL:
         if (!patch.diffs) {
-          throw Error("Out of range")
+          throw Error("Out of range");
         }
         if (
           diff_text.length <= 2 * diff_match_patch_defaults.Patch_Margin &&
@@ -1913,7 +1907,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
           patch.diffs[patchDiffLength++] = diffs[x];
           patch.length1 += diff_text.length;
           patch.length2 += diff_text.length;
-        } else if (diff_text.length >= 2 * diff_match_patch_defaults.Patch_Margin) {
+        } else if (
+          diff_text.length >=
+          2 * diff_match_patch_defaults.Patch_Margin
+        ) {
           // Time for a new patch.
           if (patchDiffLength) {
             patch_addContext_(patch, prepatch_text);
@@ -1953,7 +1950,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
  * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
  */
-  export const patch_deepCopy = function (patches: patch_obj[]) {
+export const patch_deepCopy = function (patches: patch_obj[]) {
   // Making deep copies is hard in JavaScript.
   var patchesCopy = [];
   for (var x = 0; x < patches.length; x++) {
@@ -1961,13 +1958,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
     var patchCopy = new patch_obj();
     patchCopy.diffs = [];
     if (!patch.diffs) {
-      throw new Error("Out of range")
+      throw new Error("Out of range");
     }
     for (var y = 0; y < patch.diffs.length; y++) {
-      patchCopy.diffs[y] = new Diff(
-        patch.diffs[y].op,
-        patch.diffs[y].text
-      );
+      patchCopy.diffs[y] = new Diff(patch.diffs[y].op, patch.diffs[y].text);
     }
     patchCopy.start1 = patch.start1;
     patchCopy.start2 = patch.start2;
@@ -1986,7 +1980,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {!Array.<string|!Array.<boolean>>} Two element Array, containing the
  *      new text and an array of boolean values.
  */
-  export const patch_apply = function (patches: patch_obj[], text: string) {
+export const patch_apply = function (patches: patch_obj[], text: string) {
   if (patches.length == 0) {
     return [text, []];
   }
@@ -2007,7 +2001,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
   for (var x = 0; x < patches.length; x++) {
     var expected_loc = patches[x].start2 + delta;
     if (!patches[x].diffs) {
-      throw Error("Out of range")
+      throw Error("Out of range");
     }
     var text1 = diff_text1(patches[x].diffs);
     var start_loc;
@@ -2023,7 +2017,9 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
       if (start_loc != -1) {
         end_loc = match_main(
           text,
-          text1.substring(text1.length - diff_match_patch_defaults.Match_MaxBits),
+          text1.substring(
+            text1.length - diff_match_patch_defaults.Match_MaxBits
+          ),
           expected_loc + text1.length - diff_match_patch_defaults.Match_MaxBits
         );
         if (end_loc == -1 || start_loc >= end_loc) {
@@ -2047,7 +2043,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
       if (end_loc == -1) {
         text2 = text.substring(start_loc, start_loc + text1.length);
       } else {
-        text2 = text.substring(start_loc, end_loc + diff_match_patch_defaults.Match_MaxBits);
+        text2 = text.substring(
+          start_loc,
+          end_loc + diff_match_patch_defaults.Match_MaxBits
+        );
       }
       if (text1 == text2) {
         // Perfect match, just shove the replacement text in.
@@ -2108,7 +2107,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
  * @return {string} The padding string added to each side.
  */
-  export const patch_addPadding = function (patches: patch_obj[]) {
+export const patch_addPadding = function (patches: patch_obj[]) {
   var paddingLength = diff_match_patch_defaults.Patch_Margin;
   var nullPadding = "";
   for (var x = 1; x <= paddingLength; x++) {
@@ -2172,10 +2171,10 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * Intended to be called only from within patch_apply.
  * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
  */
-  export const patch_splitMax = function (patches: patch_obj[]) {
-   if (!patches) {
-     patches = [];
-   }
+export const patch_splitMax = function (patches: patch_obj[]) {
+  if (!patches) {
+    patches = [];
+  }
   var patch_size = diff_match_patch_defaults.Match_MaxBits;
   for (var x = 0; x < patches.length; x++) {
     if (patches[x].length1 <= patch_size) {
@@ -2258,7 +2257,9 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
       }
       // Compute the head context for the next patch.
       precontext = diff_text2(patch.diffs);
-      precontext = precontext.substring(precontext.length - diff_match_patch_defaults.Patch_Margin);
+      precontext = precontext.substring(
+        precontext.length - diff_match_patch_defaults.Patch_Margin
+      );
       // Append the end context for this patch.
       var postcontext = diff_text1(bigpatch.diffs).substring(
         0,
@@ -2292,7 +2293,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
  * @return {string} Text representation of patches.
  */
-  export const patch_toText = function (patches: patch_obj[]) {
+export const patch_toText = function (patches: patch_obj[]) {
   var text = [];
   for (var x = 0; x < patches.length; x++) {
     text[x] = patches[x];
@@ -2306,7 +2307,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
  * @throws {!Error} If invalid input.
  */
-  export const patch_fromText = function (textline: string) {
+export const patch_fromText = function (textline: string) {
   var patches: patch_obj[] = [];
   if (!textline) {
     return patches;
@@ -2383,8 +2384,8 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
  * Class representing one patch operation.
  * @constructor
  */
- class patch_obj {
-   public toString() {
+class patch_obj {
+  public toString() {
     var coords1, coords2;
     if (this.length1 === 0) {
       coords1 = this.start1 + ",0";
@@ -2403,9 +2404,9 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
     var text = ["@@ -" + coords1 + " +" + coords2 + " @@\n"];
     var op;
     // Escape the body of the patch with %xx notation.
-      if (!this.diffs) {
-        throw Error("Out of range")
-      }
+    if (!this.diffs) {
+      throw Error("Out of range");
+    }
     for (var x = 0; x < this.diffs.length; x++) {
       switch (this.diffs[x].op) {
         case DIFF_INSERT:
@@ -2421,16 +2422,16 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
       text[x + 1] = op + encodeURI(this.diffs[x].text) + "\n";
     }
     return text.join("").replace(/%20/g, " ");
-   }
-   public diffs: Diff[] | undefined;
+  }
+  public diffs: Diff[] | undefined;
 
-   public start1: any;
+  public start1: any;
 
-   public start2: any;
+  public start2: any;
 
-   public length1: any;
+  public length1: any;
 
-   public length2: any;
+  public length2: any;
   // /** @type {!Array.<!diff_match_patch.Diff>} */
   // this.diffs = [];
   // /** @type {?number} */
@@ -2442,7 +2443,7 @@ export const diff_bisect_ = function (text1: string, text2: string, deadline: nu
   // /** @type {number} */
   // this.length2 = 0;
   constructor() {}
-};
+}
 
 /**
  * Emulate GNU diff's format.
