@@ -321,7 +321,7 @@ export default class CodeEditor {
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
-    console.log(symbols);
+    // console.log(symbols);
     if (symbols === []) {
       throw new Error("Error: No symbols");
     }

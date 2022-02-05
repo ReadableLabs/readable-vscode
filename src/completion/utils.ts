@@ -174,7 +174,6 @@ export const newFormatText = (
     if (!codeSplit[0].includes('"""')) {
       fullCode = " ".repeat(spaces) + '"""\n' + fullCode;
     }
-    // do the same for the end
     if (!codeSplit[codeSplit.length - 1].includes('"""')) {
       fullCode += " ".repeat(spaces === tabSize ? spaces : spaces) + '"""\n';
     }
@@ -185,7 +184,7 @@ export const newFormatText = (
   } else {
     // format the code with the correct indentation and add the comment header if needed.
     if (!codeSplit[0].includes("/**")) {
-      fullCode = " ".repeat(spaces) + "/**\n" + fullCode;
+      fullCode = 1 + " ".repeat(spaces) + "/**\n" + fullCode;
     }
     if (!codeSplit[codeSplit.length - 1].includes("*/")) {
       fullCode += " ".repeat(spaces + 1) + "*/\n";
