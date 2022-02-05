@@ -3,6 +3,7 @@ import { diff_match_patch, DIFF_EQUAL, DIFF_DELETE } from "diff-match-patch";
 import * as Git from "nodegit";
 import * as path from "path";
 import CodeEditor from "./CodeEditor";
+import { patienceDiff, patienceDiffPlus } from "./diff_match_patch/diff";
 
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
@@ -21,6 +22,7 @@ export default class CommentSyncProvider {
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
       this._path = e.added[0].uri.path;
     });
+    // this doesn't always work
     vscode.workspace.onWillSaveTextDocument((e) => {
       if (!this._document) {
         return;
@@ -30,16 +32,32 @@ export default class CommentSyncProvider {
         return;
       }
 
-      const diff = new diff_match_patch(); // start up a new task as to not delay saving
+      // const diff = new diff_match_patch(); // start up a new task as to not delay saving
       // const diffs = diff.diff_main(this._document, text);
-      const diffs = this.diff_linemode(this._document, text);
-      for (let i = 0; i < diffs.length; i++) {
-        if (diffs[i][0] !== DIFF_EQUAL) {
-          console.log(text.indexOf(diffs[i][1]));
-          if (diffs[i][0] === DIFF_DELETE) {
-            const textSplit = this._document.split("\n");
-          }
-          console.log(diffs[i]);
+      // const diffs = this.diff_linemode(this._document, text);
+      // for (let i = 0; i < diffs.length; i++) {
+      //   if (diffs[i][0] !== DIFF_EQUAL) {
+      //     console.log(text.indexOf(diffs[i][1]));
+      //     if (diffs[i][0] === DIFF_DELETE) {
+      //       const textSplit = this._document.split("\n");
+      //     }
+      //     console.log(diffs[i]);
+      //   }
+      // }
+
+      const diffs = patienceDiffPlus(
+        this._document.split("\n"),
+        text.split("\n")
+      );
+      if (diffs.lineCountDeleted === 0 || diffs.lineCountInserted === 0) {
+        return;
+      }
+      let foundLines = [];
+      for (let i = 0; i < diffs.lines.length; i++) {
+        if (diffs.lines[i].aIndex !== diffs.lines[i].bIndex) {
+          console.log("found");
+          console.log(diffs.lines[i]); // get the line + 1
+          foundLines.push({ type: diffs.lines[i] });
         }
       }
 

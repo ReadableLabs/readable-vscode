@@ -12,7 +12,9 @@ export const getLineNumber = (code: string[], currentLine: string) => {
       return true;
     }
   });
-  // this is a freaking line number
+  // this is a freaking line gamer play
+  // gaming epic gaming  part 11
+  // ok
   return lineNumber;
 };
 
