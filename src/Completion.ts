@@ -190,10 +190,17 @@ export const provideComments = async (
     // });
 
     console.log(fullCode);
-
-    const comments = document.lineAt(position).text.split("//");
-    let comment =
-      comments.length > 1 ? comments[comments.length - 1].trim() : null;
+    let comments = [];
+    let comment: string | null = "";
+    if (language === "python") {
+      comments = document.lineAt(position).text.split("#");
+      comment =
+        comments.length > 1 ? comments[comments.length - 1].trim() : null;
+    } else {
+      comments = document.lineAt(position).text.split("//");
+      comment =
+        comments.length > 1 ? comments[comments.length - 1].trim() : null;
+    }
     if (!comment) {
       comment = "";
     }

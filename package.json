@@ -10,9 +10,13 @@
     "color": "#041621",
     "theme": "dark"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ReadableLabs/readable"
+  },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -51,7 +55,7 @@
     }
   },
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {

@@ -16,7 +16,7 @@ export const registerOptions: vscode.QuickPickItem[] = [
 export const loginOptions: vscode.QuickPickItem[] = [
   {
     label: "$(mark-github)  GitHub",
-    detail: "Log in with GitHub.",
+    detail: "Log in with GitHub",
     picked: true,
   },
   {

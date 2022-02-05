@@ -57,26 +57,23 @@ export async function activate(context: vscode.ExtensionContext) {
             if (
               linePrefix.includes("#") &&
               position.character > line.trimLeft().indexOf("#")
-              // if the cursor is in a comment, return undefined
             ) {
               return new Promise<vscode.CompletionItem[] | undefined>(
-                (resolve, reject) => {
-                  setTimeout(async () => {
-                    let updatedText =
-                      vscode.window.activeTextEditor?.document.lineAt(
-                        position
-                      ).text;
-                    if (updatedText === line) {
-                      let comment = await provideComments(
-                        position,
-                        document,
-                        "python"
-                      );
-                      resolve(comment);
-                    } else {
-                      resolve(undefined);
-                    }
-                  }, 250);
+                async (resolve, reject) => {
+                  let updatedText =
+                    vscode.window.activeTextEditor?.document.lineAt(
+                      position
+                    ).text;
+                  if (updatedText === line) {
+                    let comment = await provideComments(
+                      position,
+                      document,
+                      "python"
+                    );
+                    resolve(comment);
+                  } else {
+                    resolve(undefined);
+                  }
                 }
               );
             } else {
@@ -230,7 +227,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("readable.insertComment", async (args) => {
       vscode.window.withProgress(
         {
-          title: "Generating a Comment",
+          title: "Readable: Generating Inline Comment",
           location: vscode.ProgressLocation.Notification,
           cancellable: true,
         },
@@ -242,8 +239,22 @@ export async function activate(context: vscode.ExtensionContext) {
                 resolve();
                 return;
               }
+              let fullCode = "";
+              if (args.language === "python") {
+                let fullCodeSplit = args.fullCode.split("\n");
+                fullCodeSplit.map((line: any) => {
+                  if (line.includes("#")) {
+                    fullCode += line.substring(0, line.indexOf("#") + 1) + "\n";
+                  } else {
+                    fullCode += line + "\n";
+                  }
+                });
+              } else {
+                fullCode = args.fullCode;
+              }
               let data = await generateAutoComplete(
-                args.fullCode,
+                fullCode,
+                // args.fullCode,
                 args.comment,
                 args.language,
                 args.accessToken
@@ -262,6 +273,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 let result = vscode.window.showWarningMessage(
                   "No comment was able to be generated."
                 );
+                resolve();
                 return;
               }
 

@@ -64,7 +64,7 @@ You can configure the following settings:
 
 ## [1.5.2]
 
-- Added login message showing how to use docstrings
+- Updated inline comment accuracy
 
 ### Contact
 

@@ -2,6 +2,10 @@
 
 ## [1.5.2]
 
+- Updated inline comment accuracy
+
+## [1.5.2]
+
 - Added login message showing how to use docstrings
 
 ## [1.5.1]
