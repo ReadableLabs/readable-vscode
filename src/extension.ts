@@ -157,73 +157,72 @@ export async function activate(context: vscode.ExtensionContext) {
       ","
     ),
 
-    vscode.languages.registerCompletionItemProvider(
-      [
-        { language: "javascript" },
-        { language: "typescript" },
-        { language: "cpp" },
-        { language: "csharp" },
-        { language: "php" },
-        { language: "java" },
-        { language: "javascriptreact" },
-        { language: "typescriptreact" },
-        { language: "php" },
-      ],
-      {
-        async provideCompletionItems(document, position, token, context) {
-          let isEnabled = vscode.workspace // get the configuration
-            .getConfiguration("readable")
-            .get<boolean>("enableAutoComplete");
-          if (!isEnabled || TrialHelper.TrialEnded) {
-            return;
-          }
+    // vscode.languages.registerCompletionItemProvider(
+    //   [
+    //     { language: "javascript" },
+    //     { language: "typescript" },
+    //     { language: "cpp" },
+    //     { language: "csharp" },
+    //     { language: "php" },
+    //     { language: "java" },
+    //     { language: "javascriptreact" },
+    //     { language: "typescriptreact" },
+    //     { language: "php" },
+    //   ],
+    //   {
+    //     async provideCompletionItems(document, position, token, context) {
+    //       let isEnabled = vscode.workspace // get the configuration
+    //         .getConfiguration("readable")
+    //         .get<boolean>("enableAutoComplete");
+    //       if (!isEnabled || TrialHelper.TrialEnded) {
+    //         return;
+    //       }
 
-          const linePrefix = document // get the line prefix
-            .lineAt(position)
-            .text.substring(0, position.character);
+    //       const linePrefix = document // get the line prefix
+    //         .lineAt(position)
+    //         .text.substring(0, position.character);
 
-          if (!linePrefix.endsWith("/**")) {
-            return undefined;
-          }
-          let language = codeEditor.getLanguageId();
-          return await provideDocstring(position, document, language);
-        },
-      },
-      "*"
-    ),
+    //       if (!linePrefix.endsWith("/**")) {
+    //         return undefined;
+    //       }
+    //       let language = codeEditor.getLanguageId();
+    //       return await provideDocstring(position, document, language);
+    //     },
+    //   },
+    //   "*"
+    // ),
 
-    vscode.languages.registerCompletionItemProvider(
-      [{ language: "python" }],
-      {
-        async provideCompletionItems(document, position, token, context) {
-          const isEnabled = vscode.workspace
-            .getConfiguration("readable")
-            .get<boolean>("enableAutoComplete");
-          if (!isEnabled || TrialHelper.TrialEnded) {
-            return;
-          }
+    // vscode.languages.registerCompletionItemProvider(
+    //   [{ language: "python" }],
+    //   {
+    //     async provideCompletionItems(document, position, token, context) {
+    //       const isEnabled = vscode.workspace
+    //         .getConfiguration("readable")
+    //         .get<boolean>("enableAutoComplete");
+    //       if (!isEnabled || TrialHelper.TrialEnded) {
+    //         return;
+    //       }
 
-          const linePrefix = document
-            .lineAt(position)
-            .text.substring(0, position.character);
+    //       const linePrefix = document
+    //         .lineAt(position)
+    //         .text.substring(0, position.character);
 
-          if (!linePrefix.endsWith('"""')) {
-            return;
-          }
+    //       if (!linePrefix.endsWith('"""')) {
+    //         return;
+    //       }
 
-          try {
-            return await provideDocstring(position, document, "python");
-          } catch (err: any) {
-            console.log(err);
-            vscode.window.showErrorMessage(err.message);
-          }
+    //       try {
+    //         return await provideDocstring(position, document, "python");
+    //       } catch (err: any) {
+    //         console.log(err);
+    //         vscode.window.showErrorMessage(err.message);
+    //       }
 
-          return undefined;
-        },
-      },
-      '"'
-    ),
-
+    //       return undefined;
+    //     },
+    //   },
+    //   '"'
+    // ),
     vscode.commands.registerCommand("readable.insertComment", async (args) => {
       vscode.window.withProgress(
         {
