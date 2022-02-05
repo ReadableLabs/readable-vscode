@@ -10,6 +10,14 @@ import { BASE_URL } from "../globals";
  * @param {string} accessToken - the access token of the user
  * @returns {Promise<any>} - the autocomplete data
  */
+/**
+ * Takes in a string of code and returns the autocomplete suggestions for that code.
+ * @param {string} fullCode - the code to get autocomplete suggestions for.
+ * @param {string} comment - the comment that the user is currently writing.
+ * @param {string} language - the language that the user is currently writing in.
+ * @param {string} accessToken - the access token for the user.
+ * @returns {Promise<any>} - the autocomplete suggestions for the code.
+ */
 export const generateAutoComplete = async (
   fullCode: string,
   comment: string,

@@ -178,7 +178,7 @@ export default class CodeEditor {
       throw new Error("Error: No active text editor");
     }
 
-    this._activeEditor.edit((editBuilder) => {
+    await this._activeEditor.edit((editBuilder) => {
       // insert the snippet
       editBuilder.insert(position, text);
     });

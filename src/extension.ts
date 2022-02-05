@@ -12,7 +12,7 @@ import { emailLogin } from "./authentication/EmailLogin";
 import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
-import { generateDocstring } from "./completion/generate";
+import { generateAutoComplete, generateDocstring } from "./completion/generate";
 import { newFormatText } from "./completion/utils";
 import { createSelection, removeSelections } from "./selectionTools";
 
@@ -129,24 +129,22 @@ export async function activate(context: vscode.ExtensionContext) {
               position.character > line.trimLeft().indexOf("//")
             ) {
               return new Promise<vscode.CompletionItem[] | undefined>(
-                (resolve, reject) => {
-                  setTimeout(async () => {
-                    let updatedText =
-                      vscode.window.activeTextEditor?.document.lineAt(
-                        position
-                      ).text;
-                    let language = codeEditor.getLanguageId();
-                    if (updatedText === line) {
-                      let comment = await provideComments(
-                        position,
-                        document,
-                        language
-                      );
-                      resolve(comment);
-                    } else {
-                      resolve(undefined);
-                    }
-                  }, 350);
+                async (resolve, reject) => {
+                  let updatedText =
+                    vscode.window.activeTextEditor?.document.lineAt(
+                      position
+                    ).text;
+                  let language = codeEditor.getLanguageId();
+                  if (updatedText === line) {
+                    let comment = await provideComments(
+                      position,
+                      document,
+                      language
+                    );
+                    resolve(comment);
+                  } else {
+                    resolve(undefined);
+                  }
                 }
               );
             } else {
@@ -228,6 +226,65 @@ export async function activate(context: vscode.ExtensionContext) {
       },
       '"'
     ),
+
+    vscode.commands.registerCommand("readable.insertComment", async (args) => {
+      vscode.window.withProgress(
+        {
+          title: "Generating a Comment",
+          location: vscode.ProgressLocation.Notification,
+          cancellable: true,
+        },
+        (progress, token) => {
+          const p = new Promise<void>(async (resolve, reject) => {
+            try {
+              console.log(args);
+              if (token.isCancellationRequested) {
+                resolve();
+                return;
+              }
+              let data = await generateAutoComplete(
+                args.fullCode,
+                args.comment,
+                args.language,
+                args.accessToken
+              );
+
+              if (token.isCancellationRequested) {
+                resolve();
+                return;
+              }
+              if (
+                data.trim() === "" ||
+                data.includes("<--") ||
+                data.includes("TODO")
+              ) {
+                // No comment was generated.
+                let result = vscode.window.showWarningMessage(
+                  "No comment was able to be generated."
+                );
+                return;
+              }
+
+              if (token.isCancellationRequested) {
+                resolve();
+                return;
+              }
+              await codeEditor.insertTextAtPosition(data.trim(), args.cursor);
+              console.log("inserted comment");
+              resolve();
+            } catch (err: any) {
+              if (err.message) {
+                vscode.window.showErrorMessage("An error has occurred");
+                vscode.window.showErrorMessage(err.message);
+              }
+              resolve();
+              console.log(err);
+            }
+          });
+          return p;
+        }
+      );
+    }),
 
     vscode.commands.registerCommand("readable.rightClickComment", async () => {
       // a test comment
@@ -474,7 +531,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  const sync = new CommentSyncProvider(codeEditor);
+  // const sync = new CommentSyncProvider(codeEditor);
   checkAccount();
   // await authProvider.checkAccount();
 

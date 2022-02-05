@@ -209,40 +209,56 @@ export const provideComments = async (
       )
       .trimRight();
 
-    let data = await generateAutoComplete(
-      fullCode,
-      comment,
-      language,
-      session.accessToken
-    );
-    // const { data } = await axios.post(
-    //   // send the code to the server
-    //   "https://api.readable.so/complete/autocomplete/",
-    //   {
-    //     full_code: full_code,
-    //     code: autoCode,
-    //     language: language,
-    //   },
-    //   {
-    //     headers: {
-    //       Authorization: `Token ${session.accessToken}`,
-    //     },
-    //   }
+    // let data = await generateAutoComplete(
+    //   fullCode,
+    //   comment,
+    //   language,
+    //   session.accessToken
     // );
-    if (data === "" || data.includes("<--") || data.includes("TODO")) {
-      // No comment was generated.
-      let result = vscode.window.showWarningMessage(
-        "No comment was able to be generated."
-      );
-      return [new vscode.CompletionItem("")];
-    }
+    // // const { data } = await axios.post(
+    // //   // send the code to the server
+    // //   "https://api.readable.so/complete/autocomplete/",
+    // //   {
+    // //     full_code: full_code,
+    // //     code: autoCode,
+    // //     language: language,
+    // //   },
+    // //   {
+    // //     headers: {
+    // //       Authorization: `Token ${session.accessToken}`,
+    // //     },
+    // //   }
+    // // );
+    // if (data === "" || data.includes("<--") || data.includes("TODO")) {
+    //   // No comment was generated.
+    //   let result = vscode.window.showWarningMessage(
+    //     "No comment was able to be generated."
+    //   );
+    //   return [new vscode.CompletionItem("")];
+    // }
 
     // create a completion item for the completion
     let completion = new vscode.CompletionItem(
-      data.trim(), // without spaces
+      // data.trim(), // without spaces
+      "...",
       vscode.CompletionItemKind.Text
     );
     completion.detail = "Readable";
+    completion.insertText = "";
+    completion.command = {
+      command: "readable.insertComment",
+      title: "Insert Comment",
+      arguments: [
+        {
+          cursor: position,
+          fullCode: fullCode,
+          comment: comment,
+          language: language,
+          accessToken: session.accessToken,
+        },
+      ],
+      tooltip: "Insert Comment",
+    };
     return [completion];
   } catch (err: any) {
     vscode.window.showErrorMessage(err.response);
