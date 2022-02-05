@@ -169,7 +169,6 @@ export const newFormatText = (
     }
   });
 
-  // add """ to the beginning of the code if it is not already there
   if (language === "python") {
     if (!codeSplit[0].includes('"""')) {
       fullCode = " ".repeat(spaces) + '"""\n' + fullCode;
@@ -182,9 +181,8 @@ export const newFormatText = (
       fullCode = " ".repeat(spaces) + "/// " + fullCode.trimLeft();
     }
   } else {
-    // format the code with the correct indentation and add the comment header if needed.
     if (!codeSplit[0].includes("/**")) {
-      fullCode = 1 + " ".repeat(spaces) + "/**\n" + fullCode;
+      fullCode = " ".repeat(spaces) + "/**\n" + fullCode;
     }
     if (!codeSplit[codeSplit.length - 1].includes("*/")) {
       fullCode += " ".repeat(spaces + 1) + "*/\n";

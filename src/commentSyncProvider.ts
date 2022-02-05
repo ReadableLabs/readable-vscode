@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
+import * as child_process from "child_process";
 import * as Diff from "diff";
-import { diff_match_patch, DIFF_EQUAL, DIFF_DELETE } from "diff-match-patch";
 import * as Git from "nodegit";
 import * as path from "path";
 import CodeEditor from "./CodeEditor";
@@ -20,6 +20,9 @@ export default class CommentSyncProvider {
       this._path = vscode.workspace.workspaceFolders[0].uri.path;
       console.log(this._path);
     }
+    vscode.window.onDidChangeActiveTextEditor((e) => {
+      this._document = this.getDocumentText();
+    });
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
       this._path = e.added[0].uri.path;
     });
@@ -56,9 +59,9 @@ export default class CommentSyncProvider {
       const diff = Diff.diffLines(this._document, text, {
         ignoreWhitespace: true,
       }); // get file name
-      const patch = Diff.createPatch("test3", this._document, text);
+      const patch = Diff.createPatch(e.document.fileName, this._document, text);
       let format = Diff.parsePatch(patch);
-      const linesChanged = [];
+      let linesChanged = [];
       let codePosition = 0;
       for (let i = 0; i < format[0].hunks.length; i++) {
         codePosition = format[0].hunks[i].newStart;
@@ -81,31 +84,24 @@ export default class CommentSyncProvider {
             if (!name) {
               return;
             }
-            console.log(name.name);
-            console.log(format[0].hunks[i].lines[k]);
-            console.log(k + codePosition);
+            let revision = child_process
+              .execSync("git rev-parse HEAD")
+              .toString()
+              .trim();
+
+            linesChanged.push({
+              file: e.document.fileName,
+              function: name.name,
+              last_updated: revision, // git rev-parse HEAD maybe
+              changes_count: 1,
+            });
+            // console.log(name.name);
+            // console.log(format[0].hunks[i].lines[k]);
+            // console.log(k + codePosition);
           }
         }
       }
-
-      // const diffs = patienceDiffPlus(
-      //   // check if file has changed to change document, activeEditor changed get new document
-      //   ["asdg"],
-      //   [""]
-      //   // this._document.split("\n"),
-      //   // text.split("\n")
-      // );
-      // if (diffs.lineCountDeleted === 0 || diffs.lineCountInserted === 0) {
-      //   return;
-      // }
-      // let foundLines = [];
-      // for (let i = 0; i < diffs.lines.length; i++) {
-      //   if (diffs.lines[i].aIndex !== diffs.lines[i].bIndex) {
-      //     console.log("found");
-      //     console.log(diffs.lines[i]); // get the line + 1
-      //     foundLines.push({ type: diffs.lines[i] });
-      //   }
-      // }
+      console.log(linesChanged);
 
       this._document = text;
       console.log("saving");
@@ -125,17 +121,6 @@ export default class CommentSyncProvider {
         )
       )
     );
-  }
-
-  public diff_linemode(text1: string, text2: string) {
-    const dmp = new diff_match_patch();
-    const a = dmp.diff_linesToChars_(text1, text2);
-    var lineText1 = a.chars1;
-    var lineText2 = a.chars2;
-    var lineArray = a.lineArray;
-    var diffs = dmp.diff_main(lineText1, lineText2, false);
-    dmp.diff_charsToLines_(diffs, lineArray);
-    return diffs;
   }
 
   public checkGit() {}
