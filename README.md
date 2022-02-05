@@ -1,51 +1,55 @@
-# Save Time Writing Comments With Ai Comment Suggestions
+# Save Time Writing Comments with AI
 
-Readable is a VSCode extension which writes comments for you. Using **GPT-3**, you're able to get detailed comment suggestions through intellisense.
+Readable is a VSCode extension which generates comments using **GPT-3**. It's fast, reliable, consistent, and saves you loads of time.
 
-![Readable Demo](https://github.com/Nevin1901/Readable-Assets/blob/main/final_video.gif?raw=true)
+![Readable Demo](https://github.com/ReadableLabs/readable/blob/main/output.gif?raw=true)
 
-Just start writing a comment, and get a suggestion.
+## AI Generated Comments and Docstrings
 
-#
+Readable generates both docstring and inline comments.
 
-## Ai Generated Comments and Docstrings
-
-![Docstring Demo](./assets/docstring_demo.gif)
-
-Readable generates both inline comments, as well as docstrings.
-
-## Works in 7 Languages
+## Works in 9 Languages
 
 - Typescript
 - Javascript
+- JSX/TSX
 - Python
+- C
 - C#
 - C++
 - Java
 - PHP
 
+## Docstring Comments
+
+To generate a docstring press **ctrl '** (**cmd '** on Mac) while your cursor is in any function OR if the function is highlighted.
+
+## Inline Comments
+
+To generate an inline comment type "**//**" for C-Sytle languages. For python type **#**. After hitting space, press **tab** to generate an inline comment. Optionally, type a few words after **//** to generate a more specific comment.
+
+## Pricing
+
+Start Readable with a 15 day free trial. After, purchase Readable for only $19.99 a year.
+
 ## Privacy
 
-At Readable, we do not store your code, or use it to train any of our models.
+Readable does not store or use your code to train any of its models.
 
-Note: As we use GPT-3, OpenAi may store your code, so make sure to read their privacy policy if you are unsure.
+Note: Read OpenAI's privacy policy if you are unsure about what they do.
 
 ## Getting Set Up
 
 Thanks for trying out Readable!
 
-When you first install Readable, you will be prompted to log in or create an account. Readable supports two forms of authentication: GitHub Login and Email.
-
-Once you log in with GitHub or create an account, comment autocomplete will be active. In order to get a comment suggestion, just type "//" on languages with C-Style comments, or "#" on Python.
+When you first install Readable, you will be prompted to log in or create an account. Readable supports two forms of authentication: GitHub login and email.
 
 If you would like to enable/disable comment suggestions, then you can run "Readable: Enable Comment Suggestions", or "Readable: Disable Comment Suggestions" via the command palette.
-
-NOTE: Readable tries to mimick the style of your current comments, so if you want a specific "style" of comments, then all you have to do is document your code to give Readable examples to choose from.
 
 ## Requirements
 
 - VSCode
-- An internet connection whenever you want comment autocomplete
+- An internet connection to generate comments
 
 ## Extension Settings
 
@@ -55,14 +59,16 @@ You can configure the following settings:
 
 ## Known Issues
 
-When pressing space after typing //, you do not get a comment suggestion. The way VSCode handles intellisense is the reason this happens.
+- Generate docstring (**ctrl + '**) on c# code does not work because the c# extension for VSCode has not been updated to work with the latest dotnet.
 
 ## Release Notes
 
-See [CHANGELOG.md](/CHANGELOG.md)
+## [1.5.4]
+
+- Fixed bugs
 
 ### Contact
 
-Please email support@readable.so for any questions you may have about the extension. We read all emails, and will get back to you as soon as possible.
+Feel free to email support@readable.so for any questions/comments you may have about Readable. The team reads all emails and will get back to you ASAP.
 
-2021, Puri Chapman Software
+2022, Puri Chapman Software LLC
