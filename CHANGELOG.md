@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.5.4]
+
+- Fixed bugs
+
+## [1.5.3]
+
+- Added three dot comments
+
 ## [1.5.2]
 
 - Updated inline comment accuracy

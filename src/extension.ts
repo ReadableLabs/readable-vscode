@@ -465,26 +465,27 @@ export async function activate(context: vscode.ExtensionContext) {
         status.updateStatusBar();
       }, 500);
     }),
-    vscode.commands.registerCommand("readable.giveFeedback", async () => {
-      let choice = await vscode.window.showInformationMessage(
-        "Readable: Found a bug or have a feature request? Tell us.",
-        // "Notice something wrong about Readable? Tell us!",
-        "Send Feedback"
-      );
-      if (!choice) {
-        return;
-      }
-      if (choice === "Send Feedback") {
-        const feedback = await vscode.window.showInputBox({
-          ignoreFocusOut: true,
-          placeHolder: "Feedback",
-          prompt: "Enter Feedback:",
-        });
-        if (!feedback) {
-          return;
-        }
-      }
-    }),
+
+    // vscode.commands.registerCommand("readable.giveFeedback", async () => {
+    //   let choice = await vscode.window.showInformationMessage(
+    //     "Readable: Found a bug or have a feature request? Tell us.",
+    //     // "Notice something wrong about Readable? Tell us!",
+    //     "Send Feedback"
+    //   );
+    //   if (!choice) {
+    //     return;
+    //   }
+    //   if (choice === "Send Feedback") {
+    //     const feedback = await vscode.window.showInputBox({
+    //       ignoreFocusOut: true,
+    //       placeHolder: "Feedback",
+    //       prompt: "Enter Feedback:",
+    //     });
+    //     if (!feedback) {
+    //       return;
+    //     }
+    //   }
+    // }),
 
     vscode.commands.registerCommand("readable.version", async () => {
       await createSelection(
