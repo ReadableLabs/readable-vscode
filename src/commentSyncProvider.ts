@@ -4,7 +4,6 @@ import * as Diff from "diff";
 import * as Git from "nodegit";
 import * as path from "path";
 import CodeEditor from "./CodeEditor";
-import { patienceDiff, patienceDiffPlus } from "./diff_match_patch/diff";
 
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
