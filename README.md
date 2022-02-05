@@ -26,7 +26,7 @@ To generate a docstring press **ctrl '** (**cmd '** on Mac) while your cursor is
 
 ## Inline Comments
 
-To generate an inline comment type "**//**" for C-Sytle languages. For python type **#**. After hitting space, press **tab** to generate an inline comment. Optionally, type a few words after **//** to generate a more specific comment.
+To generate an inline comment type **//** for C-Sytle languages. For python type **#**. After hitting space, press **tab** to generate an inline comment. Optionally, type a few words after **//** to generate a more specific comment.
 
 ## Pricing
 

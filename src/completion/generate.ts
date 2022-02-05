@@ -26,7 +26,6 @@ export const generateAutoComplete = async (
 ) => {
   try {
     const { data } = await axios.post(
-      // the full code to be completed
       BASE_URL + "/complete/autocomplete/",
       {
         full_code: fullCode,
@@ -81,6 +80,8 @@ export const generateDocstring = async (
     );
     return data;
   } catch (err: any) {
+    // a comment
+    // another comment
     vscode.window.showErrorMessage(
       "Error: Network error in docstring http request"
     );

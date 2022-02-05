@@ -60,7 +60,12 @@ export default class CommentSyncProvider {
       }); // get file name
       const patch = Diff.createPatch(e.document.fileName, this._document, text);
       let format = Diff.parsePatch(patch);
-      let linesChanged = [];
+      let linesChanged: {
+        file: string;
+        function: string;
+        last_updated: string;
+        changes_count: number;
+      }[] = [];
       let codePosition = 0;
       for (let i = 0; i < format[0].hunks.length; i++) {
         codePosition = format[0].hunks[i].newStart;
@@ -88,15 +93,40 @@ export default class CommentSyncProvider {
               .toString()
               .trim();
 
-            linesChanged.push({
-              file: e.document.fileName,
-              function: name.name,
-              last_updated: revision, // git rev-parse HEAD maybe
-              changes_count: 1,
+            let fileName = e.document.fileName;
+
+            let index = linesChanged.findIndex((e) => {
+              if (
+                e.file === fileName &&
+                e.function === (name as any).name &&
+                e.last_updated === revision
+              ) {
+                return true;
+              } else {
+                return false;
+              }
             });
-            // console.log(name.name);
-            // console.log(format[0].hunks[i].lines[k]);
-            // console.log(k + codePosition);
+
+            if (index !== -1) {
+              linesChanged[index].changes_count += 1;
+            } else {
+              linesChanged.push({
+                file: e.document.fileName,
+                function: name.name,
+                last_updated: revision, // git rev-parse HEAD maybe
+                changes_count: 1,
+              });
+            }
+
+            // linesChanged.push({
+            //   file: e.document.fileName,
+            //   function: name.name,
+            //   last_updated: revision, // git rev-parse HEAD maybe
+            //   changes_count: 1,
+            // });
+            console.log(name.name);
+            console.log(format[0].hunks[i].lines[k]);
+            console.log(k + codePosition);
           }
         }
       }

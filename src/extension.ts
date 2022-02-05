@@ -226,7 +226,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("readable.insertComment", async (args) => {
       vscode.window.withProgress(
         {
-          title: "Readable: Generating Inline Comment",
+          title: "Readable: Generating an Inline Comment",
           location: vscode.ProgressLocation.Notification,
           cancellable: true,
         },
@@ -543,7 +543,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // const sync = new CommentSyncProvider(codeEditor);
+  const sync = new CommentSyncProvider(codeEditor);
   checkAccount();
   // await authProvider.checkAccount();
 
