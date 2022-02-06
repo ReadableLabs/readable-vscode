@@ -107,7 +107,7 @@ export default class CommentSyncProvider {
       console.log(linesChanged);
 
       this._document = text;
-      this.commitToFile();
+      this.commitToFile(linesChanged);
       console.log("saving");
     });
   }
@@ -126,7 +126,7 @@ export default class CommentSyncProvider {
         }
       });
       if (index !== -1) {
-        allChanges[index].changes_count += 1;
+        allChanges[index].changes_count += change.changes_count;
       } else {
         allChanges.push(change);
       }
@@ -134,7 +134,7 @@ export default class CommentSyncProvider {
     return allChanges;
   }
 
-  public commitToFile() {
+  public commitToFile(newChanges: IChange[]) {
     try {
       if (vscode.workspace.workspaceFolders) {
         const sync = path.join(
@@ -148,7 +148,9 @@ export default class CommentSyncProvider {
         } else {
           fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
         }
-        fileData.map((item: IChange) => {}); // find the index and do all of that stuff
+        let updatedChanges = this.syncWithNewChanges(fileData, newChanges);
+        fs.writeFileSync(sync, JSON.stringify(updatedChanges));
+        console.log(updatedChanges);
         console.log(fileData);
         console.log(
           path.join(
