@@ -317,23 +317,17 @@ export default class CodeEditor {
     return codeSymbol;
   }
 
-  public async getSymbolUnderCusor(
+  public async getSymbolFromPosition(
+    symbols: vscode.DocumentSymbol[],
     position: vscode.Position
-  ): Promise<vscode.DocumentSymbol | null> {
-    let symbols = await this.getAllSymbols();
-    // console.log(symbols);
-    if (symbols === []) {
-      throw new Error("Error: No symbols");
-    }
+  ) {
     for (let i = 0; i < symbols.length; i++) {
       if (
-        // if the symbol is in the current line
         symbols[i].range.start.line <= position.line &&
         symbols[i].range.end.line >= position.line
       ) {
         console.log("found symbol");
         if (
-          // if the symbol is a class and it is not on the same line as the cursor, then skip it.
           symbols[i].kind === vscode.SymbolKind.Class &&
           symbols[i].range.start.line !== position.line
         ) {
@@ -359,6 +353,17 @@ export default class CodeEditor {
       }
     }
     return null;
+  }
+
+  public async getSymbolUnderCusor(
+    position: vscode.Position
+  ): Promise<vscode.DocumentSymbol | null> {
+    let symbols = await this.getAllSymbols();
+    // console.log(symbols);
+    if (symbols === []) {
+      throw new Error("Error: No symbols");
+    }
+    return await this.getSymbolFromPosition(symbols, position);
   }
 
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {

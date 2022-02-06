@@ -2,8 +2,11 @@ import * as vscode from "vscode";
 import * as child_process from "child_process";
 import * as Diff from "diff";
 import * as Git from "nodegit";
+import * as fs from "fs";
 import * as path from "path";
-import CodeEditor from "./CodeEditor";
+import CodeEditor from "../CodeEditor";
+import { IChange } from "./types";
+import { fileURLToPath } from "url";
 
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
@@ -35,49 +38,33 @@ export default class CommentSyncProvider {
         return;
       }
 
-      // const diff = new diff_match_patch(); // start up a new task as to not delay saving
-      // const diffs = diff.diff_main(this._document, text);
-      // const diffs = this.diff_linemode(this._document, text);
-      // for (let i = 0; i < diffs.length; i++) {
-      //   if (diffs[i][0] !== DIFF_EQUAL) {
-      //     console.log(text.indexOf(diffs[i][1]));
-      //     if (diffs[i][0] === DIFF_DELETE) {
-      //       const textSplit = this._document.split("\n");
-      //     }
-      //     console.log(diffs[i]);
-      //   }
-      // }
-
-      // const dmp = new diff_match_patch();
-      // const diff = dmp.diff_main(this._document, text);
-      // dmp.diff_cleanupSemantic(diff);
-      // let patch_list = dmp.patch_make(this._document, text, diff); // do line by line patch insated of this
-      // let patch_text = dmp.patch_toText(patch_list);
-      // console.log(patch_text);
-
+      // get the diff between the current document and the new document
       const diff = Diff.diffLines(this._document, text, {
         ignoreWhitespace: true,
-      }); // get file name
+      });
       const patch = Diff.createPatch(e.document.fileName, this._document, text);
       let format = Diff.parsePatch(patch);
-      let linesChanged: {
-        file: string;
-        function: string;
-        last_updated: string;
-        changes_count: number;
-      }[] = [];
+
+      let linesChanged: IChange[] = [];
       let codePosition = 0;
+      let symbols = await this._codeEditor.getAllSymbols();
+
+      let revision = child_process
+        .execSync("git rev-parse HEAD")
+        .toString()
+        .trim();
+      // for each file changed (I think)
       for (let i = 0; i < format[0].hunks.length; i++) {
         codePosition = format[0].hunks[i].newStart;
+
+        // for each line changed in file
         for (let k = 0; k < format[0].hunks[i].lines.length; k++) {
           if (
             format[0].hunks[i].lines[k].startsWith("+") ||
             format[0].hunks[i].lines[k].startsWith("-")
           ) {
-            // so that we get at the end of th efunction, exports and consts might not eb countred
-            // get all symbols before and enumerate them, not get all symbols for each call
-            // make new function getSymbolFromPosition(symbols, position)
-            let name = await this._codeEditor.getSymbolUnderCusor(
+            let name = await this._codeEditor.getSymbolFromPosition(
+              symbols,
               new vscode.Position(
                 k + codePosition,
                 e.document.lineAt(
@@ -85,22 +72,15 @@ export default class CommentSyncProvider {
                 ).firstNonWhitespaceCharacterIndex
               )
             );
+
             if (!name) {
               return;
             }
-            let revision = child_process
-              .execSync("git rev-parse HEAD")
-              .toString()
-              .trim();
 
             let fileName = e.document.fileName;
 
             let index = linesChanged.findIndex((e) => {
-              if (
-                e.file === fileName &&
-                e.function === (name as any).name &&
-                e.last_updated === revision
-              ) {
+              if (e.file === fileName && e.function === (name as any).name) {
                 return true;
               } else {
                 return false;
@@ -118,12 +98,6 @@ export default class CommentSyncProvider {
               });
             }
 
-            // linesChanged.push({
-            //   file: e.document.fileName,
-            //   function: name.name,
-            //   last_updated: revision, // git rev-parse HEAD maybe
-            //   changes_count: 1,
-            // });
             console.log(name.name);
             console.log(format[0].hunks[i].lines[k]);
             console.log(k + codePosition);
@@ -133,8 +107,61 @@ export default class CommentSyncProvider {
       console.log(linesChanged);
 
       this._document = text;
+      this.commitToFile();
       console.log("saving");
     });
+  }
+
+  public syncWithNewChanges(
+    changes: IChange[],
+    newChanges: IChange[]
+  ): IChange[] {
+    let allChanges: IChange[] = changes;
+    newChanges.map((change) => {
+      let index = changes.findIndex((e) => {
+        if (e.file === change.file && e.function === change.function) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      if (index !== -1) {
+        allChanges[index].changes_count += 1;
+      } else {
+        allChanges.push(change);
+      }
+    });
+    return allChanges;
+  }
+
+  public commitToFile() {
+    try {
+      if (vscode.workspace.workspaceFolders) {
+        const sync = path.join(
+          vscode.workspace.workspaceFolders[0].uri.fsPath,
+          "sync.json"
+        );
+        let fileData;
+        if (!fs.existsSync(sync)) {
+          fs.writeFileSync(sync, "[]");
+          fileData = [];
+        } else {
+          fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
+        }
+        fileData.map((item: IChange) => {}); // find the index and do all of that stuff
+        console.log(fileData);
+        console.log(
+          path.join(
+            vscode.workspace.workspaceFolders[0].uri.fsPath,
+            "sync.json"
+          )
+        );
+      }
+      // const fileData = fs.readFileSync()
+    } catch (err: any) {
+      console.log(err);
+      vscode.window.showErrorMessage(err);
+    }
   }
 
   private getDocumentText() {

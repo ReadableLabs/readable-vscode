@@ -16,7 +16,7 @@ import { BASE_URL } from "../globals";
  * @param {string} comment - the comment that the user is currently writing.
  * @param {string} language - the language that the user is currently writing in.
  * @param {string} accessToken - the access token for the user.
- * @returns {Promise<any>} - the autocomplete suggestions for the code.
+ * @returns {Promise<any>} - the autocomplete suggestion for the code.
  */
 export const generateAutoComplete = async (
   fullCode: string,

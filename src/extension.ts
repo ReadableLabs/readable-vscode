@@ -3,7 +3,7 @@
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
-import CommentSyncProvider from "./commentSyncProvider";
+import CommentSyncProvider from "./commentSync/commentSyncProvider";
 import CodeEditor from "./CodeEditor";
 import { provideComments, provideDocstring } from "./Completion";
 import TrialHelper from "./trial/TrialHelper";
