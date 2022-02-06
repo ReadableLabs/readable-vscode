@@ -7,7 +7,6 @@ import * as path from "path";
 import CodeEditor from "../CodeEditor";
 import { IChange } from "./types";
 import { fileURLToPath } from "url";
-
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
@@ -54,56 +53,106 @@ export default class CommentSyncProvider {
         .toString()
         .trim();
       // for each file changed (I think)
-      for (let i = 0; i < format[0].hunks.length; i++) {
-        codePosition = format[0].hunks[i].newStart;
-
-        // for each line changed in file
-        for (let k = 0; k < format[0].hunks[i].lines.length; k++) {
-          if (
-            format[0].hunks[i].lines[k].startsWith("+") ||
-            format[0].hunks[i].lines[k].startsWith("-")
-          ) {
-            let name = await this._codeEditor.getSymbolFromPosition(
-              symbols,
-              new vscode.Position(
-                k + codePosition,
-                e.document.lineAt(
-                  k + codePosition
-                ).firstNonWhitespaceCharacterIndex
-              )
-            );
-
-            if (!name) {
-              return;
-            }
-
-            let fileName = e.document.fileName;
-
-            let index = linesChanged.findIndex((e) => {
-              if (e.file === fileName && e.function === (name as any).name) {
-                return true;
-              } else {
-                return false;
-              }
-            });
-
-            if (index !== -1) {
-              linesChanged[index].changes_count += 1;
-            } else {
-              linesChanged.push({
-                file: e.document.fileName,
-                function: name.name,
-                last_updated: revision, // git rev-parse HEAD maybe
-                changes_count: 1,
-              });
-            }
-
-            console.log(name.name);
-            console.log(format[0].hunks[i].lines[k]);
-            console.log(k + codePosition);
+      // but since you can only save one file at a time, just get the first file
+      codePosition = format[0].hunks[0].newStart;
+      format[0].hunks[0].lines.forEach(async (line, index) => {
+        if (line.startsWith("+" || line.startsWith("-"))) {
+          let name = await this._codeEditor.getSymbolFromPosition(
+            symbols,
+            new vscode.Position(
+              index + codePosition,
+              e.document.lineAt(
+                index + codePosition
+              ).firstNonWhitespaceCharacterIndex // check for supported file type, symbol found
+            )
+          );
+          if (!name) {
+            return;
           }
+          // if (!this.checkComment(name)) {
+          //   return;
+          // }
+          let fileName = e.document.fileName;
+
+          let idx = linesChanged.findIndex((e) => {
+            if (e.file === fileName && e.function === (name as any).name) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+
+          if (idx !== -1) {
+            linesChanged[idx].changes_count += 1;
+          } else {
+            linesChanged.push({
+              file: e.document.fileName,
+              function: name.name,
+              last_updated: revision, // git rev-parse HEAD maybe
+              changes_count: 1,
+            });
+          }
+
+          console.log(name.name);
+          console.log(line);
+          console.log(index + codePosition);
         }
-      }
+      });
+      // for (let i = 0; i < format[0].hunks.length; i++) {
+      //   codePosition = format[0].hunks[i].newStart;
+
+      //   // for each line changed in file
+      //   for (let k = 0; k < format[0].hunks[i].lines.length; k++) {
+      //     if (
+      //       format[0].hunks[i].lines[k].startsWith("+") ||
+      //       format[0].hunks[i].lines[k].startsWith("-")
+      //     ) {
+      //       let name = await this._codeEditor.getSymbolFromPosition(
+      //         symbols,
+      //         new vscode.Position(
+      //           k + codePosition,
+      //           e.document.lineAt(
+      //             k + codePosition
+      //           ).firstNonWhitespaceCharacterIndex
+      //         )
+      //       );
+
+      //       if (!name) {
+      //         // just use map or foreach with index
+      //         return; // change this
+      //       }
+
+      //       if (!this.checkComment(name)) {
+      //         break; // don't use break because of terminal
+      //       }
+
+      //       let fileName = e.document.fileName;
+
+      //       let index = linesChanged.findIndex((e) => {
+      //         if (e.file === fileName && e.function === (name as any).name) {
+      //           return true;
+      //         } else {
+      //           return false;
+      //         }
+      //       });
+
+      //       if (index !== -1) {
+      //         linesChanged[index].changes_count += 1;
+      //       } else {
+      //         linesChanged.push({
+      //           file: e.document.fileName,
+      //           function: name.name,
+      //           last_updated: revision, // git rev-parse HEAD maybe
+      //           changes_count: 1,
+      //         });
+      //       }
+
+      //       console.log(name.name);
+      //       console.log(format[0].hunks[i].lines[k]);
+      //       console.log(k + codePosition);
+      //     }
+      //   }
+      // }
       console.log(linesChanged);
 
       this._document = text;
@@ -126,12 +175,29 @@ export default class CommentSyncProvider {
         }
       });
       if (index !== -1) {
-        allChanges[index].changes_count += change.changes_count;
+        allChanges[index].changes_count += change.changes_count; // check if comment is above
       } else {
         allChanges.push(change);
       }
     });
     return allChanges;
+  }
+
+  public checkComment(symbol: vscode.DocumentSymbol): boolean {
+    if (symbol.range.start.line - 1 < 0) {
+      return false;
+    }
+    const line = vscode.window.activeTextEditor?.document.lineAt(
+      symbol.range.start.line - 1
+    ).text;
+    if (!line) {
+      return false;
+    }
+    if (line.includes("*/") || line.includes("//")) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public commitToFile(newChanges: IChange[]) {
