@@ -140,7 +140,7 @@ export default class CommentSyncProvider {
   private getDocumentText() {
     return vscode.window.activeTextEditor?.document.getText(
       new vscode.Range(
-        // gets all text of document
+        // gets all the lines in the document
         new vscode.Position(0, 0),
         new vscode.Position(
           vscode.window.activeTextEditor.document.lineCount,
