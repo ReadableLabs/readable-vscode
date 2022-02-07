@@ -20,6 +20,7 @@ export default class DatabaseTools {
           return;
         }
         e.document.getText(
+          // test comment
           new vscode.Range(
             new vscode.Position(0, 0),
             new vscode.Position(e.document.lineCount, 0)
@@ -31,7 +32,6 @@ export default class DatabaseTools {
     this._workspace = workspace;
   }
   public async addCode(workspace: string, codeSnippet: string) {
-    // this is a test comment
     try {
       let items = this._state.get<string>(workspace);
       if (!items) {

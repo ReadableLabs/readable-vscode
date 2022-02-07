@@ -8,6 +8,14 @@ import CodeEditor from "../CodeEditor";
 import { IChange } from "./types";
 import { fileURLToPath } from "url";
 export default class CommentSyncProvider {
+  private _supportedLanguages = [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "php",
+    "python",
+  ];
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
   private _path: string | undefined;
@@ -29,7 +37,13 @@ export default class CommentSyncProvider {
     });
     // this doesn't always work
     vscode.workspace.onWillSaveTextDocument(async (e) => {
+      if (!vscode.workspace.workspaceFolders) {
+        return;
+      }
       if (!this._document) {
+        return;
+      }
+      if (!this._supportedLanguages.includes(e.document.languageId)) {
         return;
       }
       let text = this.getDocumentText();
@@ -48,14 +62,22 @@ export default class CommentSyncProvider {
       let codePosition = 0;
       let symbols = await this._codeEditor.getAllSymbols();
 
+      console.log(symbols);
+
+      // let cur = child_process.execSync("pwd").toString().trim(); // make sure git commadn is run in workspace folder, apparetnyl vscode has root
+      // console.log(cur);
+
+      let path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
       let revision = child_process
-        .execSync("git rev-parse HEAD")
+        .execSync("git -C " + path + " rev-parse HEAD")
         .toString()
         .trim();
       // for each file changed (I think)
       // but since you can only save one file at a time, just get the first file
+      console.log(format);
       codePosition = format[0].hunks[0].newStart;
-      format[0].hunks[0].lines.forEach(async (line, index) => {
+      for (let [index, line] of format[0].hunks[0].lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
           let name = await this._codeEditor.getSymbolFromPosition(
             symbols,
@@ -66,6 +88,7 @@ export default class CommentSyncProvider {
               ).firstNonWhitespaceCharacterIndex // check for supported file type, symbol found
             )
           );
+          console.log(name);
           if (!name) {
             return;
           }
@@ -83,21 +106,22 @@ export default class CommentSyncProvider {
           });
 
           if (idx !== -1) {
-            linesChanged[idx].changes_count += 1;
+            linesChanged[idx].changesCount += 1;
           } else {
             linesChanged.push({
               file: e.document.fileName,
               function: name.name,
-              last_updated: revision, // git rev-parse HEAD maybe
-              changes_count: 1,
+              lastUpdated: revision, // git rev-parse HEAD maybe
+              changesCount: 1,
             });
           }
 
           console.log(name.name);
           console.log(line);
           console.log(index + codePosition);
+          console.log(linesChanged);
         }
-      });
+      }
       // for (let i = 0; i < format[0].hunks.length; i++) {
       //   codePosition = format[0].hunks[i].newStart;
 
@@ -153,6 +177,7 @@ export default class CommentSyncProvider {
       //     }
       //   }
       // }
+      console.log("lines changing");
       console.log(linesChanged);
 
       this._document = text;
@@ -175,7 +200,7 @@ export default class CommentSyncProvider {
         }
       });
       if (index !== -1) {
-        allChanges[index].changes_count += change.changes_count; // check if comment is above
+        allChanges[index].changesCount += change.changesCount; // check if comment is above
       } else {
         allChanges.push(change);
       }
