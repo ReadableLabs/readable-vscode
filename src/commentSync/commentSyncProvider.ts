@@ -37,6 +37,7 @@ export default class CommentSyncProvider {
     });
     // this doesn't always work
     vscode.workspace.onWillSaveTextDocument(async (e) => {
+      // TODO: clean up this code to run as least as possible
       if (!vscode.workspace.workspaceFolders) {
         return;
       }
