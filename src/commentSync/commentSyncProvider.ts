@@ -77,7 +77,7 @@ export default class CommentSyncProvider {
       // but since you can only save one file at a time, just get the first file
       console.log(format);
       codePosition = format[0].hunks[0].newStart;
-      for (let [index, line] of format[0].hunks[0].lines.entries()) {
+      for await (let [index, line] of format[0].hunks[0].lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
           let name = await this._codeEditor.getSymbolFromPosition(
             symbols,
@@ -92,9 +92,9 @@ export default class CommentSyncProvider {
           if (!name) {
             return;
           }
-          // if (!this.checkComment(name)) {
-          //   return;
-          // }
+          if (!this.checkComment(name)) {
+            return;
+          }
           let fileName = e.document.fileName;
 
           let idx = linesChanged.findIndex((e) => {
