@@ -22,21 +22,14 @@ export default class CommentSyncProvider {
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
     this._document = this.getDocumentText();
-    console.log(this._document);
-    console.log("test");
     if (vscode.workspace.workspaceFolders) {
-      // another test comment
       this._path = vscode.workspace.workspaceFolders[0].uri.path;
-      console.log(this._path);
     }
-    vscode.window.onDidChangeActiveTextEditor((e) => {
-      this._document = this.getDocumentText();
-    });
-    vscode.workspace.onDidChangeWorkspaceFolders((e) => {
-      this._path = e.added[0].uri.path;
-    });
+    vscode.window.onDidChangeActiveTextEditor(this.onTextEditorChange);
+    vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
     vscode.workspace.onWillSaveTextDocument(async (e) => {
+      // add prompt which asks user if they want to enable comment sync for this project, set global variable in this class
       // TODO: clean up this code to run as least as possible
       if (!vscode.workspace.workspaceFolders) {
         return;
@@ -52,21 +45,14 @@ export default class CommentSyncProvider {
         return;
       }
 
-      // get the diff between the current document and the new document
-      const diff = Diff.diffLines(this._document, text, {
-        ignoreWhitespace: true,
-      });
-      const patch = Diff.createPatch(e.document.fileName, this._document, text);
-      let format = Diff.parsePatch(patch);
+      // here
+      let format = this.getDiffLines(this._document, text, e.document.fileName);
 
       let linesChanged: IChange[] = [];
       let codePosition = 0;
       let symbols = await this._codeEditor.getAllSymbols();
 
       console.log(symbols);
-
-      // let cur = child_process.execSync("pwd").toString().trim(); // make sure git commadn is run in workspace folder, apparetnyl vscode has root
-      // console.log(cur);
 
       let path = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
@@ -77,7 +63,7 @@ export default class CommentSyncProvider {
       // for each file changed (I think)
       // but since you can only save one file at a time, just get the first file
       console.log(format);
-      codePosition = format[0].hunks[0].newStart;
+      codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       for await (let [index, line] of format[0].hunks[0].lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
           let name = await this._codeEditor.getSymbolFromPosition(
@@ -91,10 +77,10 @@ export default class CommentSyncProvider {
           );
           console.log(name);
           if (!name) {
-            return;
+            continue;
           }
           if (!this.checkComment(name)) {
-            return;
+            continue;
           }
           let fileName = e.document.fileName;
 
@@ -123,61 +109,7 @@ export default class CommentSyncProvider {
           console.log(linesChanged);
         }
       }
-      // for (let i = 0; i < format[0].hunks.length; i++) {
-      //   codePosition = format[0].hunks[i].newStart;
 
-      //   // for each line changed in file
-      //   for (let k = 0; k < format[0].hunks[i].lines.length; k++) {
-      //     if (
-      //       format[0].hunks[i].lines[k].startsWith("+") ||
-      //       format[0].hunks[i].lines[k].startsWith("-")
-      //     ) {
-      //       let name = await this._codeEditor.getSymbolFromPosition(
-      //         symbols,
-      //         new vscode.Position(
-      //           k + codePosition,
-      //           e.document.lineAt(
-      //             k + codePosition
-      //           ).firstNonWhitespaceCharacterIndex
-      //         )
-      //       );
-
-      //       if (!name) {
-      //         // just use map or foreach with index
-      //         return; // change this
-      //       }
-
-      //       if (!this.checkComment(name)) {
-      //         break; // don't use break because of terminal
-      //       }
-
-      //       let fileName = e.document.fileName;
-
-      //       let index = linesChanged.findIndex((e) => {
-      //         if (e.file === fileName && e.function === (name as any).name) {
-      //           return true;
-      //         } else {
-      //           return false;
-      //         }
-      //       });
-
-      //       if (index !== -1) {
-      //         linesChanged[index].changes_count += 1;
-      //       } else {
-      //         linesChanged.push({
-      //           file: e.document.fileName,
-      //           function: name.name,
-      //           last_updated: revision, // git rev-parse HEAD maybe
-      //           changes_count: 1,
-      //         });
-      //       }
-
-      //       console.log(name.name);
-      //       console.log(format[0].hunks[i].lines[k]);
-      //       console.log(k + codePosition);
-      //     }
-      //   }
-      // }
       console.log("lines changing");
       console.log(linesChanged);
 
@@ -186,6 +118,27 @@ export default class CommentSyncProvider {
       console.log("saving");
     });
   }
+
+  private onTextEditorChange(e: vscode.TextEditor | undefined) {
+    this._document = this.getDocumentText();
+  }
+
+  private onWorkspaceChange(e: vscode.WorkspaceFoldersChangeEvent) {
+    // make work with multiple workspace folders
+    this._path = e.added[0].uri.path;
+  }
+
+  private getDiffLines(document: string, text1: string, fileName: string) {
+    // get the diff between the current document and the new document
+    const diff = Diff.diffLines(document, text1, {
+      ignoreWhitespace: true,
+    });
+    const patch = Diff.createPatch(fileName, document, text1);
+    let format = Diff.parsePatch(patch);
+    return format;
+  }
+
+  private updateDecorations() {}
 
   public syncWithNewChanges(
     changes: IChange[],
@@ -223,6 +176,14 @@ export default class CommentSyncProvider {
       return true;
     } else {
       return false;
+    }
+  }
+
+  public getCurrentInfo(sync: string) {
+    if (!fs.existsSync(sync)) {
+      return [];
+    } else {
+      return JSON.parse(fs.readFileSync(sync, "utf-8"));
     }
   }
 
