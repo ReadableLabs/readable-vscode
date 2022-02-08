@@ -19,19 +19,17 @@ export default class CommentSyncProvider {
   private _highlightDecoratorType;
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
+  private _comments: vscode.Range[];
   private _path: string | undefined;
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
     this._document = this.getDocumentText();
-    let warningColor = new vscode.ThemeColor("minimap.warningHighlight"); // doesn't work editorWarning.
-    console.log(warningColor);
+    this._comments = [];
     this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
       // set decoration range behavior
       {
-        outlineWidth: "1px",
-        outlineStyle: "solid",
-        outlineColor: "#cea700",
-        overviewRulerColor: "#cea700", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
+        backgroundColor: "#cea7002D",
+        overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
         overviewRulerLane: vscode.OverviewRulerLane.Right,
       }
     );
@@ -75,23 +73,35 @@ export default class CommentSyncProvider {
         .trim();
       // for each file changed (I think)
       // but since you can only save one file at a time, just get the first file
+      let editedComments = [];
       console.log(format);
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       for await (let [index, line] of format[0].hunks[0].lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
+          // go through visible view range only (optional)
+          for (let comment of this._comments) {
+            if (
+              index + codePosition >= comment.start.line &&
+              index + codePosition <= comment.end.line
+            ) {
+              editedComments.push(comment);
+              console.log(comment);
+            }
+          }
           let name = await this._codeEditor.getSymbolFromPosition(
             symbols,
             new vscode.Position(
               index + codePosition,
               e.document.lineAt(
-                index + codePosition
+                index + codePosition // if anything happens above the current function, but below the function above
               ).firstNonWhitespaceCharacterIndex // check for supported file type, symbol found
             )
           );
           console.log(name);
           if (!name) {
+            // check if comment
             continue;
-          }
+          } // put else here
           if (!this.checkComment(name)) {
             continue;
           }
@@ -129,18 +139,65 @@ export default class CommentSyncProvider {
       this._document = text;
       linesChanged = this.syncWithFileChanges(linesChanged);
       this.writeToFile(linesChanged);
-      this.updateDecorations(linesChanged); // get initial vscode highlight color
+      let allComments = await this.getCommentRanges(linesChanged);
+      if (!allComments) {
+        return;
+      }
+      this.updateDecorations(allComments); // get initial vscode highlight color
+      this._comments = allComments;
       console.log("saving");
     });
   }
 
   private onTextEditorChange(e: vscode.TextEditor | undefined) {
-    this._document = this.getDocumentText();
+    this._document = this.getDocumentText(); // get the document text from the editor
   }
 
   private onWorkspaceChange(e: vscode.WorkspaceFoldersChangeEvent) {
     // make work with multiple workspace folders
     this._path = e.added[0].uri.path;
+  }
+
+  public async getCommentRanges(changes: IChange[]) {
+    if (!vscode.window.activeTextEditor) {
+      return;
+    }
+    let symbols = await this._codeEditor.getAllSymbols();
+    let allBounds: ICommentBounds[] = [];
+    let allRanges: vscode.Range[] = [];
+    for (let change of changes) {
+      let symbol = this._codeEditor.getSymbolFromName(symbols, change.function);
+      if (!symbol) {
+        continue;
+      }
+      if (!this.checkComment(symbol)) {
+        return;
+      }
+
+      // get the start and end ranges from the comments
+      let bounds = this.getCommentBounds(symbol); // pass in document to this to avoid getting document 10 times
+      if (bounds) {
+        allRanges.push(
+          // why not put an on edit so that you delete the symbol from the array once it's been updated, 20 quintillion symbol checks before a write is made
+          new vscode.Range(
+            new vscode.Position(bounds.start, 0),
+            new vscode.Position(bounds.end + 1, 0) // kind of hacky so we don't need to get the last character
+          )
+        );
+        // allBounds.push(bounds);
+      }
+    }
+    // for (let bound of allBounds) {
+    //   allRanges.push(
+    //     new vscode.Range(
+    //       new vscode.Position(bound.start, 0), // get non whitespace character
+    //       new vscode.Position(bound.end + 1, 0)
+    //     )
+    //   );
+    // }
+    return allRanges;
+
+    // we have the changes, now we need to get the lines in between to tell where to update decorations for
   }
 
   private getDiffLines(document: string, text1: string, fileName: string) {
@@ -172,39 +229,14 @@ export default class CommentSyncProvider {
     return { start: i, end: commentEnd };
   }
 
-  private async updateDecorations(changes: IChange[]) {
+  private async updateDecorations(ranges: vscode.Range[]) {
     if (!vscode.window.activeTextEditor) {
       return;
     }
-    let symbols = await this._codeEditor.getAllSymbols();
-    let allBounds: ICommentBounds[] = [];
-    let allRanges: vscode.Range[] = [];
-    for (let change of changes) {
-      let symbol = this._codeEditor.getSymbolFromName(symbols, change.function);
-      if (!symbol) {
-        continue;
-      }
-      if (!this.checkComment(symbol)) {
-        return;
-      }
-      let bounds = this.getCommentBounds(symbol);
-      if (bounds) {
-        allBounds.push(bounds);
-      }
-    }
-    for (let bound of allBounds) {
-      allRanges.push(
-        new vscode.Range(
-          new vscode.Position(bound.start, 0), // get non whitespace character
-          new vscode.Position(bound.end + 1, 0)
-        )
-      );
-    }
     vscode.window.activeTextEditor.setDecorations(
       this._highlightDecoratorType,
-      allRanges
+      ranges
     );
-    // we have the changes, now we need to get the lines in between to tell where to update decorations for
   }
 
   public syncWithNewChanges(
