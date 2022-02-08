@@ -4,3 +4,8 @@ export interface IChange {
   lastUpdated: string;
   changesCount: number;
 }
+
+export interface ICommentBounds {
+  start: number;
+  end: number;
+}

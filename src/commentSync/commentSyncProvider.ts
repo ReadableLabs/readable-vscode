@@ -5,7 +5,7 @@ import * as Git from "nodegit";
 import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
-import { IChange } from "./types";
+import { IChange, ICommentBounds } from "./types";
 import { fileURLToPath } from "url";
 export default class CommentSyncProvider {
   private _supportedLanguages = [
@@ -163,7 +163,7 @@ export default class CommentSyncProvider {
       }
       i--;
     }
-    return i;
+    return { start: i, end: commentEnd };
   }
 
   private async updateDecorations(changes: IChange[]) {
@@ -171,6 +171,8 @@ export default class CommentSyncProvider {
       return;
     }
     let symbols = await this._codeEditor.getAllSymbols();
+    let allBounds: ICommentBounds[] = [];
+    let allRanges: vscode.Range[] = [];
     for (let change of changes) {
       let symbol = this._codeEditor.getSymbolFromName(symbols, change.function);
       if (!symbol) {
@@ -179,7 +181,24 @@ export default class CommentSyncProvider {
       if (!this.checkComment(symbol)) {
         return;
       }
+      let bounds = this.getCommentBounds(symbol);
+      if (bounds) {
+        allBounds.push(bounds);
+      }
     }
+    for (let bound of allBounds) {
+      allRanges.push(
+        new vscode.Range(
+          new vscode.Position(bound.start, 0), // get non whitespace character
+          new vscode.Position(bound.end + 1, 0)
+        )
+      );
+    }
+    vscode.window.activeTextEditor.setDecorations(
+      this._highlightDecoratorType,
+      allRanges
+    );
+    // we have the changes, now we need to get the lines in between to tell where to update decorations for
   }
 
   public syncWithNewChanges(
