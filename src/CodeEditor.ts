@@ -317,6 +317,22 @@ export default class CodeEditor {
     return codeSymbol;
   }
 
+  public getSymbolFromName(symbols: vscode.DocumentSymbol[], name: string) {
+    for (let symbol of symbols) {
+      if (symbol.name === name) {
+        return symbol;
+      }
+      if (symbol.children) {
+        for (let child of symbol.children) {
+          if (child.name === name) {
+            return symbol;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   public async getSymbolFromPosition(
     symbols: vscode.DocumentSymbol[],
     position: vscode.Position

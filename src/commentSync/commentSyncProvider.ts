@@ -16,12 +16,20 @@ export default class CommentSyncProvider {
     "php",
     "python",
   ];
+  private _highlightDecoratorType;
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
   private _path: string | undefined;
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
     this._document = this.getDocumentText();
+    this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
+      {
+        backgroundColor: "yellow",
+        overviewRulerColor: "yellow",
+        overviewRulerLane: vscode.OverviewRulerLane.Right,
+      }
+    );
     if (vscode.workspace.workspaceFolders) {
       this._path = vscode.workspace.workspaceFolders[0].uri.path;
     }
@@ -114,7 +122,8 @@ export default class CommentSyncProvider {
       console.log(linesChanged);
 
       this._document = text;
-      this.commitToFile(linesChanged);
+      linesChanged = this.syncWithFileChanges(linesChanged);
+      this.writeToFile(linesChanged);
       console.log("saving");
     });
   }
@@ -138,7 +147,40 @@ export default class CommentSyncProvider {
     return format;
   }
 
-  private updateDecorations() {}
+  public getCommentBounds(symbol: vscode.DocumentSymbol) {
+    if (!vscode.window.activeTextEditor) {
+      return;
+    }
+    const documentText = this.getDocumentText()?.split("\n");
+    if (!documentText) {
+      return;
+    }
+    const commentEnd = symbol.range.end.line - 1;
+    let i = commentEnd;
+    while (!documentText[i].includes("/*")) {
+      if (i < 0) {
+        return; // handle null checking in the parent function
+      }
+      i--;
+    }
+    return i;
+  }
+
+  private async updateDecorations(changes: IChange[]) {
+    if (!vscode.window.activeTextEditor) {
+      return;
+    }
+    let symbols = await this._codeEditor.getAllSymbols();
+    for (let change of changes) {
+      let symbol = this._codeEditor.getSymbolFromName(symbols, change.function);
+      if (!symbol) {
+        continue;
+      }
+      if (!this.checkComment(symbol)) {
+        return;
+      }
+    }
+  }
 
   public syncWithNewChanges(
     changes: IChange[],
@@ -187,30 +229,52 @@ export default class CommentSyncProvider {
     }
   }
 
-  public commitToFile(newChanges: IChange[]) {
+  public syncWithFileChanges(changes: IChange[]) {
+    if (vscode.workspace.workspaceFolders) {
+      const sync = path.join(
+        vscode.workspace.workspaceFolders[0].uri.fsPath,
+        "sync.json"
+      );
+      let fileData;
+      if (!fs.existsSync(sync)) {
+        fileData = [];
+      } else {
+        fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
+      }
+      const allChanges = this.syncWithNewChanges(fileData, changes);
+      return allChanges;
+    }
+    throw new Error("Error: no workspace folders");
+  }
+
+  public writeToFile(changes: IChange[]) {
     try {
       if (vscode.workspace.workspaceFolders) {
         const sync = path.join(
           vscode.workspace.workspaceFolders[0].uri.fsPath,
           "sync.json"
         );
-        let fileData;
         if (!fs.existsSync(sync)) {
           fs.writeFileSync(sync, "[]");
-          fileData = [];
-        } else {
-          fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
         }
-        let updatedChanges = this.syncWithNewChanges(fileData, newChanges);
-        fs.writeFileSync(sync, JSON.stringify(updatedChanges));
-        console.log(updatedChanges);
-        console.log(fileData);
-        console.log(
-          path.join(
-            vscode.workspace.workspaceFolders[0].uri.fsPath,
-            "sync.json"
-          )
-        );
+        fs.writeFileSync(sync, JSON.stringify(changes));
+        // let fileData;
+        // if (!fs.existsSync(sync)) {
+        //   fs.writeFileSync(sync, "[]");
+        //   fileData = [];
+        // } else {
+        //   fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
+        // }
+        // let updatedChanges = this.syncWithNewChanges(fileData, newChanges);
+        // fs.writeFileSync(sync, JSON.stringify(updatedChanges));
+        // console.log(updatedChanges);
+        // console.log(fileData);
+        // console.log(
+        //   path.join(
+        //     vscode.workspace.workspaceFolders[0].uri.fsPath,
+        //     "sync.json"
+        //   )
+        // );
       }
       // const fileData = fs.readFileSync()
     } catch (err: any) {
