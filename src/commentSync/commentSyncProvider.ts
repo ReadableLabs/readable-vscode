@@ -23,10 +23,11 @@ export default class CommentSyncProvider {
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
     this._document = this.getDocumentText();
+    let warningColor = new vscode.ThemeColor("editorWarning.background");
     this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
       {
-        backgroundColor: "yellow",
-        overviewRulerColor: "yellow",
+        backgroundColor: warningColor,
+        overviewRulerColor: warningColor, // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
         overviewRulerLane: vscode.OverviewRulerLane.Right,
       }
     );
@@ -104,7 +105,7 @@ export default class CommentSyncProvider {
             linesChanged[idx].changesCount += 1;
           } else {
             linesChanged.push({
-              file: e.document.fileName,
+              file: e.document.fileName, // get start line instead of end line
               function: name.name,
               lastUpdated: revision, // git rev-parse HEAD maybe
               changesCount: 1,
@@ -124,6 +125,7 @@ export default class CommentSyncProvider {
       this._document = text;
       linesChanged = this.syncWithFileChanges(linesChanged);
       this.writeToFile(linesChanged);
+      this.updateDecorations(linesChanged); // get initial vscode highlight color
       console.log("saving");
     });
   }
@@ -155,7 +157,7 @@ export default class CommentSyncProvider {
     if (!documentText) {
       return;
     }
-    const commentEnd = symbol.range.end.line - 1;
+    const commentEnd = symbol.range.start.line - 1;
     let i = commentEnd;
     while (!documentText[i].includes("/*")) {
       if (i < 0) {
