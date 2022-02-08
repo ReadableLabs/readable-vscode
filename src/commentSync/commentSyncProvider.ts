@@ -23,7 +23,8 @@ export default class CommentSyncProvider {
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
     this._document = this.getDocumentText();
-    let warningColor = new vscode.ThemeColor("editorWarning.background");
+    let warningColor = new vscode.ThemeColor("minimap.warningHighlight"); // doesn't work editorWarning.
+    console.log(warningColor);
     this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
       {
         backgroundColor: warningColor,
