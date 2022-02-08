@@ -26,9 +26,12 @@ export default class CommentSyncProvider {
     let warningColor = new vscode.ThemeColor("minimap.warningHighlight"); // doesn't work editorWarning.
     console.log(warningColor);
     this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
+      // set decoration range behavior
       {
-        backgroundColor: warningColor,
-        overviewRulerColor: warningColor, // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
+        outlineWidth: "1px",
+        outlineStyle: "solid",
+        outlineColor: "#cea700",
+        overviewRulerColor: "#cea700", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
         overviewRulerLane: vscode.OverviewRulerLane.Right,
       }
     );
