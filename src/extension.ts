@@ -305,10 +305,6 @@ export async function activate(context: vscode.ExtensionContext) {
                   }
                 });
               }
-              console.log(fullCode);
-              console.log(comment);
-              console.log(document.languageId);
-              console.log(session.accessToken);
               let data = await generateAutoComplete(
                 fullCode,
                 // args.fullCode,
@@ -601,7 +597,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  const sync = new CommentSyncProvider(codeEditor);
+  // const sync = new CommentSyncProvider(codeEditor);
   checkAccount();
   // await authProvider.checkAccount();
 
