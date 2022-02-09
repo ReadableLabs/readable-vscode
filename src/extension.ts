@@ -15,6 +15,7 @@ import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateAutoComplete, generateDocstring } from "./completion/generate";
 import { newFormatText } from "./completion/utils";
 import { createSelection, removeSelections } from "./selectionTools";
+import { SidebarProvider } from "./sideBar/sidebarProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -33,6 +34,15 @@ export async function activate(context: vscode.ExtensionContext) {
       .getConfiguration("readable")
       .get<boolean>("enableAutoComplete");
   };
+
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      "readable-sidebar",
+      sidebarProvider
+    )
+  );
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
