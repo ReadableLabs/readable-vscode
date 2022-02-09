@@ -283,8 +283,7 @@ export default class CodeEditor {
     }
 
     // if (symbol.range.end.line - 10 <= symbol.range.start.line) {
-    //   endLine = symbol.range.start.line;
-    // } else {
+    //   endLine = symbol.range.start.line; // } else {
     //   endLine = symbol.range.end.line - 11;
     // }
   }
@@ -305,7 +304,7 @@ export default class CodeEditor {
         "The symbol of the current line",
         vscode.SymbolKind.String,
         new vscode.Range(
-          new vscode.Position(position.line - 8 > 0 ? position.line - 8 : 1, 0),
+          new vscode.Position(position.line - 8 > 0 ? position.line - 8 : 1, 0), // FIX THIS SHIT, TODO most important thing in the world
           new vscode.Position(
             position.line + 8 < lineCount ? position.line + 8 : lineCount,
             position.character

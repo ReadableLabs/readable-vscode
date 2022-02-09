@@ -65,7 +65,7 @@
         {
           "id": "readable-sidebar-view",
           "title": "Readable",
-          "icon": "media/sidebar_icon.svg"
+          "icon": "media/new_sidebar_icon.svg"
         }
       ]
     },
@@ -75,7 +75,7 @@
           "type": "webview",
           "id": "readable-sidebar",
           "name": "Readable",
-          "icon": "media/sidebar_icon.svg",
+          "icon": "media/new_sidebar_icon.svg",
           "contextualTitle": "Readable"
         }
       ]

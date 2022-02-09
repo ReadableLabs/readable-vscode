@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CommentSyncProvider from "./commentSync/commentSyncProvider";
 import CodeEditor from "./CodeEditor";
-import { provideComments, provideDocstring } from "./Completion";
+import { provideComments, provideDocstring } from "./completion/Completion";
 import TrialHelper from "./trial/TrialHelper";
 import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
@@ -13,9 +13,10 @@ import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateAutoComplete, generateDocstring } from "./completion/generate";
-import { newFormatText } from "./completion/utils";
+import { getSafeRange, newFormatText } from "./completion/utils";
 import { createSelection, removeSelections } from "./selectionTools";
 import { SidebarProvider } from "./sideBar/sidebarProvider";
+import { getCommentFromLine } from "./completion/formatUtils";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -243,14 +244,59 @@ export async function activate(context: vscode.ExtensionContext) {
         (progress, token) => {
           const p = new Promise<void>(async (resolve, reject) => {
             try {
+              const position = args.cursor as vscode.Position;
+              const document = args.document as vscode.TextDocument;
+              const session = await vscode.authentication.getSession(
+                CodeCommentAuthenticationProvider.id,
+                [],
+                { createIfNone: false }
+              );
+
+              if (!session) {
+                vscode.window.showErrorMessage("Readable: Please log in");
+                resolve();
+                return;
+              }
+
+              let codeSymbol = await codeEditor.getOrCreateSymbolUnderCursor(
+                args.cursor,
+                document.lineCount
+              );
+
+              if (!codeSymbol) {
+                // show an error
+                resolve();
+                return;
+              }
+
+              let { startLine, endLine } = getSafeRange(
+                args.cursor.line,
+                codeSymbol.range.start.line,
+                codeSymbol.range.end.line,
+                document.lineCount
+              );
+
+              let code = await codeEditor.getTextInRange(
+                new vscode.Range(
+                  new vscode.Position(startLine, 0),
+                  new vscode.Position(
+                    endLine,
+                    document.lineAt(endLine).range.end.character
+                  )
+                )
+              );
+
+              const line = document.lineAt(position).text;
+              const comment = getCommentFromLine(line, document.languageId);
+
               console.log(args);
               if (token.isCancellationRequested) {
                 resolve();
                 return;
               }
-              let fullCode = "";
+              let fullCode = code;
               if (args.language === "python") {
-                let fullCodeSplit = args.fullCode.split("\n");
+                let fullCodeSplit = fullCode.split("\n");
                 fullCodeSplit.map((line: any) => {
                   if (line.includes("#")) {
                     fullCode += line.substring(0, line.indexOf("#") + 1) + "\n";
@@ -258,15 +304,17 @@ export async function activate(context: vscode.ExtensionContext) {
                     fullCode += line + "\n";
                   }
                 });
-              } else {
-                fullCode = args.fullCode;
               }
+              console.log(fullCode);
+              console.log(comment);
+              console.log(document.languageId);
+              console.log(session.accessToken);
               let data = await generateAutoComplete(
                 fullCode,
                 // args.fullCode,
-                args.comment,
-                args.language,
-                args.accessToken
+                comment,
+                document.languageId,
+                session.accessToken
               );
 
               if (token.isCancellationRequested) {

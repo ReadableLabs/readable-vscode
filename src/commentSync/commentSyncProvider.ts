@@ -139,7 +139,7 @@ export default class CommentSyncProvider {
       this._document = text;
       linesChanged = this.syncWithFileChanges(linesChanged);
       this.writeToFile(linesChanged);
-      let allComments = await this.getCommentRanges(linesChanged);
+      let allComments = await this.getCommentRanges(linesChanged); // refactor this to be run within one function, one at a time
       if (!allComments) {
         return;
       }
