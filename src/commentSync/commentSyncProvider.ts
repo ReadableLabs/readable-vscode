@@ -20,22 +20,45 @@ export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
   private _comments: vscode.Range[];
+  private _commentsToDelete: vscode.Range[];
   private _path: string | undefined;
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
     this._document = this.getDocumentText();
     this._comments = [];
+    this._commentsToDelete = [];
     this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
       // set decoration range behavior
       {
-        backgroundColor: "#cea7002D",
+        backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
         overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
         overviewRulerLane: vscode.OverviewRulerLane.Right,
       }
     );
+    // get list of code and comments to that code with that initial diff, then you can check which comments have been edited
+    /**
+     * So like {
+     *   Code {
+     *      functionName, all that stuff
+     *      Comment: { start, end }
+     *    }
+     * }
+     */
     if (vscode.workspace.workspaceFolders) {
       this._path = vscode.workspace.workspaceFolders[0].uri.path;
     }
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      // queue up the changes on edit, save them on save
+      // console.log(e.contentChanges[0].range); // this might be useful
+      let edit = e.contentChanges[0].range.start.line;
+      for (let comment of this._comments) {
+        if (edit >= comment.start.line && edit <= comment.end.line) {
+          // maybe store comment range so we can calculate that
+          this._commentsToDelete.push(comment); // get symbol at one plus range end of comment assuming text at range end is */, do a while loop
+          console.log(comment);
+        }
+      }
+    });
     vscode.window.onDidChangeActiveTextEditor(this.onTextEditorChange);
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
@@ -78,16 +101,16 @@ export default class CommentSyncProvider {
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       for await (let [index, line] of format[0].hunks[0].lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
-          // go through visible view range only (optional)
-          for (let comment of this._comments) {
-            if (
-              index + codePosition >= comment.start.line &&
-              index + codePosition <= comment.end.line
-            ) {
-              editedComments.push(comment);
-              console.log(comment);
-            }
-          }
+          // do changed comments in onTextChange
+          // for (let comment of this._comments) {
+          //   if (
+          //     index + codePosition >= comment.start.line &&
+          //     index + codePosition <= comment.end.line
+          //   ) {
+          //     editedComments.push(comment);
+          //     console.log(comment);
+          //   }
+          // }
           let name = await this._codeEditor.getSymbolFromPosition(
             symbols,
             new vscode.Position(
@@ -141,6 +164,7 @@ export default class CommentSyncProvider {
       this.writeToFile(linesChanged);
       let allComments = await this.getCommentRanges(linesChanged);
       if (!allComments) {
+        console.log("comments not found");
         return;
       }
       this.updateDecorations(allComments); // get initial vscode highlight color
