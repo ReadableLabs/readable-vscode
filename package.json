@@ -55,10 +55,31 @@
     }
   },
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onView:readable-sidebar"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "readable-sidebar-view",
+          "title": "Readable",
+          "icon": "media/sidebar_icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "readable-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "readable-sidebar",
+          "name": "Readable",
+          "icon": "media/sidebar_icon.svg",
+          "contextualTitle": "Readable"
+        }
+      ]
+    },
     "menus": {
       "editor/context": [
         {

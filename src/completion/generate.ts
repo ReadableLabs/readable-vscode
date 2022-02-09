@@ -40,8 +40,9 @@ export const generateAutoComplete = async (
     );
     return data;
   } catch (err: any) {
+    // Figure out what went wrong
     vscode.window.showErrorMessage(
-      "Error: You are most likely being rate limited. We are working on fixing this."
+      "Error: Something went wrong. Try again shortly."
     );
     console.log(err);
     if (err.request.data) {
@@ -80,10 +81,9 @@ export const generateDocstring = async (
     );
     return data;
   } catch (err: any) {
-    // a comment
-    // another comment
+    // Figure out what went wrong
     vscode.window.showErrorMessage(
-      "Error: Network error in docstring http request"
+      "Error: Something went wrong. Try again shortly."
     );
     if (err.request.data) {
       vscode.window.showErrorMessage(err.request.data);
