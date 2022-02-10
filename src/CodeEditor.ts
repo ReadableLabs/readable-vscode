@@ -304,15 +304,19 @@ export default class CodeEditor {
         "The symbol of the current line",
         vscode.SymbolKind.String,
         new vscode.Range(
-          new vscode.Position(position.line - 8 > 0 ? position.line - 8 : 1, 0), // FIX THIS SHIT, TODO most important thing in the world
           new vscode.Position(
-            position.line + 8 < lineCount ? position.line + 8 : lineCount,
+            position.line - 1 > 0 ? position.line - 1 : position.line,
+            0
+          ), // FIX THIS SHIT, TODO most important thing in the world
+          new vscode.Position(
+            position.line + 3 < lineCount ? position.line + 3 : lineCount - 1,
             position.character
           )
         ),
         new vscode.Range(new vscode.Position(position.line, 0), position)
       );
     }
+    console.log(codeSymbol);
     return codeSymbol;
   }
 
