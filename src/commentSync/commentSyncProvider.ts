@@ -6,7 +6,6 @@ import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
 import { IChange, ICommentBounds } from "./types";
-import { fileURLToPath } from "url";
 export default class CommentSyncProvider {
   private _supportedLanguages = [
     "javascript",
