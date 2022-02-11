@@ -16,7 +16,7 @@
   },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -55,31 +55,10 @@
     }
   },
   "activationEvents": [
-    "onStartupFinished",
-    "onView:readable-sidebar"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "readable-sidebar-view",
-          "title": "Readable",
-          "icon": "media/new_sidebar_icon.svg"
-        }
-      ]
-    },
-    "views": {
-      "readable-sidebar-view": [
-        {
-          "type": "webview",
-          "id": "readable-sidebar",
-          "name": "Readable",
-          "icon": "media/new_sidebar_icon.svg",
-          "contextualTitle": "Readable"
-        }
-      ]
-    },
     "menus": {
       "editor/context": [
         {

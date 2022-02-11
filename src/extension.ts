@@ -3,7 +3,7 @@
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
-import CommentSyncProvider from "./commentSync/commentSyncProvider";
+// import CommentSyncProvider from "./commentSync/commentSyncProvider";
 import CodeEditor from "./CodeEditor";
 import { provideComments, provideDocstring } from "./completion/Completion";
 import TrialHelper from "./trial/TrialHelper";
@@ -15,7 +15,7 @@ import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { generateAutoComplete, generateDocstring } from "./completion/generate";
 import { getSafeRange, newFormatText } from "./completion/utils";
 import { createSelection, removeSelections } from "./selectionTools";
-import { SidebarProvider } from "./sideBar/sidebarProvider";
+// import { SidebarProvider } from "./sideBar/sidebarProvider";
 import { getCommentFromLine } from "./completion/formatUtils";
 
 // this method is called when your extension is activated
@@ -36,14 +36,14 @@ export async function activate(context: vscode.ExtensionContext) {
       .get<boolean>("enableAutoComplete");
   };
 
-  const sidebarProvider = new SidebarProvider(context.extensionUri);
+  // const sidebarProvider = new SidebarProvider(context.extensionUri);
 
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      "readable-sidebar",
-      sidebarProvider
-    )
-  );
+  // context.subscriptions.push(
+  //   vscode.window.registerWebviewViewProvider(
+  //     "readable-sidebar",
+  //     sidebarProvider
+  //   )
+  // );
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(

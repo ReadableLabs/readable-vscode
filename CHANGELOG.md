@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.5.5]
+
+- Bug fixes
+
 ## [1.5.4]
 
 - Fixed bugs
