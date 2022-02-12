@@ -100,16 +100,6 @@ export default class CommentSyncProvider {
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       for await (let [index, line] of format[0].hunks[0].lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
-          // do changed comments in onTextChange
-          // for (let comment of this._comments) {
-          //   if (
-          //     index + codePosition >= comment.start.line &&
-          //     index + codePosition <= comment.end.line
-          //   ) {
-          //     editedComments.push(comment);
-          //     console.log(comment);
-          //   }
-          // }
           console.log(index);
           console.log(codePosition);
           let name = await this._codeEditor.getSymbolFromPosition(
@@ -163,7 +153,7 @@ export default class CommentSyncProvider {
       console.log(linesChanged);
 
       this._document = text;
-      linesChanged = this.syncWithFileChanges(linesChanged);
+      linesChanged = this.syncWithFileChanges(linesChanged); // add deleted array which runs a filter for the name
       console.log(linesChanged);
       this.writeToFile(linesChanged);
       // let allComments = await this.getCommentRanges(linesChanged); // run before
@@ -191,48 +181,6 @@ export default class CommentSyncProvider {
     // make work with multiple workspace folders
     this._path = e.added[0].uri.path;
   }
-
-  // public async getCommentRanges(changes: IChange[]) {
-  //   if (!vscode.window.activeTextEditor) {
-  //     return;
-  //   }
-  //   let symbols = await this._codeEditor.getAllSymbols();
-  //   let allBounds: ICommentBounds[] = [];
-  //   let allRanges: vscode.Range[] = [];
-  //   for (let change of changes) {
-  //     let symbol = this._codeEditor.getSymbolFromName(symbols, change.function);
-  //     if (!symbol) {
-  //       continue;
-  //     }
-  //     if (!this.getComment(symbol)) {
-  //       return;
-  //     }
-
-  //     // get the start and end ranges from the comments
-  //     let bounds = this.getCommentRange(symbol, symbols, text); // pass in document to this to avoid getting document 10 times
-  //     if (bounds) {
-  //       allRanges.push(
-  //         // why not put an on edit so that you delete the symbol from the array once it's been updated, 20 quintillion symbol checks before a write is made
-  //         new vscode.Range(
-  //           new vscode.Position(bounds.start, 0),
-  //           new vscode.Position(bounds.end + 1, 0) // kind of hacky so we don't need to get the last character
-  //         )
-  //       );
-  //       // allBounds.push(bounds);
-  //     }
-  //   }
-  //   // for (let bound of allBounds) {
-  //   //   allRanges.push(
-  //   //     new vscode.Range(
-  //   //       new vscode.Position(bound.start, 0), // get non whitespace character
-  //   //       new vscode.Position(bound.end + 1, 0)
-  //   //     )
-  //   //   );
-  //   // }
-  //   return allRanges;
-
-  //   // we have the changes, now we need to get the lines in between to tell where to update decorations for
-  // }
 
   private getDiffLines(document: string, text1: string, fileName: string) {
     // get the diff between the current document and the new document
@@ -279,39 +227,20 @@ export default class CommentSyncProvider {
       ).firstNonWhitespaceCharacterIndex;
     const endLine = symbol.range.start.line - 1; // fix 15 instead of 16
     const endCharacter =
-      vscode.window.activeTextEditor.document.lineAt(endLine).text.length;
+      // vscode.window.activeTextEditor.document.lineAt(endLine).text.length;
+      document[endLine].length;
     return new vscode.Range(
       new vscode.Position(startLine, startCharacter),
-      new vscode.Position(endLine, endCharacter) // use first non whitespace character efficiently
+      new vscode.Position(endLine, endCharacter)
     );
   }
-
-  // public getCommentBounds(symbol: vscode.DocumentSymbol) {
-  //   if (!vscode.window.activeTextEditor) {
-  //     throw new Error("Error: no active text editor");
-  //   } // pass in document text from saved file
-  //   const documentText = this.getDocumentText()?.split("\n");
-  //   if (!documentText) {
-  //     return;
-  //   }
-  //   const commentEnd = symbol.range.start.line - 1;
-  //   vscode.window.activeTextEditor.document.lineAt(commentEnd).range.end
-  //     .character;
-  //   let i = commentEnd;
-  //   while (!documentText[i].includes("/*")) {
-  //     if (i < 0) {
-  //       return; // handle null checking in the parent function
-  //     }
-  //     i--;
-  //   }
-  //   return { start: i, end: commentEnd };
-  // }
 
   private async updateDecorations(changes: any) {
     console.log(changes);
     let allRanges: vscode.Range[] = [];
 
     for (let change of changes) {
+      // on did change active text editor update decorations
       allRanges.push(
         new vscode.Range(
           new vscode.Position(change.range[0].line, change.range[0].character),
