@@ -1,7 +1,9 @@
+import * as vscode from "vscode";
+
 export interface IChange {
   file: string;
   function: string;
-  lastUpdated: string;
+  range: vscode.Range;
   changesCount: number;
 }
 

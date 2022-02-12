@@ -597,7 +597,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // const sync = new CommentSyncProvider(codeEditor);
+  const sync = new CommentSyncProvider(codeEditor);
   checkAccount();
   // await authProvider.checkAccount();
 

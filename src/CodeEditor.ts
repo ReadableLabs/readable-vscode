@@ -27,8 +27,6 @@ export default class CodeEditor {
     }
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
-      console.log("got editor");
-      console.log(e);
       this._activeEditor = e;
     });
   }
