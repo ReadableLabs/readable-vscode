@@ -20,11 +20,13 @@ import { getCommentFromLine } from "./completion/formatUtils";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
+
 export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "Readable" is now active!');
 
+  // Get the password for the readable account, if it exists, and if it doesn't, prompt the user for it.
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
   let pass = await context.secrets.get("readable:password");
@@ -370,6 +372,13 @@ export async function activate(context: vscode.ExtensionContext) {
         },
         (progress, token) => {
           let p = new Promise<void>(async (resolve, reject) => {
+            if (!vscode.window.activeTextEditor) {
+              vscode.window.showErrorMessage(
+                "Error: failed to get active text editor"
+              );
+              resolve();
+              return;
+            }
             try {
               let _position = 0;
               let codeSpaces = 0;
@@ -382,7 +391,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 codeSpaces = codeEditor.getSpacesFromLine(selection.start.line);
               } else {
                 const position = codeEditor.getCursor();
-                const symbol = await codeEditor.getSymbolUnderCusor(position);
+                let symbol = await codeEditor.getSymbolUnderCusor(position);
                 if (!symbol) {
                   vscode.window.showErrorMessage(
                     "Error: Failed to find function. Highlight function instead."
@@ -390,8 +399,20 @@ export async function activate(context: vscode.ExtensionContext) {
                   resolve();
                   return;
                 }
+                const startCharacter =
+                  vscode.window.activeTextEditor.document.lineAt(
+                    symbol.range.start.line
+                  ).firstNonWhitespaceCharacterIndex;
 
-                await createSelection(symbol.range);
+                const selectionRange = new vscode.Range(
+                  new vscode.Position(symbol.range.start.line, startCharacter),
+                  new vscode.Position(
+                    symbol.range.end.line,
+                    symbol.range.end.character
+                  )
+                );
+
+                await createSelection(selectionRange);
                 setTimeout(async () => {
                   await removeSelections();
                 }, 850);
