@@ -53,6 +53,11 @@ export default class CodeEditor {
     return this._activeEditor.document.languageId; //returns the language id of the active editor
   }
 
+  /**
+   * Returns the number of spaces at the beginning of the string.
+   * @param {string} text - the string to get the number of spaces from
+   * @returns {number} the number of spaces at the beginning of the string
+   */
   public getSpaces(text: string): number {
     return text.search(/\S/);
   }
