@@ -46,18 +46,18 @@ export default class CommentSyncProvider {
     if (vscode.workspace.workspaceFolders) {
       this._path = vscode.workspace.workspaceFolders[0].uri.path;
     }
-    vscode.workspace.onDidChangeTextDocument((e) => {
-      // queue up the changes on edit, save them on save
-      // console.log(e.contentChanges[0].range); // this might be useful
-      let edit = e.contentChanges[0].range.start.line;
-      for (let comment of this._comments) {
-        if (edit >= comment.start.line && edit <= comment.end.line) {
-          // maybe store comment range so we can calculate that
-          this._commentsToDelete.push(comment); // get symbol at one plus range end of comment assuming text at range end is */, do a while loop
-          console.log(comment);
-        }
-      }
-    });
+    // vscode.workspace.onDidChangeTextDocument((e) => {
+    //   // queue up the changes on edit, save them on save
+    //   // console.log(e.contentChanges[0].range); // this might be useful
+    //   let edit = e.contentChanges[0].range.start.line;
+    //   for (let comment of this._comments) {
+    //     if (edit >= comment.start.line && edit <= comment.end.line) {
+    //       // maybe store comment range so we can calculate that
+    //       this._commentsToDelete.push(comment); // get symbol at one plus range end of comment assuming text at range end is */, do a while loop
+    //       console.log(comment);
+    //     }
+    //   }
+    // });
     vscode.window.onDidChangeActiveTextEditor(this.onTextEditorChange);
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
@@ -164,13 +164,14 @@ export default class CommentSyncProvider {
 
       this._document = text;
       linesChanged = this.syncWithFileChanges(linesChanged);
+      console.log(linesChanged);
       this.writeToFile(linesChanged);
       // let allComments = await this.getCommentRanges(linesChanged); // run before
       // if (!allComments) {
       //   console.log("comments not found");
       //   return;
       // }
-      // this.updateDecorations(allComments); // get initial vscode highlight color
+      this.updateDecorations(linesChanged); // get initial vscode highlight color
       // this._comments = allComments;
       console.log("saving");
     });
@@ -306,13 +307,25 @@ export default class CommentSyncProvider {
   //   return { start: i, end: commentEnd };
   // }
 
-  private async updateDecorations(ranges: vscode.Range[]) {
+  private async updateDecorations(changes: any) {
+    console.log(changes);
+    let allRanges: vscode.Range[] = [];
+
+    for (let change of changes) {
+      allRanges.push(
+        new vscode.Range(
+          new vscode.Position(change.range[0].line, change.range[0].character),
+          new vscode.Position(change.range[1].line, change.range[1].character)
+        )
+      );
+    }
+
     if (!vscode.window.activeTextEditor) {
       return;
     }
     vscode.window.activeTextEditor.setDecorations(
       this._highlightDecoratorType,
-      ranges
+      allRanges
     );
   }
 
@@ -426,6 +439,7 @@ export default class CommentSyncProvider {
   }
 
   private getDocumentText() {
+    // fix bug in constructor
     return vscode.window.activeTextEditor?.document.getText(
       new vscode.Range(
         // gets all the lines in the document
