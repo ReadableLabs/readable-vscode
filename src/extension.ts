@@ -415,7 +415,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 await createSelection(selectionRange);
                 setTimeout(async () => {
                   await removeSelections();
-                }, 850);
+                }, 200);
                 fullCode = await codeEditor.getFirstAndLastText(symbol);
                 codeSpaces = codeEditor.getSpacesFromLine(
                   symbol.range.start.line
