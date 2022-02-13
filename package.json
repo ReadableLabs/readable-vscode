@@ -33,6 +33,7 @@
     "comment",
     "comments",
     "docstring",
+    "autodocstring",
     "documentation",
     "completion",
     "completions",
@@ -72,11 +73,12 @@
     "views": {
       "readable-sidebar-view": [
         {
-          "type": "webview",
-          "id": "readable-sidebar",
-          "name": "Readable",
-          "icon": "media/new_sidebar_icon.svg",
-          "contextualTitle": "Readable"
+          "id": "help",
+          "name": "Help"
+        },
+        {
+          "id": "account",
+          "name": "Account"
         }
       ]
     },
@@ -146,6 +148,18 @@
           "type": "boolean",
           "default": true,
           "description": "Enables or disables the feedback prompt after every completion."
+        },
+        "readable.help": {
+          "type": "string",
+          "enum": [
+            "Discord",
+            "Config"
+          ],
+          "enumDescriptions": [
+            "Join our community!",
+            "Change comment style"
+          ],
+          "description": "Help"
         }
       }
     }
