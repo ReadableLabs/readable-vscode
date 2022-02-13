@@ -192,6 +192,8 @@ export default class CommentSyncProvider {
     return format;
   }
 
+  public getCodeFromFile(workspace: string) {}
+
   public getCommentRange(
     symbol: vscode.DocumentSymbol,
     symbols: vscode.DocumentSymbol[],
