@@ -5,7 +5,8 @@ import * as Git from "nodegit";
 import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
-import { IChange, ICommentBounds } from "./types";
+import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
+import { getCurrentChanges, updateDecorations } from "./utils";
 export default class CommentSyncProvider {
   private _supportedLanguages = [
     "javascript",
@@ -15,7 +16,6 @@ export default class CommentSyncProvider {
     "php",
     "python",
   ];
-  private _highlightDecoratorType;
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
   private _comments: vscode.Range[];
@@ -26,14 +26,6 @@ export default class CommentSyncProvider {
     this._document = this.getDocumentText();
     this._comments = [];
     this._commentsToDelete = [];
-    this._highlightDecoratorType = vscode.window.createTextEditorDecorationType(
-      // set decoration range behavior
-      {
-        backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
-        overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
-        overviewRulerLane: vscode.OverviewRulerLane.Right,
-      }
-    );
     // get list of code and comments to that code with that initial diff, then you can check which comments have been edited
     /**
      * So like {
@@ -98,33 +90,35 @@ export default class CommentSyncProvider {
         return;
       }
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
-      for await (let [index, line] of format[0].hunks[0].lines.entries()) {
+      const lines = format[0].hunks[0].lines;
+      for await (let [index, line] of lines.entries()) {
         if (line.startsWith("+" || line.startsWith("-"))) {
-          console.log(index);
-          console.log(codePosition);
-          let name = await this._codeEditor.getSymbolFromPosition(
-            symbols,
-            new vscode.Position(
-              index + codePosition,
-              e.document.lineAt(
-                index + codePosition // if anything happens above the current function, but below the function above
-              ).firstNonWhitespaceCharacterIndex // check for supported file type, symbol found
-            )
+          let line = index + codePosition;
+          let symbolPosition = new vscode.Position(
+            line,
+            e.document.lineAt(line).firstNonWhitespaceCharacterIndex
           );
-          console.log(name);
-          if (!name) {
+
+          let symbol = await this._codeEditor.getSymbolFromPosition(
+            symbols,
+            symbolPosition
+          );
+          if (!symbol) {
             // check if comment
             continue;
           } // put else here
           // instead of check comment, get comment
-          let range = this.getCommentRange(name, symbols, text.split("\n"));
+          let range = this.getCommentRange(symbol, symbols, text.split("\n"));
           if (!range) {
             continue; // no range
           }
           let fileName = e.document.fileName;
 
           let idx = linesChanged.findIndex((e) => {
-            if (e.file === fileName && e.function === (name as any).name) {
+            if (!symbol) {
+              return false;
+            }
+            if (e.file === fileName && e.function === symbol.name) {
               return true;
             } else {
               return false;
@@ -136,13 +130,13 @@ export default class CommentSyncProvider {
           } else {
             linesChanged.push({
               file: e.document.fileName, // get start line instead of end line
-              function: name.name,
+              function: symbol.name,
               range,
               changesCount: 1,
             });
           }
 
-          console.log(name.name);
+          console.log(symbol.name);
           console.log(line);
           console.log(index + codePosition);
           console.log(linesChanged);
@@ -161,20 +155,36 @@ export default class CommentSyncProvider {
       //   console.log("comments not found");
       //   return;
       // }
-      this.updateDecorations(linesChanged); // get initial vscode highlight color
+      updateDecorations(linesChanged); // get initial vscode highlight color
       // this._comments = allComments;
       console.log("saving");
     });
   }
 
   private onTextEditorChange(e: vscode.TextEditor | undefined) {
+    console.log("ok");
     if (!e) {
       return;
     }
-    if (!this._supportedLanguages.includes(e.document.languageId)) {
+    // if (!this._supportedLanguages.includes(e.document.languageId)) {
+    //   return;
+    // }
+    if (!vscode.workspace.workspaceFolders) {
       return;
     }
-    this._document = this.getDocumentText(); // get the document text from the editor
+    let filePath = path.join(
+      vscode.workspace.workspaceFolders[0].uri.fsPath,
+      "sync.json"
+    );
+    // this._document = this.getDocumentText(); // get the document text from the editor
+    let ranges: vscode.Range[] = [];
+    const changes = getCurrentChanges(filePath);
+    console.log(changes);
+    console.log(changes);
+    if (!changes) {
+      return;
+    }
+    updateDecorations(changes);
   }
 
   private onWorkspaceChange(e: vscode.WorkspaceFoldersChangeEvent) {
@@ -191,8 +201,6 @@ export default class CommentSyncProvider {
     let format = Diff.parsePatch(patch);
     return format;
   }
-
-  public getCodeFromFile(workspace: string) {}
 
   public getCommentRange(
     symbol: vscode.DocumentSymbol,
@@ -237,35 +245,12 @@ export default class CommentSyncProvider {
     );
   }
 
-  private async updateDecorations(changes: any) {
-    console.log(changes);
-    let allRanges: vscode.Range[] = [];
-
-    for (let change of changes) {
-      // on did change active text editor update decorations
-      allRanges.push(
-        new vscode.Range(
-          new vscode.Position(change.range[0].line, change.range[0].character),
-          new vscode.Position(change.range[1].line, change.range[1].character)
-        )
-      );
-    }
-
-    if (!vscode.window.activeTextEditor) {
-      return;
-    }
-    vscode.window.activeTextEditor.setDecorations(
-      this._highlightDecoratorType,
-      allRanges
-    );
-  }
-
   public syncWithNewChanges(
     changes: IChange[],
     newChanges: IChange[]
   ): IChange[] {
     let allChanges: IChange[] = changes;
-    newChanges.map((change) => {
+    for (let change of newChanges) {
       let index = changes.findIndex((e) => {
         if (e.file === change.file && e.function === change.function) {
           return true;
@@ -275,10 +260,11 @@ export default class CommentSyncProvider {
       });
       if (index !== -1) {
         allChanges[index].changesCount += change.changesCount; // check if comment is above
+        allChanges[index].range = change.range; // update comment range
       } else {
         allChanges.push(change);
       }
-    });
+    }
     return allChanges;
   }
 
@@ -321,11 +307,15 @@ export default class CommentSyncProvider {
         vscode.workspace.workspaceFolders[0].uri.fsPath,
         "sync.json"
       );
-      let fileData;
+      let fileData: IChange[] | undefined;
       if (!fs.existsSync(sync)) {
         fileData = [];
       } else {
-        fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
+        fileData = getCurrentChanges(sync);
+        // fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
+      }
+      if (!fileData) {
+        fileData = [];
       }
       const allChanges = this.syncWithNewChanges(fileData, changes);
       return allChanges;

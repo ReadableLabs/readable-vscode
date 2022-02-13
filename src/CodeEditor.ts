@@ -82,12 +82,19 @@ export default class CodeEditor {
     return s;
   };
 
+  /**
+   * something
+   * @param comment
+   * @param _spaces
+   * @param language
+   * @returns
+   */
   public formatText(
     comment: string,
     _spaces: number,
     language?: string
   ): string {
-    let spaces = 0;
+    let spaces = 0; // a comment4
     let currentLanguage = language
       ? language
       : this._activeEditor?.document.languageId;
