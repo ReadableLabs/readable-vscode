@@ -87,7 +87,7 @@ export default class CodeEditor {
    * @param comment
    * @param _spaces
    * @param language
-   * @returns
+   * @returns hafjsdhfuadf
    */
   public formatText(
     comment: string,
@@ -95,7 +95,7 @@ export default class CodeEditor {
     language?: string
   ): string {
     let spaces = 0; // a comment4
-    let currentLanguage = language
+    let currentLanguage = language // 2
       ? language
       : this._activeEditor?.document.languageId;
     if (!currentLanguage) {
