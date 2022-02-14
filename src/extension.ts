@@ -17,6 +17,7 @@ import { getSafeRange, newFormatText } from "./completion/utils";
 import { createSelection, removeSelections } from "./selectionTools";
 import { HelpOptionsProvider } from "./sideBar/HelpOptionsProvider";
 import { getCommentFromLine } from "./completion/formatUtils";
+import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -38,7 +39,9 @@ export async function activate(context: vscode.ExtensionContext) {
       .get<boolean>("enableAutoComplete");
   };
 
+  const accountTree = new AccountOptionsProvider();
   const helpTree = new HelpOptionsProvider();
+  vscode.window.createTreeView("account", { treeDataProvider: accountTree });
   vscode.window.createTreeView("help", { treeDataProvider: helpTree });
 
   context.subscriptions.push(

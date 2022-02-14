@@ -73,12 +73,12 @@
     "views": {
       "readable-sidebar-view": [
         {
-          "id": "help",
-          "name": "Help"
-        },
-        {
           "id": "account",
           "name": "Account"
+        },
+        {
+          "id": "help",
+          "name": "Help"
         }
       ]
     },
@@ -148,6 +148,17 @@
           "type": "boolean",
           "default": true,
           "description": "Enables or disables the feedback prompt after every completion."
+        },
+        "readable.account": {
+          "type": "string",
+          "enum": [
+            "Log in",
+            "Sign up"
+          ],
+          "enumDescriptions": [
+            "Log in to your Readable account",
+            "Sign up to use Readable"
+          ]
         },
         "readable.help": {
           "type": "string",
