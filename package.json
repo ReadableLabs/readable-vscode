@@ -136,6 +136,12 @@
         "title": "Readable: Version"
       }
     ],
+    "viewsWelcome": [
+      {
+        "view": "account",
+        "contents": "[️ Log in ](command:readable.login)\nDont have an account? [Sign Up](https://readable.so/account)"
+      }
+    ],
     "configuration": {
       "title": "Readable",
       "properties": {
@@ -148,17 +154,6 @@
           "type": "boolean",
           "default": true,
           "description": "Enables or disables the feedback prompt after every completion."
-        },
-        "readable.account": {
-          "type": "string",
-          "enum": [
-            "Log in",
-            "Sign up"
-          ],
-          "enumDescriptions": [
-            "Log in to your Readable account",
-            "Sign up to use Readable"
-          ]
         },
         "readable.help": {
           "type": "string",
