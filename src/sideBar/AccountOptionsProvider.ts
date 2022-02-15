@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import { accountConfigProperty } from "./utils/constants";
 
 const ACCOUNT_OPTIONS = ["Log in", "Sign up"];
 
@@ -14,13 +15,14 @@ export class AccountOptionsProvider
 
   getChildren(): AccountOption[] {
     const readableConfig = vscode.workspace.getConfiguration("readable");
-    const currentValue = readableConfig.get("account");
+    const accountConfig = accountConfigProperty();
+    // const currentValue = readableConfig.get(accountConfig);
     const options = ACCOUNT_OPTIONS.map((option) => {
-      const selected = option === currentValue;
+      // const selected = option === currentValue;
       return new AccountOption(
         option,
         vscode.TreeItemCollapsibleState.None,
-        selected
+        false
       );
     });
     return options;
