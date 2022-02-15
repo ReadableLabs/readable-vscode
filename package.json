@@ -77,6 +77,10 @@
           "name": "Account"
         },
         {
+          "id": "resync",
+          "name": "Resync"
+        },
+        {
           "id": "help",
           "name": "Help"
         }
@@ -139,7 +143,11 @@
     "viewsWelcome": [
       {
         "view": "account",
-        "contents": "[️ Log in ](command:readable.login)\nDont have an account? [Sign Up](https://readable.so/account)"
+        "contents": "Log in to use Readable: \n [️ Log in ](command:readable.login)\nDont have an account? [Sign Up](https://readable.so/register)"
+      },
+      {
+        "view": "resync",
+        "contents": "[️ Enable Resync ](command:readable.login)\nPrevent comment rot in your constantly changing codebase.   [Learn More](https://readable.so/resync)"
       }
     ],
     "configuration": {
@@ -158,12 +166,14 @@
         "readable.help": {
           "type": "string",
           "enum": [
-            "Discord",
-            "Config"
+            "Have a question?",
+            "Configure comment style",
+            "More info"
           ],
           "enumDescriptions": [
-            "Join our community!",
-            "Change comment style"
+            "Discord",
+            "Settings",
+            "More info"
           ],
           "description": "Help"
         }

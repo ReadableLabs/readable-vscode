@@ -1,7 +1,12 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
-const HELP_OPTIONS = ["Discord", "Config"];
+// Must match in package.json
+const HELP_OPTIONS = [
+  "Have a question?",
+  "Configure comment style",
+  "More info",
+];
 
 export class HelpOptionsProvider
   implements vscode.TreeDataProvider<HelpOption>
@@ -38,21 +43,7 @@ class HelpOption extends vscode.TreeItem {
   }
 
   iconPath = {
-    light: path.join(
-      __filename,
-      "..",
-      "..",
-      "resources",
-      "light",
-      "dependency.svg"
-    ),
-    dark: path.join(
-      __filename,
-      "..",
-      "..",
-      "resources",
-      "dark",
-      "dependency.svg"
-    ),
+    light: path.join(__filename, "..", "..", "media", "dark", "discord.svg"),
+    dark: path.join(__filename, "..", "..", "media", "dark", "discord.svg"),
   };
 }
