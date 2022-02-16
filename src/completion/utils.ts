@@ -153,7 +153,7 @@ export const newFormatText = (
   let spaces = 0;
   const tabSize = vscode.workspace
     .getConfiguration("editor")
-    .get<number>("tabSize");
+    .get<number>("tabSize"); // check if file is using tabs or spaces, and if it is using tabs, get tab width
   if (!tabSize) {
     throw new Error("Error: Unable to get tab size from editor");
   }
