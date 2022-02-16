@@ -17,6 +17,15 @@ export class HelpOptionsProvider
     return element;
   }
 
+  getIconPath(element: String): string {
+    if (element === "Have a question?") {
+      return "discord";
+    } else if (element === "Configure comment style") {
+      return "settings-gear";
+    }
+    return "info";
+  }
+
   getChildren(): HelpOption[] {
     const readableConfig = vscode.workspace.getConfiguration("readable");
     const currentValue = readableConfig.get("help");
@@ -25,7 +34,8 @@ export class HelpOptionsProvider
       return new HelpOption(
         option,
         vscode.TreeItemCollapsibleState.None,
-        selected
+        selected,
+        this.getIconPath(option)
       );
     });
     return options;
@@ -36,14 +46,29 @@ class HelpOption extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly selected: boolean = false
+    public readonly selected: boolean = false,
+    public readonly iconName: string
   ) {
     super(label, collapsibleState);
     this.tooltip = this.label;
+    this.setIconPath();
   }
 
-  iconPath = {
-    light: path.join(__filename, "..", "..", "media", "dark", "discord.svg"),
-    dark: path.join(__filename, "..", "..", "media", "dark", "discord.svg"),
-  };
+  setIconPath() {
+    if (this.iconName !== "discord") {
+      this.iconPath = new vscode.ThemeIcon(this.iconName);
+    } else {
+      this.iconPath = {
+        light: path.join(
+          __filename,
+          "..",
+          "..",
+          "media",
+          "dark",
+          "discord.svg"
+        ),
+        dark: path.join(__filename, "..", "..", "media", "dark", "discord.svg"),
+      };
+    }
+  }
 }
