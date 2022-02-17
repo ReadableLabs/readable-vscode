@@ -11,6 +11,8 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   }
 );
 
+const isInComment = (lineNumber: number, changes: IChange[]) => {};
+
 const updateDecorations = async (changes: IChange[]) => {
   let allRanges: vscode.Range[] = [];
 
@@ -69,4 +71,26 @@ const getRangeFromParsedChange = (change: IParsedChange) => {
   );
 };
 
-export { getCurrentChanges, getRangeFromParsedChange, updateDecorations };
+const getDocumentText = () => {
+  // fix bug in constructor
+  return vscode.window.activeTextEditor?.document.getText(
+    new vscode.Range(
+      // gets all the lines in the document
+      new vscode.Position(0, 0),
+      new vscode.Position(
+        vscode.window.activeTextEditor.document.lineCount,
+        vscode.window.activeTextEditor.document.lineAt(
+          vscode.window.activeTextEditor.document.lineCount - 1
+        ).lineNumber
+      )
+    )
+  );
+};
+
+export {
+  getCurrentChanges,
+  getRangeFromParsedChange,
+  updateDecorations,
+  getDocumentText,
+  isInComment,
+};
