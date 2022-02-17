@@ -6,17 +6,14 @@ import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
 import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
-import { getCurrentChanges, isInComment, updateDecorations } from "./utils";
+import {
+  getCurrentChanges,
+  getDocumentText,
+  isInComment,
+  updateDecorations,
+} from "./utils";
 import { getCommentRange, getSymbolFromCommentRange } from "./comments";
 export default class CommentSyncProvider {
-  private _supportedLanguages = [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "php",
-    "python",
-  ];
   private _codeEditor: CodeEditor;
   private _document: string | undefined;
   private _comments: vscode.Range[];
@@ -24,7 +21,7 @@ export default class CommentSyncProvider {
   private _path: string | undefined;
   constructor(codeEditor: CodeEditor) {
     this._codeEditor = codeEditor;
-    this._document = this.getDocumentText();
+    this._document = getDocumentText();
     this._comments = [];
     this._commentsToDelete = [];
     // get list of code and comments to that code with that initial diff, then you can check which comments have been edited
@@ -55,6 +52,14 @@ export default class CommentSyncProvider {
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
     vscode.workspace.onWillSaveTextDocument(async (e) => {
+      let _supportedLanguages = [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "php",
+        "python",
+      ];
       // add prompt which asks user if they want to enable comment sync for this project, set global variable in this class
       // TODO: clean up this code to run as least as possible
       if (!vscode.workspace.workspaceFolders) {
@@ -63,10 +68,10 @@ export default class CommentSyncProvider {
       if (!this._document) {
         return;
       }
-      if (!this._supportedLanguages.includes(e.document.languageId)) {
+      if (!_supportedLanguages.includes(e.document.languageId)) {
         return;
       }
-      let text = this.getDocumentText();
+      let text = getDocumentText();
       if (!text) {
         return;
       }
@@ -96,9 +101,13 @@ export default class CommentSyncProvider {
       for await (let [index, _line] of lines.entries()) {
         if (_line.startsWith("+" || _line.startsWith("-"))) {
           let line = index + codePosition;
+          console.log(line);
+          let characterIndex =
+            e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
           let symbolPosition = new vscode.Position(
             line,
-            e.document.lineAt(line).firstNonWhitespaceCharacterIndex // this is throwing an error
+            characterIndex
+            // e.document.lineAt(line).firstNonWhitespaceCharacterIndex // this is throwing an error
           );
 
           let symbol = await this._codeEditor.getSymbolFromPosition(
@@ -106,7 +115,7 @@ export default class CommentSyncProvider {
             symbolPosition
           );
           if (!symbol) {
-            let range = await getCommentRange(line - 1, text.split("\n")); // because we're freaking cool
+            let range = getCommentRange(line - 1, text.split("\n")); // because we're freaking cool
 
             if (!range) {
               continue;
@@ -166,13 +175,22 @@ export default class CommentSyncProvider {
   }
 
   private onTextEditorChange(e: vscode.TextEditor | undefined) {
+    let _supportedLanguages = [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "php",
+      "python",
+    ];
     console.log("ok");
     if (!e) {
       return;
     }
-    if (!this._supportedLanguages.includes(e.document.languageId)) {
+    if (!_supportedLanguages.includes(e.document.languageId)) {
       return;
     }
+    console.log(e.document.languageId);
     if (!vscode.workspace.workspaceFolders) {
       return;
     }
@@ -180,7 +198,7 @@ export default class CommentSyncProvider {
       vscode.workspace.workspaceFolders[0].uri.fsPath,
       "sync.json"
     );
-    this._document = this.getDocumentText(); // get the document text from the editor
+    this._document = getDocumentText(); // get the document text from the editor
     let ranges: vscode.Range[] = [];
     const changes = getCurrentChanges(filePath);
     console.log(changes);
@@ -318,22 +336,6 @@ export default class CommentSyncProvider {
       console.log(err);
       vscode.window.showErrorMessage(err);
     }
-  }
-
-  private getDocumentText() {
-    // fix bug in constructor
-    return vscode.window.activeTextEditor?.document.getText(
-      new vscode.Range(
-        // gets all the lines in the document
-        new vscode.Position(0, 0),
-        new vscode.Position(
-          vscode.window.activeTextEditor.document.lineCount,
-          vscode.window.activeTextEditor.document.lineAt(
-            vscode.window.activeTextEditor.document.lineCount - 1
-          ).lineNumber
-        )
-      )
-    );
   }
 
   public checkGit() {}
