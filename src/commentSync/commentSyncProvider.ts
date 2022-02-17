@@ -6,7 +6,8 @@ import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
 import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
-import { getCurrentChanges, updateDecorations } from "./utils";
+import { getCurrentChanges, isInComment, updateDecorations } from "./utils";
+import { getCommentRange, getSymbolFromCommentRange } from "./comments";
 export default class CommentSyncProvider {
   private _supportedLanguages = [
     "javascript",
@@ -87,16 +88,17 @@ export default class CommentSyncProvider {
       // but since you can only save one file at a time, just get the first file
       console.log(format);
       if (!format[0].hunks[0]) {
+        // use get comment range and compare to see if it's in it
         return;
       }
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       const lines = format[0].hunks[0].lines;
-      for await (let [index, line] of lines.entries()) {
-        if (line.startsWith("+" || line.startsWith("-"))) {
+      for await (let [index, _line] of lines.entries()) {
+        if (_line.startsWith("+" || _line.startsWith("-"))) {
           let line = index + codePosition;
           let symbolPosition = new vscode.Position(
             line,
-            e.document.lineAt(line).firstNonWhitespaceCharacterIndex
+            e.document.lineAt(line).firstNonWhitespaceCharacterIndex // this is throwing an error
           );
 
           let symbol = await this._codeEditor.getSymbolFromPosition(
@@ -104,11 +106,24 @@ export default class CommentSyncProvider {
             symbolPosition
           );
           if (!symbol) {
+            let range = await getCommentRange(line - 1, text.split("\n")); // because we're freaking cool
+
+            if (!range) {
+              continue;
+            }
+
+            let comment = await getSymbolFromCommentRange(symbols, range); // just delete the comment from the symbol range in sync
+            console.log("comemnte edited");
+            console.log(comment?.name);
+            // get function from comment range
             // check if comment
             continue;
           } // put else here
           // instead of check comment, get comment
-          let range = this.getCommentRange(symbol, symbols, text.split("\n"));
+          let range = getCommentRange(
+            symbol.range.start.line - 2,
+            text.split("\n")
+          );
           if (!range) {
             continue; // no range
           }
@@ -135,11 +150,6 @@ export default class CommentSyncProvider {
               changesCount: 1,
             });
           }
-
-          console.log(symbol.name);
-          console.log(line);
-          console.log(index + codePosition);
-          console.log(linesChanged);
         }
       }
 
@@ -150,13 +160,7 @@ export default class CommentSyncProvider {
       linesChanged = this.syncWithFileChanges(linesChanged); // add deleted array which runs a filter for the name
       console.log(linesChanged);
       this.writeToFile(linesChanged);
-      // let allComments = await this.getCommentRanges(linesChanged); // run before
-      // if (!allComments) {
-      //   console.log("comments not found");
-      //   return;
-      // }
       updateDecorations(linesChanged); // get initial vscode highlight color
-      // this._comments = allComments;
       console.log("saving");
     });
   }
@@ -166,9 +170,9 @@ export default class CommentSyncProvider {
     if (!e) {
       return;
     }
-    // if (!this._supportedLanguages.includes(e.document.languageId)) {
-    //   return;
-    // }
+    if (!this._supportedLanguages.includes(e.document.languageId)) {
+      return;
+    }
     if (!vscode.workspace.workspaceFolders) {
       return;
     }
@@ -176,7 +180,7 @@ export default class CommentSyncProvider {
       vscode.workspace.workspaceFolders[0].uri.fsPath,
       "sync.json"
     );
-    // this._document = this.getDocumentText(); // get the document text from the editor
+    this._document = this.getDocumentText(); // get the document text from the editor
     let ranges: vscode.Range[] = [];
     const changes = getCurrentChanges(filePath);
     console.log(changes);
@@ -200,49 +204,6 @@ export default class CommentSyncProvider {
     const patch = Diff.createPatch(fileName, document, text1);
     let format = Diff.parsePatch(patch);
     return format;
-  }
-
-  public getCommentRange(
-    symbol: vscode.DocumentSymbol,
-    symbols: vscode.DocumentSymbol[],
-    document: string[]
-  ): vscode.Range | undefined {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: no active text editor");
-    }
-    let i = symbol.range.start.line - 1;
-
-    if (i < 0) {
-      return;
-    }
-
-    console.log(document[i]);
-    if (!document[i].includes("*/") && !document[i].includes("//")) {
-      return;
-    }
-
-    while (!document[i].includes("/*")) {
-      console.log(document[i]);
-      // do a check to see if the current line doesn't include // in this
-      if (i - 1 < 0) {
-        console.log("failed to find comment");
-        return;
-      }
-      i--;
-    }
-    const startLine = i;
-    const startCharacter =
-      vscode.window.activeTextEditor.document.lineAt(
-        startLine
-      ).firstNonWhitespaceCharacterIndex;
-    const endLine = symbol.range.start.line - 1; // fix 15 instead of 16
-    const endCharacter =
-      // vscode.window.activeTextEditor.document.lineAt(endLine).text.length;
-      document[endLine].length;
-    return new vscode.Range(
-      new vscode.Position(startLine, startCharacter),
-      new vscode.Position(endLine, endCharacter)
-    );
   }
 
   public syncWithNewChanges(

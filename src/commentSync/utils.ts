@@ -11,6 +11,8 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   }
 );
 
+const isInComment = (lineNumber: number, changes: IChange[]) => {};
+
 const updateDecorations = async (changes: IChange[]) => {
   let allRanges: vscode.Range[] = [];
 
@@ -69,4 +71,9 @@ const getRangeFromParsedChange = (change: IParsedChange) => {
   );
 };
 
-export { getCurrentChanges, getRangeFromParsedChange, updateDecorations };
+export {
+  getCurrentChanges,
+  getRangeFromParsedChange,
+  updateDecorations,
+  isInComment,
+};
