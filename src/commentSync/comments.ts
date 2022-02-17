@@ -78,6 +78,14 @@ const getSymbolFromCommentRange = (
   let i = commentRange.end.line + 1;
   for (let symbol of symbols) {
     if (i >= symbol.range.start.line && i <= symbol.range.end.line) {
+      // check if it's a class
+      if (symbol.kind === vscode.SymbolKind.Class) {
+        for (let _symbol of symbol.children) {
+          if (i >= _symbol.range.start.line && i <= _symbol.range.end.line) {
+            return _symbol;
+          }
+        }
+      }
       return symbol;
     }
   }

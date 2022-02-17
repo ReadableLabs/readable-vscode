@@ -9,13 +9,15 @@ import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
 import {
   getCurrentChanges,
   getDocumentText,
+  getDocumentTextFromEditor,
   isInComment,
   updateDecorations,
 } from "./utils";
 import { getCommentRange, getSymbolFromCommentRange } from "./comments";
+import { vsCodeDropdown } from "@vscode/webview-ui-toolkit";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
-  private _document: string | undefined;
+  private _document: string | null;
   private _comments: vscode.Range[];
   private _commentsToDelete: vscode.Range[];
   private _path: string | undefined;
@@ -48,7 +50,46 @@ export default class CommentSyncProvider {
     //     }
     //   }
     // });
-    vscode.window.onDidChangeActiveTextEditor(this.onTextEditorChange);
+    vscode.window.onDidChangeActiveTextEditor((e) => {
+      try {
+        let _supportedLanguages = [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "php",
+          "python",
+        ];
+        console.log("ok");
+        if (!e) {
+          return;
+        }
+        if (!_supportedLanguages.includes(e.document.languageId)) {
+          return;
+        }
+        console.log(e.document.languageId);
+        if (!vscode.workspace.workspaceFolders) {
+          return;
+        }
+        let filePath = path.join(
+          vscode.workspace.workspaceFolders[0].uri.fsPath,
+          "sync.json"
+        );
+        this._document = "";
+        this._document = getDocumentTextFromEditor(e); // get the document text from the editor
+        let ranges: vscode.Range[] = [];
+        const changes = getCurrentChanges(filePath);
+        console.log(changes);
+        console.log(changes);
+        if (!changes) {
+          return;
+        }
+        updateDecorations(changes);
+      } catch (err: any) {
+        console.log(err);
+        vscode.window.showErrorMessage(err);
+      }
+    });
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
     vscode.workspace.onWillSaveTextDocument(async (e) => {
@@ -133,8 +174,22 @@ export default class CommentSyncProvider {
             symbol.range.start.line - 2,
             text.split("\n")
           );
+
           if (!range) {
             continue; // no range
+          }
+
+          if (symbol.kind === vscode.SymbolKind.Class) {
+            let functionRange = getCommentRange(line - 1, text.split("\n"));
+            if (functionRange) {
+              let comment = await getSymbolFromCommentRange(
+                symbols,
+                functionRange
+              ); // just delete the comment from the symbol range in sync
+              console.log("comemnte edited");
+              console.log(comment?.name);
+              continue;
+            }
           }
           let fileName = e.document.fileName;
 
@@ -174,40 +229,7 @@ export default class CommentSyncProvider {
     });
   }
 
-  private onTextEditorChange(e: vscode.TextEditor | undefined) {
-    let _supportedLanguages = [
-      "javascript",
-      "javascriptreact",
-      "typescript",
-      "typescriptreact",
-      "php",
-      "python",
-    ];
-    console.log("ok");
-    if (!e) {
-      return;
-    }
-    if (!_supportedLanguages.includes(e.document.languageId)) {
-      return;
-    }
-    console.log(e.document.languageId);
-    if (!vscode.workspace.workspaceFolders) {
-      return;
-    }
-    let filePath = path.join(
-      vscode.workspace.workspaceFolders[0].uri.fsPath,
-      "sync.json"
-    );
-    this._document = getDocumentText(); // get the document text from the editor
-    let ranges: vscode.Range[] = [];
-    const changes = getCurrentChanges(filePath);
-    console.log(changes);
-    console.log(changes);
-    if (!changes) {
-      return;
-    }
-    updateDecorations(changes);
-  }
+  private onTextEditorChange(e: vscode.TextEditor | undefined) {}
 
   private onWorkspaceChange(e: vscode.WorkspaceFoldersChangeEvent) {
     // make work with multiple workspace folders

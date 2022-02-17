@@ -71,9 +71,25 @@ const getRangeFromParsedChange = (change: IParsedChange) => {
   );
 };
 
+const getDocumentTextFromEditor = (e: vscode.TextEditor) => {
+  return e.document.getText(
+    new vscode.Range(
+      // gets all the lines in the document
+      new vscode.Position(0, 0),
+      new vscode.Position(
+        e.document.lineCount,
+        e.document.lineAt(e.document.lineCount - 1).lineNumber
+      )
+    )
+  );
+};
+
 const getDocumentText = () => {
+  if (!vscode.window.activeTextEditor) {
+    return null;
+  }
   // fix bug in constructor
-  return vscode.window.activeTextEditor?.document.getText(
+  return vscode.window.activeTextEditor.document.getText(
     new vscode.Range(
       // gets all the lines in the document
       new vscode.Position(0, 0),
@@ -89,6 +105,7 @@ const getDocumentText = () => {
 
 export {
   getCurrentChanges,
+  getDocumentTextFromEditor,
   getRangeFromParsedChange,
   updateDecorations,
   getDocumentText,
