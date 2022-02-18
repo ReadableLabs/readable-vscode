@@ -15,6 +15,7 @@ const getCommentRange = (
   while (startLine > 0) {
     if (document[startLine].includes("*/")) {
       if (startLine === line) {
+        startLine--;
         continue;
       } else {
         return;
@@ -31,6 +32,7 @@ const getCommentRange = (
     // TODO: refactor to remove all whitespace and check. Benchmark results
     if (document[endLine].includes("/*")) {
       if (endLine === line) {
+        endLine++;
         continue;
       } else {
         return;

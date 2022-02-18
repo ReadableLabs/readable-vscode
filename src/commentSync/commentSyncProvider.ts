@@ -139,12 +139,22 @@ export default class CommentSyncProvider {
       if (!format[0].hunks[0]) {
         // use get comment range and compare to see if it's in it
         return;
-      }
+      } // run a foreach through the hunks so you can get the newline and oldline
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       const lines = format[0].hunks[0].lines;
+      let lastNormalLine: number = format[0].hunks[0].newStart;
       for await (let [index, _line] of lines.entries()) {
+        // just do _line[0] === '+' instead
         if (_line.startsWith("+") || _line.startsWith("-")) {
-          let line = index + codePosition;
+          // do something if it's a minus
+          // last normal line, so if it's a minus, the position will be the last normal line
+          let line = 0;
+          if (_line.startsWith("+")) {
+            line = index + codePosition;
+          } else {
+            line = lastNormalLine;
+          }
+          // let line = index + codePosition;
           console.log(line);
           let characterIndex =
             e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
@@ -224,6 +234,8 @@ export default class CommentSyncProvider {
               changesCount: 1,
             });
           }
+        } else {
+          lastNormalLine = index + codePosition;
         }
       }
 
