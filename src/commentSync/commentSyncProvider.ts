@@ -14,7 +14,6 @@ import {
   updateDecorations,
 } from "./utils";
 import { getCommentRange, getSymbolFromCommentRange } from "./comments";
-import { vsCodeDropdown } from "@vscode/webview-ui-toolkit";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | null;
@@ -120,6 +119,8 @@ export default class CommentSyncProvider {
       // here
       let format = this.getDiffLines(this._document, text, e.document.fileName);
 
+      let changedComments: string[] = [];
+
       let linesChanged: IChange[] = [];
       let codePosition = 0;
       let symbols = await this._codeEditor.getAllSymbols();
@@ -164,6 +165,9 @@ export default class CommentSyncProvider {
 
             let comment = await getSymbolFromCommentRange(symbols, range); // just delete the comment from the symbol range in sync
             console.log("comemnte edited");
+            if (comment) {
+              changedComments.push(comment.name);
+            }
             console.log(comment?.name);
             // get function from comment range
             // check if comment
@@ -187,6 +191,9 @@ export default class CommentSyncProvider {
                 functionRange
               ); // just delete the comment from the symbol range in sync
               console.log("comemnte edited");
+              if (comment) {
+                changedComments.push(comment.name);
+              }
               console.log(comment?.name);
               continue;
             }
@@ -221,7 +228,7 @@ export default class CommentSyncProvider {
       console.log(linesChanged);
 
       this._document = text;
-      linesChanged = this.syncWithFileChanges(linesChanged); // add deleted array which runs a filter for the name
+      linesChanged = this.syncWithFileChanges(linesChanged, changedComments); // add deleted array which runs a filter for the name
       console.log(linesChanged);
       this.writeToFile(linesChanged);
       updateDecorations(linesChanged); // get initial vscode highlight color
@@ -248,7 +255,8 @@ export default class CommentSyncProvider {
 
   public syncWithNewChanges(
     changes: IChange[],
-    newChanges: IChange[]
+    newChanges: IChange[],
+    commentsToDelete: string[]
   ): IChange[] {
     let allChanges: IChange[] = changes;
     for (let change of newChanges) {
@@ -266,7 +274,15 @@ export default class CommentSyncProvider {
         allChanges.push(change);
       }
     }
-    return allChanges;
+    let filtered = allChanges.filter((change) => {
+      for (let functionName of commentsToDelete) {
+        if (change.function === functionName) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return filtered;
   }
 
   /**
@@ -302,7 +318,7 @@ export default class CommentSyncProvider {
     }
   }
 
-  public syncWithFileChanges(changes: IChange[]) {
+  public syncWithFileChanges(changes: IChange[], commentsToDelete: string[]) {
     if (vscode.workspace.workspaceFolders) {
       const sync = path.join(
         vscode.workspace.workspaceFolders[0].uri.fsPath,
@@ -318,7 +334,11 @@ export default class CommentSyncProvider {
       if (!fileData) {
         fileData = [];
       }
-      const allChanges = this.syncWithNewChanges(fileData, changes);
+      const allChanges = this.syncWithNewChanges(
+        fileData,
+        changes,
+        commentsToDelete
+      );
       return allChanges;
     }
     throw new Error("Error: no workspace folders");
