@@ -400,6 +400,7 @@ export default class CodeEditor {
       return [];
     }
 
+    // this is the problem, you're using the active editor and not getting it from the whatever
     let symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
       "vscode.executeDocumentSymbolProvider", // command name
       this._activeEditor.document.uri // command arguments

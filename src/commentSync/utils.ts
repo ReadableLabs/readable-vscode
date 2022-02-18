@@ -71,17 +71,27 @@ const getRangeFromParsedChange = (change: IParsedChange) => {
   );
 };
 
-const getDocumentTextFromEditor = (e: vscode.TextEditor) => {
-  return e.document.getText(
+const getDocumentTextFromEditor = (e: vscode.TextDocument) => {
+  return e.getText(
     new vscode.Range(
       // gets all the lines in the document
       new vscode.Position(0, 0),
-      new vscode.Position(
-        e.document.lineCount,
-        e.document.lineAt(e.document.lineCount - 1).lineNumber
-      )
+      new vscode.Position(e.lineCount, e.lineAt(e.lineCount - 1).lineNumber)
     )
   );
+};
+
+const getAllSymbolsFromDocument = async (
+  e: vscode.TextDocument
+): Promise<vscode.DocumentSymbol[]> => {
+  const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
+    "vscode.executeDocumentSymbolProvider",
+    e.uri
+  );
+  if (!symbols) {
+    return [];
+  }
+  return symbols;
 };
 
 const getDocumentText = () => {
@@ -107,6 +117,7 @@ export {
   getCurrentChanges,
   getDocumentTextFromEditor,
   getRangeFromParsedChange,
+  getAllSymbolsFromDocument,
   updateDecorations,
   getDocumentText,
   isInComment,

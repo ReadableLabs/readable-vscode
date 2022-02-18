@@ -7,6 +7,7 @@ import * as path from "path";
 import CodeEditor from "../CodeEditor";
 import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
 import {
+  getAllSymbolsFromDocument,
   getCurrentChanges,
   getDocumentText,
   getDocumentTextFromEditor,
@@ -75,7 +76,7 @@ export default class CommentSyncProvider {
           "sync.json"
         );
         this._document = "";
-        this._document = getDocumentTextFromEditor(e); // get the document text from the editor
+        this._document = getDocumentTextFromEditor(e.document); // get the document text from the editor
         let ranges: vscode.Range[] = [];
         const changes = getCurrentChanges(filePath);
         console.log(changes);
@@ -111,7 +112,7 @@ export default class CommentSyncProvider {
       if (!_supportedLanguages.includes(e.document.languageId)) {
         return;
       }
-      let text = getDocumentText();
+      let text = getDocumentTextFromEditor(e.document);
       if (!text) {
         return;
       }
@@ -123,7 +124,7 @@ export default class CommentSyncProvider {
 
       let linesChanged: IChange[] = [];
       let codePosition = 0;
-      let symbols = await this._codeEditor.getAllSymbols();
+      let symbols = await getAllSymbolsFromDocument(e.document);
 
       let path = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
@@ -133,7 +134,7 @@ export default class CommentSyncProvider {
       //   .trim();
       // for each file changed (I think)
       // but since you can only save one file at a time, just get the first file
-      console.log(format);
+      console.log(format); // it's throwing an error
       if (!format[0].hunks[0]) {
         // use get comment range and compare to see if it's in it
         return;
@@ -141,8 +142,10 @@ export default class CommentSyncProvider {
       codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
       const lines = format[0].hunks[0].lines;
       for await (let [index, _line] of lines.entries()) {
-        if (_line.startsWith("+" || _line.startsWith("-"))) {
-          let line = index + codePosition;
+        if (_line.startsWith("+") || _line.startsWith("-")) {
+          console.log(_line);
+          let line =
+            index + codePosition - 2 >= 0 ? index + codePosition - 2 : 0;
           console.log(line);
           let characterIndex =
             e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
@@ -157,7 +160,7 @@ export default class CommentSyncProvider {
             symbolPosition
           );
           if (!symbol) {
-            let range = getCommentRange(line - 1, text.split("\n")); // because we're freaking cool
+            let range = getCommentRange(line, text.split("\n")); // because we're freaking cool
 
             if (!range) {
               continue;
@@ -179,12 +182,8 @@ export default class CommentSyncProvider {
             text.split("\n")
           );
 
-          if (!range) {
-            continue; // no range
-          }
-
           if (symbol.kind === vscode.SymbolKind.Class) {
-            let functionRange = getCommentRange(line - 1, text.split("\n"));
+            let functionRange = getCommentRange(line, text.split("\n"));
             if (functionRange) {
               let comment = await getSymbolFromCommentRange(
                 symbols,
@@ -198,6 +197,11 @@ export default class CommentSyncProvider {
               continue;
             }
           }
+
+          if (!range) {
+            continue; // no range
+          }
+
           let fileName = e.document.fileName;
 
           let idx = linesChanged.findIndex((e) => {
