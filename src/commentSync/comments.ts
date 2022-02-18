@@ -12,10 +12,14 @@ const getCommentRange = (
   let startLine = line,
     endLine = line;
 
-  while (startLine >= 0) {
+  while (startLine > 0) {
     if (document[startLine].includes("*/")) {
+      if (startLine === line) {
+        continue;
+      } else {
+        return;
+      }
       // pass in i - 2 so you don't hit this
-      return;
     } else if (document[startLine].includes("/*")) {
       // found start range
       break;
@@ -23,10 +27,14 @@ const getCommentRange = (
     startLine--;
   }
 
-  while (endLine <= document.length) {
+  while (endLine < document.length) {
     // TODO: refactor to remove all whitespace and check. Benchmark results
     if (document[endLine].includes("/*")) {
-      return;
+      if (endLine === line) {
+        continue;
+      } else {
+        return;
+      }
     } else if (document[endLine].includes("*/")) {
       break;
     }

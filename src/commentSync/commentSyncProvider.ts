@@ -11,6 +11,7 @@ import {
   getCurrentChanges,
   getDocumentText,
   getDocumentTextFromEditor,
+  getFileChanges,
   isInComment,
   updateDecorations,
 } from "./utils";
@@ -78,7 +79,7 @@ export default class CommentSyncProvider {
         this._document = "";
         this._document = getDocumentTextFromEditor(e.document); // get the document text from the editor
         let ranges: vscode.Range[] = [];
-        const changes = getCurrentChanges(filePath);
+        const changes = getFileChanges(filePath, e.document.fileName);
         console.log(changes);
         console.log(changes);
         if (!changes) {
@@ -143,9 +144,7 @@ export default class CommentSyncProvider {
       const lines = format[0].hunks[0].lines;
       for await (let [index, _line] of lines.entries()) {
         if (_line.startsWith("+") || _line.startsWith("-")) {
-          console.log(_line);
-          let line =
-            index + codePosition - 2 >= 0 ? index + codePosition - 2 : 0;
+          let line = index + codePosition;
           console.log(line);
           let characterIndex =
             e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
@@ -235,7 +234,13 @@ export default class CommentSyncProvider {
       linesChanged = this.syncWithFileChanges(linesChanged, changedComments); // add deleted array which runs a filter for the name
       console.log(linesChanged);
       this.writeToFile(linesChanged);
-      updateDecorations(linesChanged); // get initial vscode highlight color
+      let filteredChanges = linesChanged.filter((change) => {
+        if (change.file !== e.document.fileName) {
+          return false;
+        }
+        return true;
+      });
+      updateDecorations(filteredChanges); // get initial vscode highlight color
       console.log("saving");
     });
   }

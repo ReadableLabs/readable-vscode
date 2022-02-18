@@ -36,6 +36,20 @@ const updateDecorations = async (changes: IChange[]) => {
   );
 };
 
+const getFileChanges = (syncFile: string, fileName: string) => {
+  const changes = getCurrentChanges(syncFile);
+  if (!changes) {
+    return [];
+  }
+  let filteredChanges = changes.filter((change) => {
+    if (change.file !== fileName) {
+      return false;
+    }
+    return true;
+  });
+  return filteredChanges;
+};
+
 const getCurrentChanges = (file: string) => {
   console.log("here");
   const data = fs.readFileSync(file, "utf-8");
@@ -120,5 +134,6 @@ export {
   getAllSymbolsFromDocument,
   updateDecorations,
   getDocumentText,
+  getFileChanges,
   isInComment,
 };

@@ -371,6 +371,15 @@ export default class CodeEditor {
               symbols[i].children[k].range.start.line <= position.line &&
               symbols[i].children[k].range.end.line >= position.line
             ) {
+              if (symbols[i].children[k].children) {
+                for (
+                  let b = 0;
+                  b < symbols[i].children[k].children.length;
+                  b++
+                ) {
+                  // just use a while loop at this point, what the hell.
+                }
+              }
               console.log("found symbol");
               return symbols[i].children[k];
             }
