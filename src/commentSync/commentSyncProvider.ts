@@ -140,109 +140,119 @@ export default class CommentSyncProvider {
         // use get comment range and compare to see if it's in it
         return;
       } // run a foreach through the hunks so you can get the newline and oldline
-      codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
-      const lines = format[0].hunks[0].lines;
-      let lastNormalLine: number = format[0].hunks[0].newStart;
-      for await (let [index, _line] of lines.entries()) {
-        // just do _line[0] === '+' instead
-        if (_line.startsWith("+") || _line.startsWith("-")) {
-          // do something if it's a minus
-          // last normal line, so if it's a minus, the position will be the last normal line
-          let line = 0;
-          if (_line.startsWith("+")) {
-            line = index + codePosition;
-          } else {
-            line = lastNormalLine;
-          }
-          // let line = index + codePosition;
-          console.log(line);
-          let characterIndex =
-            e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
-          let symbolPosition = new vscode.Position(
-            line,
-            characterIndex
-            // e.document.lineAt(line).firstNonWhitespaceCharacterIndex // this is throwing an error
-          );
 
-          let symbol = await this._codeEditor.getSymbolFromPosition(
-            symbols,
-            symbolPosition
-          );
-          if (!symbol) {
-            let range = getCommentRange(line, text.split("\n")); // because we're freaking cool
-
-            if (!range) {
-              continue;
+      let lines: string[] = [];
+      let lastNormalLine: number = 0;
+      for (let hunk of format[0].hunks) {
+        codePosition = hunk.newStart;
+        lines = hunk.lines;
+        lastNormalLine = hunk.newStart;
+        // codePosition = format[0].hunks[0].newStart; // filter to remove all the non retarded lines
+        // const lines = format[0].hunks[0].lines;
+        // let lastNormalLine: number = format[0].hunks[0].newStart;
+        for await (let [index, _line] of lines.entries()) {
+          // just do _line[0] === '+' instead
+          if (_line.startsWith("+") || _line.startsWith("-")) {
+            // do something if it's a minus
+            // last normal line, so if it's a minus, the position will be the last normal line
+            let line = 0;
+            if (_line.startsWith("+")) {
+              line = index + codePosition;
+            } else {
+              line = lastNormalLine;
             }
+            // let line = index + codePosition;
+            console.log(line);
+            let characterIndex =
+              e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
+            let symbolPosition = new vscode.Position(
+              line,
+              characterIndex
+              // e.document.lineAt(line).firstNonWhitespaceCharacterIndex // this is throwing an error
+            );
 
-            let comment = await getSymbolFromCommentRange(symbols, range); // just delete the comment from the symbol range in sync
-            console.log("comemnte edited");
-            if (comment) {
-              changedComments.push(comment.name);
-            }
-            console.log(comment?.name);
-            // get function from comment range
-            // check if comment
-            continue;
-          } // put else here
-          // instead of check comment, get comment
-          let range = getCommentRange(
-            symbol.range.start.line - 2,
-            text.split("\n")
-          );
+            let symbol = await this._codeEditor.getSymbolFromPosition(
+              symbols,
+              symbolPosition
+            );
+            if (!symbol) {
+              let range = getCommentRange(line, text.split("\n")); // because we're freaking cool
 
-          if (symbol.kind === vscode.SymbolKind.Class) {
-            let functionRange = getCommentRange(line, text.split("\n"));
-            if (functionRange) {
-              let comment = await getSymbolFromCommentRange(
-                symbols,
-                functionRange
-              ); // just delete the comment from the symbol range in sync
+              if (!range) {
+                continue;
+              }
+
+              let comment = await getSymbolFromCommentRange(symbols, range); // just delete the comment from the symbol range in sync
               console.log("comemnte edited");
               if (comment) {
                 changedComments.push(comment.name);
               }
               console.log(comment?.name);
+              // get function from comment range
+              // check if comment
               continue;
+            } // put else here
+            // instead of check comment, get comment
+            let range = getCommentRange(
+              symbol.range.start.line - 2,
+              text.split("\n")
+            );
+
+            if (symbol.kind === vscode.SymbolKind.Class) {
+              let functionRange = getCommentRange(line, text.split("\n"));
+              if (functionRange) {
+                let comment = await getSymbolFromCommentRange(
+                  symbols,
+                  functionRange
+                ); // just delete the comment from the symbol range in sync
+                console.log("comemnte edited");
+                if (comment) {
+                  changedComments.push(comment.name);
+                }
+                console.log(comment?.name);
+                continue;
+              }
             }
-          }
 
-          if (!range) {
-            continue; // no range
-          }
-
-          let fileName = e.document.fileName;
-
-          let idx = linesChanged.findIndex((e) => {
-            if (!symbol) {
-              return false;
+            if (!range) {
+              continue; // no range
             }
-            if (e.file === fileName && e.function === symbol.name) {
-              return true;
-            } else {
-              return false;
-            }
-          });
 
-          if (idx !== -1) {
-            linesChanged[idx].changesCount += 1;
-          } else {
-            linesChanged.push({
-              file: e.document.fileName, // get start line instead of end line
-              function: symbol.name,
-              range,
-              changesCount: 1,
+            let fileName = e.document.fileName;
+
+            let idx = linesChanged.findIndex((e) => {
+              if (!symbol) {
+                return false;
+              }
+              if (e.file === fileName && e.function === symbol.name) {
+                return true;
+              } else {
+                return false;
+              }
             });
+
+            if (idx !== -1) {
+              linesChanged[idx].changesCount += 1;
+            } else {
+              linesChanged.push({
+                file: e.document.fileName, // get start line instead of end line
+                function: symbol.name,
+                range,
+                changesCount: 1,
+              });
+            }
+          } else {
+            lastNormalLine = index + codePosition;
           }
-        } else {
-          lastNormalLine = index + codePosition;
         }
       }
+      // update all other ones with the proper offsets after all changed lines. You can do this by getting all the comment ranges once again for each of the functions
 
       console.log("lines changing"); // open new folder update decorations from sync file
       console.log(linesChanged);
 
       this._document = text;
+      // update lineschanged to get new comment bounds
       linesChanged = this.syncWithFileChanges(linesChanged, changedComments); // add deleted array which runs a filter for the name
       console.log(linesChanged);
       this.writeToFile(linesChanged);
