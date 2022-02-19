@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import * as child_process from "child_process";
 import * as Diff from "diff";
-import * as Git from "nodegit";
 import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
+import "../git";
 import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
 import {
   getAllSymbolsFromDocument,
@@ -16,9 +16,11 @@ import {
   updateDecorations,
 } from "./utils";
 import { getCommentRange, getSymbolFromCommentRange } from "./comments";
+import { GitExtension } from "../git";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | null;
+  // private _repository: Git.Repository | undefined;
   private _comments: vscode.Range[];
   private _commentsToDelete: vscode.Range[];
   private _path: string | undefined;
@@ -27,6 +29,12 @@ export default class CommentSyncProvider {
     this._document = getDocumentText();
     this._comments = [];
     this._commentsToDelete = [];
+    const gitExtension =
+      vscode.extensions.getExtension<GitExtension>("vscode.git")?.exports;
+    if (gitExtension) {
+      const git = gitExtension.getAPI(1);
+      console.log(git);
+    }
     // get list of code and comments to that code with that initial diff, then you can check which comments have been edited
     /**
      * So like {
@@ -117,6 +125,11 @@ export default class CommentSyncProvider {
       if (!text) {
         return;
       }
+
+      // const repository = await Repository.open(
+      //   vscode.workspace.workspaceFolders[0].uri.fsPath
+      // );
+      // console.log(repository);
 
       // here
       let format = this.getDiffLines(this._document, text, e.document.fileName);

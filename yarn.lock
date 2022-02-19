@@ -172,13 +172,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.0.tgz#98df2397f6936bfbff4f089e40e06fa5dd88d32a"
   integrity sha512-0GeIl2kmVMXEnx8tg1SlG6Gg8vkqirrW752KqolYo1PHevhhZN3bhJ67qHj+bQaINhX0Ra3TlWwRvMCd9iEfNQ==
 
-"@types/nodegit@^0.27.9":
-  version "0.27.9"
-  resolved "https://registry.yarnpkg.com/@types/nodegit/-/nodegit-0.27.9.tgz#9c7ae76398fcc837c14b0f812eb805c09a45ea79"
-  integrity sha512-rkJ5a945dUUnkujlrjhjmF7FoB214nWvigMovibP4VCGBrwDBaQAVtJcFPhbavYSJuiIHU0Gex9J6Y4q7NBWMg==
-  dependencies:
-    "@types/node" "*"
-
 "@types/sqlite3@^3.1.8":
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/@types/sqlite3/-/sqlite3-3.1.8.tgz#e64310c5841fc01c1a8795d960d951e4cf940296"
