@@ -1,5 +1,6 @@
 import { PRIORITY_BELOW_NORMAL } from "constants";
 import * as vscode from "vscode";
+import { IChange } from "./interfaces";
 
 const getCommentRange = (
   line: number,
