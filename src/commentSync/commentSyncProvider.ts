@@ -295,7 +295,7 @@ export default class CommentSyncProvider {
           return false;
         }
         return true;
-      });
+      }); // check if function name has been changed
       updateDecorations(filteredChanges); // get initial vscode highlight color
       console.log("saving");
     });

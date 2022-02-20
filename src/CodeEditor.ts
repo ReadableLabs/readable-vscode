@@ -366,8 +366,7 @@ export default class CodeEditor {
             if (
               (symbols[i].children[k].kind === vscode.SymbolKind.Method ||
                 symbols[i].children[k].kind === vscode.SymbolKind.Function ||
-                symbols[i].children[k].kind === vscode.SymbolKind.Constant ||
-                symbols[i].children[k].kind === vscode.SymbolKind.Property) &&
+                symbols[i].children[k].kind === vscode.SymbolKind.Constant) &&
               symbols[i].children[k].range.start.line <= position.line &&
               symbols[i].children[k].range.end.line >= position.line
             ) {

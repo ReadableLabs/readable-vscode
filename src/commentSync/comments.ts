@@ -88,8 +88,9 @@ const getNewCommentRanges = (
   fileName: string,
   textDocument: string[]
 ) => {
-  let allComments = changes;
-  for (let [index, comment] of allComments.entries()) {
+  let currentComments = changes;
+  let allComments: IChange[] = [];
+  for (let [index, comment] of currentComments.entries()) {
     if (comment.file === fileName) {
       let symbol = getSymbolFromName(symbols, comment.function);
       if (!symbol) {
@@ -99,7 +100,8 @@ const getNewCommentRanges = (
       if (!range) {
         continue;
       }
-      allComments[index].range = range;
+      currentComments[index].range = range;
+      allComments.push(currentComments[index]);
     }
   }
   return allComments;
