@@ -1,4 +1,3 @@
-import { PRIORITY_BELOW_NORMAL } from "constants";
 import * as vscode from "vscode";
 import { IChange } from "./interfaces";
 import { getSymbolFromName } from "./utils";
@@ -39,6 +38,7 @@ const getCommentRange = (
         endLine++;
         continue;
       } else {
+        // to get parameters changed, get start range, get start character, and traverse the lines + characters (string as single line) until you find the )
         return;
       }
     } else if (document[endLine].includes("*/")) {

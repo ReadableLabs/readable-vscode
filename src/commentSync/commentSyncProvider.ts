@@ -168,6 +168,7 @@ export default class CommentSyncProvider {
 
       let lines: string[] = [];
       let lastNormalLine: number = 0;
+      let hasReturnChanged: boolean = false;
       for (let hunk of format[0].hunks) {
         codePosition = hunk.newStart;
         lines = hunk.lines;
@@ -176,8 +177,12 @@ export default class CommentSyncProvider {
         // const lines = format[0].hunks[0].lines;
         // let lastNormalLine: number = format[0].hunks[0].newStart;
         for await (let [index, _line] of lines.entries()) {
+          hasReturnChanged = false;
           // just do _line[0] === '+' instead
           if (_line.startsWith("+") || _line.startsWith("-")) {
+            if (_line.includes("return")) {
+              hasReturnChanged = true;
+            }
             // do something if it's a minus
             // last normal line, so if it's a minus, the position will be the last normal line
             let line = 0;
@@ -258,14 +263,16 @@ export default class CommentSyncProvider {
 
             if (idx !== -1) {
               linesChanged[idx].changesCount += 1;
+              linesChanged[idx].isReturnChanged = hasReturnChanged;
+              linesChanged[idx].range = range;
             } else {
               linesChanged.push({
-                file: e.document.fileName, // get start line instead of end line
+                file: e.document.fileName,
                 function: symbol.name,
                 range,
                 changesCount: 1,
                 isArgsChanged: false,
-                isReturnChanged: false,
+                isReturnChanged: hasReturnChanged,
               });
             }
           } else {
@@ -273,18 +280,15 @@ export default class CommentSyncProvider {
           }
         }
       }
-      // update all other ones with the proper offsets after all changed lines. You can do this by getting all the comment ranges once again for each of the functions
-
       console.log("lines changing"); // open new folder update decorations from sync file
       console.log(linesChanged);
 
       this._document = text;
-      // update lineschanged to get new comment bounds
       linesChanged = this.syncWithFileChanges(
         linesChanged,
         changedComments,
         symbols
-      ); // add deleted array which runs a filter for the name
+      );
       let updatedRanges = getNewCommentRanges(
         symbols,
         linesChanged,
