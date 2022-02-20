@@ -19,6 +19,7 @@ import {
   getCommentRange,
   getNewCommentRanges,
   getSymbolFromCommentRange,
+  getValidCommentRanges,
 } from "./comments";
 import { API, GitExtension } from "../@types/git";
 export default class CommentSyncProvider {
@@ -263,6 +264,8 @@ export default class CommentSyncProvider {
                 function: symbol.name,
                 range,
                 changesCount: 1,
+                isArgsChanged: false,
+                isReturnChanged: false,
               });
             }
           } else {
@@ -288,9 +291,16 @@ export default class CommentSyncProvider {
         e.document.fileName,
         text.split("\n")
       );
-      console.log(updatedRanges);
-      this.writeToFile(updatedRanges);
-      let filteredChanges = updatedRanges.filter((change) => {
+
+      let validRanges = getValidCommentRanges(
+        updatedRanges,
+        text.split("\n"),
+        e.document.fileName
+      );
+
+      console.log(validRanges);
+      this.writeToFile(validRanges);
+      let filteredChanges = validRanges.filter((change) => {
         if (change.file !== e.document.fileName) {
           return false;
         }

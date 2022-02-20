@@ -11,8 +11,8 @@ const getCommentRange = (
     throw new Error("Error: no active text editor");
   }
 
-  let startLine = line,
-    endLine = line;
+  let startLine = line >= 0 ? line : 0,
+    endLine = line >= 0 ? line : 0;
 
   while (startLine > 0) {
     if (document[startLine].includes("*/")) {
@@ -30,7 +30,9 @@ const getCommentRange = (
     startLine--;
   }
 
-  while (endLine < document.length) {
+  while (endLine < document.length - 1) {
+    console.log("end line " + endLine);
+    // try -1
     // TODO: refactor to remove all whitespace and check. Benchmark results
     if (document[endLine].includes("/*")) {
       if (endLine === line) {
@@ -107,6 +109,26 @@ const getNewCommentRanges = (
   return allComments;
 };
 
+const getValidCommentRanges = (
+  changes: IChange[],
+  document: string[],
+  fileName: string
+) => {
+  let allChanges: IChange[] = [];
+  for (let change of changes) {
+    if (change.file !== fileName) {
+      continue;
+    }
+    if (
+      document[change.range.start.line].includes("/*") &&
+      document[change.range.end.line].includes("*/")
+    ) {
+      allChanges.push(change);
+    }
+  }
+  return allChanges;
+};
+
 const getSymbolFromCommentRange = (
   symbols: vscode.DocumentSymbol[],
   commentRange: vscode.Range
@@ -129,4 +151,9 @@ const getSymbolFromCommentRange = (
   return;
 };
 
-export { getCommentRange, getSymbolFromCommentRange, getNewCommentRanges };
+export {
+  getCommentRange,
+  getSymbolFromCommentRange,
+  getNewCommentRanges,
+  getValidCommentRanges,
+};

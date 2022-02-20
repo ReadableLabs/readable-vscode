@@ -13,6 +13,8 @@ interface IUnknownChange {
   file: string;
   function: string;
   changesCount: number;
+  isReturnChanged: boolean;
+  isArgsChanged: boolean;
 }
 
 export interface IChange extends IUnknownChange {
