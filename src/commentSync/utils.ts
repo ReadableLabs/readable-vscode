@@ -127,11 +127,28 @@ const getDocumentText = () => {
   );
 };
 
+const getSymbolFromName = (symbols: vscode.DocumentSymbol[], name: string) => {
+  for (let symbol of symbols) {
+    if (symbol.name === name) {
+      return symbol;
+    }
+    if (symbol.children) {
+      for (let child of symbol.children) {
+        if (child.name === name) {
+          return child;
+        }
+      }
+    }
+  }
+  return null;
+};
+
 export {
   getCurrentChanges,
   getDocumentTextFromEditor,
   getRangeFromParsedChange,
   getAllSymbolsFromDocument,
+  getSymbolFromName,
   updateDecorations,
   getDocumentText,
   getFileChanges,

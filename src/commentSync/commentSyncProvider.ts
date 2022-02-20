@@ -11,10 +11,15 @@ import {
   getDocumentText,
   getDocumentTextFromEditor,
   getFileChanges,
+  getSymbolFromName,
   isInComment,
   updateDecorations,
 } from "./utils";
-import { getCommentRange, getSymbolFromCommentRange } from "./comments";
+import {
+  getCommentRange,
+  getNewCommentRanges,
+  getSymbolFromCommentRange,
+} from "./comments";
 import { API, GitExtension } from "../@types/git";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
@@ -144,7 +149,9 @@ export default class CommentSyncProvider {
       let path = vscode.workspace.workspaceFolders[0].uri;
 
       const folder = await this._git?.openRepository(path);
-      folder?.blame("");
+      // let file = await folder?.blame("Dockerfile");
+      // console.log(file);
+      // console.log(await folder?.blame("Dockerfile"));
 
       // let revision = child_process
       //   .execSync("git -C " + path + " rev-parse HEAD")
@@ -188,7 +195,7 @@ export default class CommentSyncProvider {
               // e.document.lineAt(line).firstNonWhitespaceCharacterIndex // this is throwing an error
             );
 
-            let symbol = await this._codeEditor.getSymbolFromPosition(
+            let symbol = await CodeEditor.getSymbolFromPosition(
               symbols,
               symbolPosition
             );
@@ -270,10 +277,20 @@ export default class CommentSyncProvider {
 
       this._document = text;
       // update lineschanged to get new comment bounds
-      linesChanged = this.syncWithFileChanges(linesChanged, changedComments); // add deleted array which runs a filter for the name
-      console.log(linesChanged);
-      this.writeToFile(linesChanged);
-      let filteredChanges = linesChanged.filter((change) => {
+      linesChanged = this.syncWithFileChanges(
+        linesChanged,
+        changedComments,
+        symbols
+      ); // add deleted array which runs a filter for the name
+      let updatedRanges = getNewCommentRanges(
+        symbols,
+        linesChanged,
+        e.document.fileName,
+        text.split("\n")
+      );
+      console.log(updatedRanges);
+      this.writeToFile(updatedRanges);
+      let filteredChanges = updatedRanges.filter((change) => {
         if (change.file !== e.document.fileName) {
           return false;
         }
@@ -304,7 +321,8 @@ export default class CommentSyncProvider {
   public syncWithNewChanges(
     changes: IChange[],
     newChanges: IChange[],
-    commentsToDelete: string[]
+    commentsToDelete: string[],
+    symbols: vscode.DocumentSymbol[]
   ): IChange[] {
     let allChanges: IChange[] = changes;
     for (let change of newChanges) {
@@ -322,6 +340,8 @@ export default class CommentSyncProvider {
         allChanges.push(change);
       }
     }
+
+    // delete the filtered comments
     let filtered = allChanges.filter((change) => {
       for (let functionName of commentsToDelete) {
         if (change.function === functionName) {
@@ -330,6 +350,7 @@ export default class CommentSyncProvider {
       }
       return true;
     });
+
     return filtered;
   }
 
@@ -366,7 +387,11 @@ export default class CommentSyncProvider {
     }
   }
 
-  public syncWithFileChanges(changes: IChange[], commentsToDelete: string[]) {
+  public syncWithFileChanges(
+    changes: IChange[],
+    commentsToDelete: string[],
+    symbols: vscode.DocumentSymbol[]
+  ) {
     if (vscode.workspace.workspaceFolders) {
       const sync = path.join(
         vscode.workspace.workspaceFolders[0].uri.fsPath,
@@ -385,7 +410,8 @@ export default class CommentSyncProvider {
       const allChanges = this.syncWithNewChanges(
         fileData,
         changes,
-        commentsToDelete
+        commentsToDelete,
+        symbols
       );
       return allChanges;
     }

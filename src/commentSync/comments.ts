@@ -1,6 +1,7 @@
 import { PRIORITY_BELOW_NORMAL } from "constants";
 import * as vscode from "vscode";
 import { IChange } from "./interfaces";
+import { getSymbolFromName } from "./utils";
 
 const getCommentRange = (
   line: number,
@@ -81,6 +82,29 @@ const getCommentRange = (
   );
 };
 
+const getNewCommentRanges = (
+  symbols: vscode.DocumentSymbol[],
+  changes: IChange[],
+  fileName: string,
+  textDocument: string[]
+) => {
+  let allComments = changes;
+  for (let [index, comment] of allComments.entries()) {
+    if (comment.file === fileName) {
+      let symbol = getSymbolFromName(symbols, comment.function);
+      if (!symbol) {
+        continue;
+      }
+      let range = getCommentRange(symbol.range.start.line - 1, textDocument);
+      if (!range) {
+        continue;
+      }
+      allComments[index].range = range;
+    }
+  }
+  return allComments;
+};
+
 const getSymbolFromCommentRange = (
   symbols: vscode.DocumentSymbol[],
   commentRange: vscode.Range
@@ -103,4 +127,4 @@ const getSymbolFromCommentRange = (
   return;
 };
 
-export { getCommentRange, getSymbolFromCommentRange };
+export { getCommentRange, getSymbolFromCommentRange, getNewCommentRanges };

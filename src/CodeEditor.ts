@@ -338,7 +338,7 @@ export default class CodeEditor {
       if (symbol.children) {
         for (let child of symbol.children) {
           if (child.name === name) {
-            return symbol;
+            return child;
           }
         }
       }
@@ -346,7 +346,7 @@ export default class CodeEditor {
     return null;
   }
 
-  public async getSymbolFromPosition(
+  public static async getSymbolFromPosition(
     symbols: vscode.DocumentSymbol[],
     position: vscode.Position
   ) {
@@ -392,7 +392,7 @@ export default class CodeEditor {
     if (symbols === []) {
       throw new Error("Error: No symbols");
     }
-    return await this.getSymbolFromPosition(symbols, position);
+    return await CodeEditor.getSymbolFromPosition(symbols, position);
   }
 
   public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
