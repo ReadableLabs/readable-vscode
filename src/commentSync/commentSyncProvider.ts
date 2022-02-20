@@ -4,7 +4,6 @@ import * as Diff from "diff";
 import * as fs from "fs";
 import * as path from "path";
 import CodeEditor from "../CodeEditor";
-import "../git";
 import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
 import {
   getAllSymbolsFromDocument,
@@ -16,10 +15,11 @@ import {
   updateDecorations,
 } from "./utils";
 import { getCommentRange, getSymbolFromCommentRange } from "./comments";
-import { GitExtension } from "../git";
+import { API, GitExtension } from "../@types/git";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | null;
+  private _git: API | undefined;
   // private _repository: Git.Repository | undefined;
   private _comments: vscode.Range[];
   private _commentsToDelete: vscode.Range[];
@@ -30,9 +30,10 @@ export default class CommentSyncProvider {
     this._comments = [];
     this._commentsToDelete = [];
     const gitExtension =
-      vscode.extensions.getExtension<GitExtension>("vscode.git")?.exports;
+      vscode.extensions.getExtension<GitExtension>("vscode.git");
     if (gitExtension) {
-      const git = gitExtension.getAPI(1);
+      const git = gitExtension.exports.getAPI(1);
+      this._git = git;
       console.log(git);
     }
     // get list of code and comments to that code with that initial diff, then you can check which comments have been edited
@@ -140,7 +141,10 @@ export default class CommentSyncProvider {
       let codePosition = 0;
       let symbols = await getAllSymbolsFromDocument(e.document);
 
-      let path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+      let path = vscode.workspace.workspaceFolders[0].uri;
+
+      const folder = await this._git?.openRepository(path);
+      folder?.blame("");
 
       // let revision = child_process
       //   .execSync("git -C " + path + " rev-parse HEAD")
