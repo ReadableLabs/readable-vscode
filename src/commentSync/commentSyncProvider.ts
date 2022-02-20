@@ -109,7 +109,7 @@ export default class CommentSyncProvider {
     });
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
-    vscode.workspace.onWillSaveTextDocument(async (e) => {
+    vscode.workspace.onDidSaveTextDocument(async (e) => {
       // change on will save to on did save
       let _supportedLanguages = [
         "javascript",
@@ -127,10 +127,10 @@ export default class CommentSyncProvider {
       if (!this._document) {
         return;
       }
-      if (!_supportedLanguages.includes(e.document.languageId)) {
+      if (!_supportedLanguages.includes(e.languageId)) {
         return;
       }
-      let text = getDocumentTextFromEditor(e.document);
+      let text = getDocumentTextFromEditor(e);
       if (!text) {
         return;
       }
@@ -141,13 +141,13 @@ export default class CommentSyncProvider {
       // console.log(repository);
 
       // here
-      let format = this.getDiffLines(this._document, text, e.document.fileName);
+      let format = this.getDiffLines(this._document, text, e.fileName);
 
       let changedComments: string[] = [];
 
       let linesChanged: IChange[] = [];
       let codePosition = 0;
-      let symbols = await getAllSymbolsFromDocument(e.document);
+      let symbols = await getAllSymbolsFromDocument(e);
 
       // let path = vscode.workspace.workspaceFolders[0].uri;
 
@@ -200,7 +200,7 @@ export default class CommentSyncProvider {
             // let line = index + codePosition;
             console.log(line);
             let characterIndex =
-              e.document.lineAt(line).firstNonWhitespaceCharacterIndex;
+              e.lineAt(line).firstNonWhitespaceCharacterIndex;
             let symbolPosition = new vscode.Position(
               line,
               characterIndex
@@ -259,8 +259,8 @@ export default class CommentSyncProvider {
             }
             if (parametersRange) {
               if (
-                line >= parametersRange.start.line &&
-                line <= parametersRange.end.line
+                lastNormalLine >= parametersRange.start.line &&
+                lastNormalLine <= parametersRange.end.line
               ) {
                 hasParametersChanged = true;
               }
@@ -272,7 +272,7 @@ export default class CommentSyncProvider {
               continue; // no range
             }
 
-            let fileName = e.document.fileName;
+            let fileName = e.fileName;
 
             let idx = linesChanged.findIndex((e) => {
               if (!symbol) {
@@ -287,12 +287,18 @@ export default class CommentSyncProvider {
 
             if (idx !== -1) {
               linesChanged[idx].changesCount += 1;
-              linesChanged[idx].isArgsChanged = hasParametersChanged;
-              linesChanged[idx].isReturnChanged = hasReturnChanged;
+              linesChanged[idx].isArgsChanged =
+                linesChanged[idx].isArgsChanged === true
+                  ? true
+                  : hasParametersChanged;
+              linesChanged[idx].isReturnChanged =
+                linesChanged[idx].isReturnChanged === true
+                  ? true
+                  : hasReturnChanged;
               linesChanged[idx].range = range;
             } else {
               linesChanged.push({
-                file: e.document.fileName,
+                file: e.fileName,
                 function: symbol.name,
                 range,
                 changesCount: 1,
@@ -317,7 +323,7 @@ export default class CommentSyncProvider {
       let validRanges = getNewCommentRanges(
         symbols,
         linesChanged,
-        e.document.fileName,
+        e.fileName,
         text.split("\n")
       );
 
@@ -330,7 +336,7 @@ export default class CommentSyncProvider {
       console.log(validRanges);
       this.writeToFile(validRanges);
       let filteredChanges = validRanges.filter((change) => {
-        if (change.file !== e.document.fileName) {
+        if (change.file !== e.fileName) {
           return false;
         }
         return true;
@@ -373,6 +379,22 @@ export default class CommentSyncProvider {
       if (index !== -1) {
         allChanges[index].changesCount += change.changesCount; // check if comment is above
         allChanges[index].range = change.range; // update comment range
+        allChanges[index].isArgsChanged =
+          allChanges[index].isArgsChanged === true
+            ? true
+            : change.isArgsChanged;
+        allChanges[index].isReturnChanged =
+          allChanges[index].isReturnChanged === true
+            ? true
+            : change.isReturnChanged;
+        // allChanges[index].isArgsChanged =
+        //   allChanges[index].isArgsChanged === true
+        //     ? true
+        //     : change.isArgsChanged;
+        // allChanges[index].isReturnChanged =
+        //   allChanges[index].isReturnChanged === true
+        //     ? true
+        //     : change.isReturnChanged;
       } else {
         allChanges.push(change);
       }

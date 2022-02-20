@@ -76,8 +76,8 @@ const toChange = (parsedChanges: IParsedChange[]) => {
       function: change.function,
       range: range,
       changesCount: change.changesCount,
-      isArgsChanged: false,
-      isReturnChanged: false,
+      isArgsChanged: change.isArgsChanged,
+      isReturnChanged: change.isReturnChanged,
     });
   }
   return changes;
