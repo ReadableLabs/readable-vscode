@@ -7,6 +7,9 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   {
     backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
     overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
+    // outlineColor: "yellow",
+    // outlineWidth: "1px",
+    // borderStyle: "solid",
     overviewRulerLane: vscode.OverviewRulerLane.Right,
   }
 );
@@ -145,6 +148,37 @@ const getSymbolFromName = (symbols: vscode.DocumentSymbol[], name: string) => {
   return null;
 };
 
+/**
+ * gets parameters for text
+ * @param text the text of the file
+ */
+const getParametersRange = (symbol: vscode.DocumentSymbol, text: string[]) => {
+  let open = 0,
+    close = 0,
+    initialLine = 0,
+    initialCharacter = 0;
+  for (let i = symbol.range.start.line; i < symbol.range.end.line; i++) {
+    for (let b = 0; b < text[i].length; b++) {
+      if (text[i][b] === "(") {
+        if (open === 0) {
+          initialLine = i;
+          initialCharacter = b;
+        }
+        open++;
+      } else if (text[i][b] === ")") {
+        close++;
+      }
+      if (close >= open && close !== 0 && open !== 0) {
+        return new vscode.Range(
+          new vscode.Position(initialLine, initialCharacter),
+          new vscode.Position(i, b)
+        ); // ok
+      }
+    }
+  }
+  return;
+};
+
 export {
   getCurrentChanges,
   getDocumentTextFromEditor,
@@ -154,5 +188,6 @@ export {
   updateDecorations,
   getDocumentText,
   getFileChanges,
+  getParametersRange,
   isInComment,
 };

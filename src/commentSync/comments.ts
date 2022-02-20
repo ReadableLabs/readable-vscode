@@ -102,8 +102,13 @@ const getNewCommentRanges = (
       if (!range) {
         continue;
       }
-      currentComments[index].range = range;
-      allComments.push(currentComments[index]);
+      if (
+        textDocument[range.start.line].includes("/*") &&
+        textDocument[range.end.line].includes("*/")
+      ) {
+        currentComments[index].range = range;
+        allComments.push(currentComments[index]);
+      }
     }
   }
   return allComments;

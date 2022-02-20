@@ -11,6 +11,7 @@ import {
   getDocumentText,
   getDocumentTextFromEditor,
   getFileChanges,
+  getParametersRange,
   getSymbolFromName,
   isInComment,
   updateDecorations,
@@ -109,6 +110,7 @@ export default class CommentSyncProvider {
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
     vscode.workspace.onWillSaveTextDocument(async (e) => {
+      // change on will save to on did save
       let _supportedLanguages = [
         "javascript",
         "javascriptreact",
@@ -147,9 +149,9 @@ export default class CommentSyncProvider {
       let codePosition = 0;
       let symbols = await getAllSymbolsFromDocument(e.document);
 
-      let path = vscode.workspace.workspaceFolders[0].uri;
+      // let path = vscode.workspace.workspaceFolders[0].uri;
 
-      const folder = await this._git?.openRepository(path);
+      // const folder = await this._git?.openRepository(path);
       // let file = await folder?.blame("Dockerfile");
       // console.log(file);
       // console.log(await folder?.blame("Dockerfile"));
@@ -168,6 +170,7 @@ export default class CommentSyncProvider {
 
       let lines: string[] = [];
       let lastNormalLine: number = 0;
+      let hasParametersChanged: boolean = false;
       let hasReturnChanged: boolean = false;
       for (let hunk of format[0].hunks) {
         codePosition = hunk.newStart;
@@ -177,16 +180,19 @@ export default class CommentSyncProvider {
         // const lines = format[0].hunks[0].lines;
         // let lastNormalLine: number = format[0].hunks[0].newStart;
         for await (let [index, _line] of lines.entries()) {
+          hasParametersChanged = false;
           hasReturnChanged = false;
           // just do _line[0] === '+' instead
-          if (_line.startsWith("+") || _line.startsWith("-")) {
+          // if (_line.startsWith("+") || _line.startsWith("-")) {
+          if (_line[0] === "+" || _line[0] === "-") {
             if (_line.includes("return")) {
               hasReturnChanged = true;
             }
             // do something if it's a minus
             // last normal line, so if it's a minus, the position will be the last normal line
             let line = 0;
-            if (_line.startsWith("+")) {
+            // if (_line.startsWith("+")) {
+            if (_line[0] === "+") {
               line = index + codePosition;
             } else {
               line = lastNormalLine;
@@ -228,6 +234,9 @@ export default class CommentSyncProvider {
               text.split("\n")
             );
 
+            console.log("symbol range");
+            console.log(symbol.selectionRange);
+
             if (symbol.kind === vscode.SymbolKind.Class) {
               let functionRange = getCommentRange(line, text.split("\n"));
               if (functionRange) {
@@ -243,6 +252,21 @@ export default class CommentSyncProvider {
                 continue;
               }
             }
+
+            let parametersRange = getParametersRange(symbol, text.split("\n"));
+            if (!parametersRange) {
+              hasParametersChanged = false;
+            }
+            if (parametersRange) {
+              if (
+                line >= parametersRange.start.line &&
+                line <= parametersRange.end.line
+              ) {
+                hasParametersChanged = true;
+              }
+            }
+            console.log("parameters");
+            console.log(parametersRange);
 
             if (!range) {
               continue; // no range
@@ -263,6 +287,7 @@ export default class CommentSyncProvider {
 
             if (idx !== -1) {
               linesChanged[idx].changesCount += 1;
+              linesChanged[idx].isArgsChanged = hasParametersChanged;
               linesChanged[idx].isReturnChanged = hasReturnChanged;
               linesChanged[idx].range = range;
             } else {
@@ -271,7 +296,7 @@ export default class CommentSyncProvider {
                 function: symbol.name,
                 range,
                 changesCount: 1,
-                isArgsChanged: false,
+                isArgsChanged: hasParametersChanged,
                 isReturnChanged: hasReturnChanged,
               });
             }
@@ -289,18 +314,18 @@ export default class CommentSyncProvider {
         changedComments,
         symbols
       );
-      let updatedRanges = getNewCommentRanges(
+      let validRanges = getNewCommentRanges(
         symbols,
         linesChanged,
         e.document.fileName,
         text.split("\n")
       );
 
-      let validRanges = getValidCommentRanges(
-        updatedRanges,
-        text.split("\n"),
-        e.document.fileName
-      );
+      // let validRanges = getValidCommentRanges(
+      //   updatedRanges,
+      //   text.split("\n"),
+      //   e.document.fileName
+      // );
 
       console.log(validRanges);
       this.writeToFile(validRanges);
@@ -314,8 +339,6 @@ export default class CommentSyncProvider {
       console.log("saving");
     });
   }
-
-  private onTextEditorChange(e: vscode.TextEditor | undefined) {}
 
   private onWorkspaceChange(e: vscode.WorkspaceFoldersChangeEvent) {
     // make work with multiple workspace folders
