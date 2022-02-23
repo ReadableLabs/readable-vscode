@@ -32,7 +32,7 @@ export const provideDocstring = async (
     }
 
     // Get the line number of the cursor position, and make sure it's not out of range.
-    let codeSymbol = await codeEditor.getSymbolUnderCusor(
+    let codeSymbol = await CodeEditor.getSymbolUnderCusor(
       new vscode.Position(
         getSafeLine(position.line, document.lineCount),
         position.character

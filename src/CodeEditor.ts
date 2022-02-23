@@ -19,38 +19,34 @@ export default class CodeEditor {
   private _activeEditor: vscode.TextEditor | undefined;
   constructor(editor?: vscode.TextEditor) {
     console.log("new codereader");
-    this._activeEditor = vscode.window.activeTextEditor;
+    // vscode.window.activeTextEditor = vscode.window.activeTextEditor;
 
     if (editor) {
-      this._activeEditor = editor;
+      //   vscode.window.activeTextEditor = editor;
       console.log(editor.document);
     }
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
-      this._activeEditor = e;
+      //   vscode.window.activeTextEditor = e;
     });
   }
-  public getSpacesFromLine(lineNumber: number): number {
-    if (!this._activeEditor) {
-      throw new Error("Error: No active text editor");
-    }
-
+  public static getSpacesFromLine(lineNumber: number): number {
     return this.getSpaces(this.getLine(lineNumber));
   }
 
-  public getLine(lineNumber: number): string {
-    if (!this._activeEditor) {
+  public static getLine(lineNumber: number): string {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: No active text editor");
     }
 
-    return this._activeEditor.document.lineAt(lineNumber).text;
+    return vscode.window.activeTextEditor.document.lineAt(lineNumber).text;
   }
 
-  public getLanguageId() {
-    if (!this._activeEditor) {
+  public static getLanguageId() {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: No active text editor");
     }
-    return this._activeEditor.document.languageId; //returns the language id of the active editor
+    return vscode.window.activeTextEditor.document.languageId; //returns the language id of the active editor
   }
 
   /**
@@ -58,7 +54,7 @@ export default class CodeEditor {
    * @param {string} text - the string to get the number of spaces from
    * @returns {number} the number of spaces at the beginning of the string
    */
-  public getSpaces(text: string): number {
+  public static getSpaces(text: string): number {
     return text.search(/\S/);
   }
 
@@ -89,7 +85,7 @@ export default class CodeEditor {
    * @param language
    * @returns hafjsdhfuadf
    */
-  public formatText(
+  public static formatText(
     comment: string,
     _spaces: number,
     language?: string
@@ -97,7 +93,7 @@ export default class CodeEditor {
     let spaces = 0; // a comment4
     let currentLanguage = language // 2
       ? language
-      : this._activeEditor?.document.languageId;
+      : vscode.window.activeTextEditor?.document.languageId;
     if (!currentLanguage) {
       throw new Error("Error: Unable to retrieve language");
     }
@@ -158,11 +154,11 @@ export default class CodeEditor {
    * @param {vscode.Selection} selection - the current selection.
    * @returns {string} the text from the current selection.
    */
-  public getTextFromSelection(selection: vscode.Selection): string {
-    if (!this._activeEditor) {
+  public static getTextFromSelection(selection: vscode.Selection): string {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: Unable to get active editor");
     }
-    return this._activeEditor?.document.getText(
+    return vscode.window.activeTextEditor.document.getText(
       new vscode.Range(selection.start, selection.end)
     );
   }
@@ -172,28 +168,28 @@ export default class CodeEditor {
    * @param {vscode.DocumentSymbol} symbol - the symbol to get the text from.
    * @returns {string} the text from the given symbol.
    */
-  public getTextFromSymbol(symbol: vscode.DocumentSymbol) {
-    if (!this._activeEditor) {
+  public static getTextFromSymbol(symbol: vscode.DocumentSymbol) {
+    if (!vscode.window.activeTextEditor) {
       // if there's no active editor, throw an error
       throw new Error("Error: Unable to get active editor");
     }
-    return this._activeEditor.document.getText(symbol.range);
+    return vscode.window.activeTextEditor.document.getText(symbol.range);
   }
 
-  public async insertTextAtPosition(
+  public static async insertTextAtPosition(
     text: string,
     position: vscode.Position
   ): Promise<void> {
-    if (!this._activeEditor) {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: No active text editor");
     }
 
-    await this._activeEditor.edit((editBuilder) => {
+    await vscode.window.activeTextEditor.edit((editBuilder) => {
       // insert the snippet
       editBuilder.insert(position, text);
     });
     // let snippet = new vscode.SnippetString(text); // create a snippet
-    // let result = await this._activeEditor?.insertSnippet(snippet, position); // insert the snippet
+    // let result = await vscode.window.activeTextEditor?.insertSnippet(snippet, position); // insert the snippet
     // if (!result) {
     // if the snippet failed to insert
     // throw new Error("Error: unable to insert text");
@@ -201,22 +197,24 @@ export default class CodeEditor {
     // return result;
   }
 
-  public getSelectedText(): string {
-    if (!this._activeEditor) {
+  public static getSelectedText(): string {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: No active text editor");
     }
-    return this._activeEditor.document.getText(this._activeEditor.selection);
+    return vscode.window.activeTextEditor.document.getText(
+      vscode.window.activeTextEditor.selection
+    );
   }
 
-  public hasSelection(): boolean {
-    if (!this._activeEditor) {
+  public static hasSelection(): boolean {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: No active text editor");
     }
     if (
-      this._activeEditor.selection.start.line ===
-        this._activeEditor.selection.end.line &&
-      this._activeEditor.selection.start.character ===
-        this._activeEditor.selection.end.character
+      vscode.window.activeTextEditor.selection.start.line ===
+        vscode.window.activeTextEditor.selection.end.line &&
+      vscode.window.activeTextEditor.selection.start.character ===
+        vscode.window.activeTextEditor.selection.end.character
     ) {
       return false;
     } else {
@@ -224,43 +222,47 @@ export default class CodeEditor {
     }
   }
 
-  public getSelection() {
-    if (!this._activeEditor) {
+  public static getSelection() {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: No active text editor");
     }
-    return this._activeEditor.selection;
+    return vscode.window.activeTextEditor.selection;
   }
 
-  public getCursor(): vscode.Position {
-    if (!this._activeEditor) {
+  public static getCursor(): vscode.Position {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: Unable to get cursor position");
     }
 
-    return this._activeEditor.selection.active;
+    return vscode.window.activeTextEditor.selection.active;
   }
 
-  public getCursorPosition(): number {
-    if (!this._activeEditor) {
+  public static getCursorPosition(): number {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: Unable to get cursor position");
     }
 
-    return this._activeEditor.selection.active.line;
+    return vscode.window.activeTextEditor.selection.active.line;
   }
 
-  public getTextInRange(range: vscode.Range): string {
-    if (!this._activeEditor) {
+  public static getTextInRange(range: vscode.Range): string {
+    // if (!vscode.window.activeTextEditor) {
+    //   throw new Error("Error: Unable to get active editor");
+    // }
+
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: Unable to get active editor");
     }
 
-    return this._activeEditor.document.getText(range);
+    return vscode.window.activeTextEditor.document.getText(range);
   }
 
   // Two scenarios.
   // 1st: The function is less than 20 lines
   // 2nd: THe function is greater than 20 lines
 
-  public async getFirstAndLastText(symbol: vscode.DocumentSymbol) {
-    if (!this._activeEditor) {
+  public static async getFirstAndLastText(symbol: vscode.DocumentSymbol) {
+    if (!vscode.window.activeTextEditor) {
       throw new Error("Error: Unable to get active editor");
     }
     let startLine = 0,
@@ -274,13 +276,13 @@ export default class CodeEditor {
       let endStart = symbol.range.end.line - 10;
       let endEnd = symbol.range.end.line;
 
-      const first10Lines = this._activeEditor.document.getText(
+      const first10Lines = vscode.window.activeTextEditor.document.getText(
         new vscode.Range(
           new vscode.Position(startStart, 0),
           new vscode.Position(startEnd, 0)
         )
       );
-      const last10Lines = this._activeEditor.document.getText(
+      const last10Lines = vscode.window.activeTextEditor.document.getText(
         new vscode.Range(
           new vscode.Position(endStart, 0),
           new vscode.Position(endEnd, 0)
@@ -288,8 +290,8 @@ export default class CodeEditor {
       );
       return first10Lines + "\n" + last10Lines;
     } else {
-      // console.log(this._activeEditor.document.getText(symbol.range));
-      return this._activeEditor.document.getText(symbol.range);
+      // console.log(vscode.window.activeTextEditor.document.getText(symbol.range));
+      return vscode.window.activeTextEditor.document.getText(symbol.range);
     }
 
     // if (symbol.range.end.line - 10 <= symbol.range.start.line) {
@@ -298,12 +300,15 @@ export default class CodeEditor {
     // }
   }
 
-  public async getOrCreateSymbolUnderCursor(
+  public static async getOrCreateSymbolUnderCursor(
     position: vscode.Position,
     lineCount: number
   ): Promise<vscode.DocumentSymbol> {
-    if (!this._activeEditor) {
-      throw new Error("Error: No active text editor");
+    // if (!vscode.window.activeTextEditor) {
+    //   throw new Error("Error: No active text editor");
+    // }
+    if (!vscode.window.activeTextEditor) {
+      throw new Error("Error: no active text editor");
     }
     let codeSymbol = await this.getSymbolUnderCusor(position);
     if (!codeSymbol) {
@@ -330,7 +335,10 @@ export default class CodeEditor {
     return codeSymbol;
   }
 
-  public getSymbolFromName(symbols: vscode.DocumentSymbol[], name: string) {
+  public static getSymbolFromName(
+    symbols: vscode.DocumentSymbol[],
+    name: string
+  ) {
     for (let symbol of symbols) {
       if (symbol.name === name) {
         return symbol;
@@ -383,7 +391,7 @@ export default class CodeEditor {
     return null;
   }
 
-  public async getSymbolUnderCusor(
+  public static async getSymbolUnderCusor(
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
@@ -394,15 +402,19 @@ export default class CodeEditor {
     return await CodeEditor.getSymbolFromPosition(symbols, position);
   }
 
-  public async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
-    if (!this._activeEditor) {
+  public static async getAllSymbols(): Promise<vscode.DocumentSymbol[]> {
+    // if (!vscode.window.activeTextEditor) {
+    //   return [];
+    // }
+
+    if (!vscode.window.activeTextEditor) {
       return [];
     }
 
     // this is the problem, you're using the active editor and not getting it from the whatever
     let symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
       "vscode.executeDocumentSymbolProvider", // command name
-      this._activeEditor.document.uri // command arguments
+      vscode.window.activeTextEditor.document.uri // command arguments
     );
 
     if (!symbols) {
