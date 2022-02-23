@@ -183,9 +183,10 @@ export class CodeCommentAuthenticationProvider
       return token ? [new CodeCommentPatSession(token)] : []; // return a session
     } catch (err: any) {
       console.log(err);
+      await this.removeSession(CodeCommentAuthenticationProvider.id);
       vscode.window.showErrorMessage(err.message);
       vscode.window.showInformationMessage(
-        "Error: Can't get sessions. If you are on mac, open the 'keychain access' app, look for vscodepcsoftware.readable, and click delete. Then try logging in again."
+        "Readable: Error getting account info. Please try logging in again."
       );
       throw new Error("Error: Can't get sessions");
     }
