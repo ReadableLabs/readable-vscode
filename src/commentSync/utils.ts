@@ -14,6 +14,8 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   }
 );
 
+const exponentialDecay = () => {};
+
 const isInComment = (lineNumber: number, changes: IChange[]) => {};
 
 const updateDecorations = async (changes: IChange[]) => {
