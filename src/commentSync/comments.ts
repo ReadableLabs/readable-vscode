@@ -2,6 +2,12 @@ import * as vscode from "vscode";
 import { IChange } from "./interfaces";
 import { getSymbolFromName } from "./utils";
 
+/**
+ * Gets the range of the comment that is associated with the given line.
+ * @param {number} line - the line to get the comment range for.
+ * @param {string[]} document - the document to get the comment range for.
+ * @returns {vscode.Range | undefined} - the range of the comment that is associated with the given line.
+ */
 const getCommentRange = (
   line: number,
   document: string[]
