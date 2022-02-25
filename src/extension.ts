@@ -107,6 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
         { language: "javascript" },
         { language: "typescript" },
         { language: "cpp" },
+        { language: "c" },
         { language: "csharp" },
         { language: "php" },
         { language: "java" },
