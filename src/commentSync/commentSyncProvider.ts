@@ -109,7 +109,12 @@ export default class CommentSyncProvider {
     });
     vscode.workspace.onDidChangeWorkspaceFolders(this.onWorkspaceChange);
     // this doesn't always work
+    vscode.workspace.onWillSaveTextDocument((e) => {
+      console.log("reason");
+      console.log(e.reason);
+    });
     vscode.workspace.onDidSaveTextDocument(async (e) => {
+      console.log();
       // change on will save to on did save
       let _supportedLanguages = [
         "javascript",

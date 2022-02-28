@@ -340,6 +340,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  console.log("sync");
   const sync = new CommentSyncProvider(codeEditor);
   checkAccount();
 
