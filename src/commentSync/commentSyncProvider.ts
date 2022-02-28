@@ -25,6 +25,7 @@ import {
 import { API, GitExtension } from "../@types/git";
 import axios from "axios";
 import { BASE_URL } from "../globals";
+import { newFormatText } from "../completion/utils";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | null;
@@ -270,7 +271,7 @@ export default class CommentSyncProvider {
 
             let parametersRange = getParametersRange(symbol, text.split("\n")); // compare length of parameters to those in file
             if (!parametersRange) {
-              return;
+              continue;
               hasParametersChanged = false;
             }
             if (parametersRange) {
@@ -282,7 +283,7 @@ export default class CommentSyncProvider {
               }
             }
             if (!hasParametersChanged) {
-              return; // get only comments whose parameters have changed
+              continue;
             }
             console.log("parameters");
             console.log(parametersRange);
@@ -378,8 +379,16 @@ export default class CommentSyncProvider {
           );
           console.log(data);
 
+          const spaces = CodeEditor.getSpacesFromLine(
+            lineChanged.range.start.line
+          );
+          const language = vscode.window.activeTextEditor.document.languageId;
+
           vscode.window.activeTextEditor.edit((editBuilder) => {
-            editBuilder.replace(lineChanged.range, data);
+            editBuilder.replace(
+              lineChanged.range,
+              newFormatText(data, spaces, language).trimEnd()
+            );
           });
           // update docstring
         } catch (err: any) {
