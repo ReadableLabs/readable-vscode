@@ -72,7 +72,7 @@ const toChange = (parsedChanges: IParsedChange[]) => {
     if (!change.range[0] || !change.range[1]) {
       continue;
     }
-    let range = getRangeFromParsedChange(change);
+    let [range, params] = getRangeFromParsedChange(change);
     changes.push({
       file: change.file,
       function: change.function,
@@ -80,16 +80,22 @@ const toChange = (parsedChanges: IParsedChange[]) => {
       changesCount: change.changesCount,
       isArgsChanged: change.isArgsChanged,
       isReturnChanged: change.isReturnChanged,
+      params: params,
     });
   }
   return changes;
 };
 
 const getRangeFromParsedChange = (change: IParsedChange) => {
-  return new vscode.Range(
+  const commentRange = new vscode.Range(
     new vscode.Position(change.range[0].line, change.range[0].character),
     new vscode.Position(change.range[1].line, change.range[1].character)
   );
+  const params = new vscode.Range(
+    new vscode.Position(change.params[0].line, change.params[0].character),
+    new vscode.Position(change.params[0].line, change.params[0].character)
+  ); // just try casting, "as" vscode.Range
+  return [commentRange, params];
 };
 
 const getDocumentTextFromEditor = (e: vscode.TextDocument) => {
@@ -173,7 +179,7 @@ const getParametersRange = (symbol: vscode.DocumentSymbol, text: string[]) => {
       if (close >= open && close !== 0 && open !== 0) {
         return new vscode.Range(
           new vscode.Position(initialLine, initialCharacter),
-          new vscode.Position(i, b)
+          new vscode.Position(i, b + 1)
         ); // ok
       }
     }

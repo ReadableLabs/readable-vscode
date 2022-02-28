@@ -23,6 +23,8 @@ import {
   getValidCommentRanges,
 } from "./comments";
 import { API, GitExtension } from "../@types/git";
+import axios from "axios";
+import { BASE_URL } from "../globals";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | null;
@@ -31,8 +33,13 @@ export default class CommentSyncProvider {
   private _comments: vscode.Range[];
   private _commentsToDelete: vscode.Range[];
   private _path: string | undefined;
-  constructor(codeEditor: CodeEditor) {
+  private _session: vscode.AuthenticationSession | undefined;
+  constructor(
+    codeEditor: CodeEditor,
+    session: vscode.AuthenticationSession | undefined
+  ) {
     this._codeEditor = codeEditor;
+    this._session = session;
     this._document = getDocumentText();
     this._comments = [];
     this._commentsToDelete = [];
@@ -67,6 +74,9 @@ export default class CommentSyncProvider {
     //     }
     //   }
     // });
+    vscode.authentication.onDidChangeSessions((e) => {
+      // refresh local session key
+    });
     vscode.window.onDidChangeActiveTextEditor((e) => {
       try {
         let _supportedLanguages = [
@@ -258,8 +268,9 @@ export default class CommentSyncProvider {
               }
             }
 
-            let parametersRange = getParametersRange(symbol, text.split("\n"));
+            let parametersRange = getParametersRange(symbol, text.split("\n")); // compare length of parameters to those in file
             if (!parametersRange) {
+              return;
               hasParametersChanged = false;
             }
             if (parametersRange) {
@@ -269,6 +280,9 @@ export default class CommentSyncProvider {
               ) {
                 hasParametersChanged = true;
               }
+            }
+            if (!hasParametersChanged) {
+              return; // get only comments whose parameters have changed
             }
             console.log("parameters");
             console.log(parametersRange);
@@ -301,6 +315,7 @@ export default class CommentSyncProvider {
                   ? true
                   : hasReturnChanged;
               linesChanged[idx].range = range;
+              linesChanged[idx].params = parametersRange;
             } else {
               linesChanged.push({
                 file: e.fileName,
@@ -309,6 +324,7 @@ export default class CommentSyncProvider {
                 changesCount: 1,
                 isArgsChanged: hasParametersChanged,
                 isReturnChanged: hasReturnChanged,
+                params: parametersRange,
               });
             }
           } else {
@@ -319,7 +335,60 @@ export default class CommentSyncProvider {
       console.log("lines changing"); // open new folder update decorations from sync file
       console.log(linesChanged);
 
+      if (!vscode.window.activeTextEditor) {
+        return;
+      }
+
+      for await (let lineChanged of linesChanged) {
+        try {
+          let params = vscode.window.activeTextEditor.document.getText(
+            lineChanged.params
+          );
+
+          params = lineChanged.function + params;
+
+          let docstring = vscode.window.activeTextEditor.document.getText(
+            lineChanged.range
+          );
+          // const { data } = await axios.post(BASE_URL + "/complete/params/", {
+          //   // use a different prompt if only return has been changed
+          //   docstring,
+          //   params,
+          // });
+          console.log("params");
+          console.log(lineChanged.function + params);
+          console.log("docstring");
+          console.log(docstring);
+
+          if (!session) {
+            return;
+          }
+
+          const { data } = await axios.post(
+            BASE_URL + "/complete/update/",
+            {
+              params,
+              docstring,
+            },
+            {
+              headers: {
+                Authorization: `Token ${session.accessToken}`,
+              },
+            }
+          );
+          console.log(data);
+
+          vscode.window.activeTextEditor.edit((editBuilder) => {
+            editBuilder.replace(lineChanged.range, data);
+          });
+          // update docstring
+        } catch (err: any) {
+          vscode.window.showErrorMessage(err.toString());
+        }
+      }
+
       this._document = text;
+      return;
       linesChanged = this.syncWithFileChanges(
         linesChanged,
         changedComments,

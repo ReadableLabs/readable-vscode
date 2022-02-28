@@ -36,7 +36,7 @@ const getCommentRange = (
   }
 
   while (endLine < document.length - 1) {
-    console.log("end line " + endLine);
+    // console.log("end line " + endLine);
     // try -1
     // TODO: refactor to remove all whitespace and check. Benchmark results
     if (document[endLine].includes("/*")) {

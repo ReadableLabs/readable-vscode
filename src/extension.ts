@@ -341,7 +341,14 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   console.log("sync");
-  const sync = new CommentSyncProvider(codeEditor);
+
+  const session = await vscode.authentication.getSession(
+    CodeCommentAuthenticationProvider.id,
+    [],
+    { createIfNone: false }
+  );
+
+  const sync = new CommentSyncProvider(codeEditor, session);
   checkAccount();
 
   createSideBar();

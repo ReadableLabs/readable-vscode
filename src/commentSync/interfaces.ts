@@ -7,6 +7,7 @@ export interface IRange {
 
 export interface IParsedChange extends IUnknownChange {
   range: IRange[];
+  params: IRange[];
 }
 
 interface IUnknownChange {
@@ -19,6 +20,7 @@ interface IUnknownChange {
 
 export interface IChange extends IUnknownChange {
   range: vscode.Range;
+  params: vscode.Range;
 }
 
 export interface ICommentBounds {
