@@ -261,7 +261,7 @@ export default class CodeEditor {
   // 1st: The function is less than 20 lines
   // 2nd: THe function is greater than 20 lines
 
-  public static async getFirstAndLastText(symbol: vscode.DocumentSymbol) {
+  public static getFirstAndLastText(symbol: vscode.DocumentSymbol) {
     if (!vscode.window.activeTextEditor) {
       throw new Error("Error: Unable to get active editor");
     }

@@ -16,6 +16,7 @@ interface IUnknownChange {
   changesCount: number;
   isReturnChanged: boolean;
   isArgsChanged: boolean;
+  symbol: vscode.DocumentSymbol;
 }
 
 export interface IChange extends IUnknownChange {

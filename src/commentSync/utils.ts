@@ -81,6 +81,7 @@ const toChange = (parsedChanges: IParsedChange[]) => {
       isArgsChanged: change.isArgsChanged,
       isReturnChanged: change.isReturnChanged,
       params: params,
+      symbol: change.symbol,
     });
   }
   return changes;
@@ -119,6 +120,17 @@ const getAllSymbolsFromDocument = async (
     return [];
   }
   return symbols;
+};
+
+const getCommentFromRange = (range: vscode.Range, document: string[]) => {
+  let fullText = "";
+  for (let i = range.start.line; i <= range.end.line; i++) {
+    for (let b = range.start.character; b < document[i].length; b++) {
+      // maybe the file has new lines in it? I have no idea
+      fullText += document[i][b];
+    }
+  }
+  return fullText;
 };
 
 const getDocumentText = () => {
@@ -195,6 +207,7 @@ export {
   getSymbolFromName,
   updateDecorations,
   getDocumentText,
+  getCommentFromRange,
   getFileChanges,
   getParametersRange,
   isInComment,

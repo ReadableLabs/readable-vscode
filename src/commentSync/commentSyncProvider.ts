@@ -7,6 +7,7 @@ import CodeEditor from "../CodeEditor";
 import { IChange, ICommentBounds, IParsedChange } from "./interfaces";
 import {
   getAllSymbolsFromDocument,
+  getCommentFromRange,
   getCurrentChanges,
   getDocumentText,
   getDocumentTextFromEditor,
@@ -26,6 +27,7 @@ import { API, GitExtension } from "../@types/git";
 import axios from "axios";
 import { BASE_URL } from "../globals";
 import { newFormatText } from "../completion/utils";
+import { generateDocstring } from "../completion/generate";
 export default class CommentSyncProvider {
   private _codeEditor: CodeEditor;
   private _document: string | null;
@@ -317,6 +319,7 @@ export default class CommentSyncProvider {
                   : hasReturnChanged;
               linesChanged[idx].range = range;
               linesChanged[idx].params = parametersRange;
+              linesChanged[idx].symbol = symbol;
             } else {
               linesChanged.push({
                 file: e.fileName,
@@ -326,6 +329,7 @@ export default class CommentSyncProvider {
                 isArgsChanged: hasParametersChanged,
                 isReturnChanged: hasReturnChanged,
                 params: parametersRange,
+                symbol: symbol,
               });
             }
           } else {
@@ -340,54 +344,79 @@ export default class CommentSyncProvider {
         return;
       }
 
+      if (!this._session) {
+        return;
+      }
+
       for await (let lineChanged of linesChanged) {
         try {
-          let params = vscode.window.activeTextEditor.document.getText(
-            lineChanged.params
+          let spaces = CodeEditor.getSpacesFromLine(
+            lineChanged.symbol.range.start.line
           );
+          let params = vscode.window.activeTextEditor.document.getText(
+            lineChanged.params // maybe use lineAt to get more unified line
+          );
+
+          let language = vscode.window.activeTextEditor.document.languageId;
+          // split the old function and have for loop go through lines and characters
 
           params = lineChanged.function + params;
 
-          let docstring = vscode.window.activeTextEditor.document.getText(
-            lineChanged.range
+          let code = CodeEditor.getFirstAndLastText(lineChanged.symbol);
+
+          // let code = vscode.window.activeTextEditor.document.getText(
+          //   lineChanged.symbol.range
+          // );
+
+          let docstring = await generateDocstring(
+            code,
+            language,
+            undefined,
+            this._session.accessToken
           );
+
+          let formattedDocstring = newFormatText(docstring, spaces, language);
+
+          console.log(code);
+          // let docstring = vscode.window.activeTextEditor.document.getText(
+          //   lineChanged.range
+          // );
           // const { data } = await axios.post(BASE_URL + "/complete/params/", {
           //   // use a different prompt if only return has been changed
           //   docstring,
           //   params,
           // });
           console.log("params");
-          console.log(lineChanged.function + params);
+          console.log(params);
           console.log("docstring");
           console.log(docstring);
 
-          if (!session) {
-            return;
-          }
+          // const data = await generateDocstring("", "", "", "");
 
-          const { data } = await axios.post(
-            BASE_URL + "/complete/update/",
-            {
-              params,
-              docstring,
-            },
-            {
-              headers: {
-                Authorization: `Token ${session.accessToken}`,
-              },
-            }
-          );
-          console.log(data);
+          // const { data } = await axios.post(
+          //   BASE_URL + "/complete/update/",
+          //   {
+          //     params,
+          //     docstring,
+          //   },
+          //   {
+          //     headers: {
+          //       Authorization: `Token ${session.accessToken}`,
+          //     },
+          //   }
+          // );
+          // console.log(data);
 
-          const spaces = CodeEditor.getSpacesFromLine(
-            lineChanged.range.start.line
-          );
-          const language = vscode.window.activeTextEditor.document.languageId;
+          // const spaces = CodeEditor.getSpacesFromLine(
+          //   lineChanged.range.start.line
+          // );
+          // const language = vscode.window.activeTextEditor.document.languageId;
 
           vscode.window.activeTextEditor.edit((editBuilder) => {
             editBuilder.replace(
               lineChanged.range,
-              newFormatText(data, spaces, language).trimEnd()
+              formattedDocstring
+              // newFormatText(data, spaces, language).trimEnd()
             );
           });
           // update docstring
