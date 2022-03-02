@@ -13,8 +13,6 @@ import {
   getDocumentTextFromEditor,
   getFileChanges,
   getParametersRange,
-  getSymbolFromName,
-  isInComment,
   updateDecorations,
 } from "./utils";
 import {
@@ -348,87 +346,86 @@ export default class CommentSyncProvider {
         return;
       }
 
-      for await (let lineChanged of linesChanged) {
-        try {
-          let spaces = CodeEditor.getSpacesFromLine(
-            lineChanged.symbol.range.start.line
-          );
-          let params = vscode.window.activeTextEditor.document.getText(
-            lineChanged.params // maybe use lineAt to get more unified line
-          );
+      // for await (let lineChanged of linesChanged) {
+      //   try {
+      //     let spaces = CodeEditor.getSpacesFromLine(
+      //       lineChanged.symbol.range.start.line
+      //     );
+      //     let params = vscode.window.activeTextEditor.document.getText(
+      //       lineChanged.params // maybe use lineAt to get more unified line
+      //     );
 
-          let language = vscode.window.activeTextEditor.document.languageId;
-          // split the old function and have for loop go through lines and characters
+      //     let language = vscode.window.activeTextEditor.document.languageId;
+      //     // split the old function and have for loop go through lines and characters
 
-          params = lineChanged.function + params;
+      //     params = lineChanged.function + params;
 
-          let code = CodeEditor.getFirstAndLastText(lineChanged.symbol);
+      //     let code = CodeEditor.getFirstAndLastText(lineChanged.symbol);
 
-          // let code = vscode.window.activeTextEditor.document.getText(
-          //   lineChanged.symbol.range
-          // );
+      //     // let code = vscode.window.activeTextEditor.document.getText(
+      //     //   lineChanged.symbol.range
+      //     // );
 
-          console.log("generating");
+      //     console.log("generating");
 
-          let docstring = await generateDocstring(
-            code,
-            language,
-            undefined,
-            this._session.accessToken
-          );
+      //     let docstring = await generateDocstring(
+      //       code,
+      //       language,
+      //       undefined,
+      //       this._session.accessToken
+      //     );
 
-          let formattedDocstring = newFormatText(docstring, spaces, language);
+      //     let formattedDocstring = newFormatText(docstring, spaces, language);
 
-          console.log(code);
-          // let docstring = vscode.window.activeTextEditor.document.getText(
-          //   lineChanged.range
-          // );
-          // const { data } = await axios.post(BASE_URL + "/complete/params/", {
-          //   // use a different prompt if only return has been changed
-          //   docstring,
-          //   params,
-          // });
-          console.log("params");
-          console.log(params);
-          console.log("docstring");
-          console.log(docstring);
+      //     console.log(code);
+      //     // let docstring = vscode.window.activeTextEditor.document.getText(
+      //     //   lineChanged.range
+      //     // );
+      //     // const { data } = await axios.post(BASE_URL + "/complete/params/", {
+      //     //   // use a different prompt if only return has been changed
+      //     //   docstring,
+      //     //   params,
+      //     // });
+      //     console.log("params");
+      //     console.log(params);
+      //     console.log("docstring");
+      //     console.log(docstring);
 
-          // const data = await generateDocstring("", "", "", "");
+      //     // const data = await generateDocstring("", "", "", "");
 
-          // const { data } = await axios.post(
-          //   BASE_URL + "/complete/update/",
-          //   {
-          //     params,
-          //     docstring,
-          //   },
-          //   {
-          //     headers: {
-          //       Authorization: `Token ${session.accessToken}`,
-          //     },
-          //   }
-          // );
-          // console.log(data);
+      //     // const { data } = await axios.post(
+      //     //   BASE_URL + "/complete/update/",
+      //     //   {
+      //     //     params,
+      //     //     docstring,
+      //     //   },
+      //     //   {
+      //     //     headers: {
+      //     //       Authorization: `Token ${session.accessToken}`,
+      //     //     },
+      //     //   }
+      //     // );
+      //     // console.log(data);
 
-          // const spaces = CodeEditor.getSpacesFromLine(
-          //   lineChanged.range.start.line
-          // );
-          // const language = vscode.window.activeTextEditor.document.languageId;
+      //     // const spaces = CodeEditor.getSpacesFromLine(
+      //     //   lineChanged.range.start.line
+      //     // );
+      //     // const language = vscode.window.activeTextEditor.document.languageId;
 
-          vscode.window.activeTextEditor.edit((editBuilder) => {
-            editBuilder.replace(
-              lineChanged.range,
-              formattedDocstring.trimEnd()
-              // newFormatText(data, spaces, language).trimEnd()
-            );
-          });
-          // update docstring
-        } catch (err: any) {
-          vscode.window.showErrorMessage(err.toString());
-        }
-      }
+      //     vscode.window.activeTextEditor.edit((editBuilder) => {
+      //       editBuilder.replace(
+      //         lineChanged.range,
+      //         formattedDocstring.trimEnd()
+      //         // newFormatText(data, spaces, language).trimEnd()
+      //       );
+      //     });
+      //     // update docstring
+      //   } catch (err: any) {
+      //     vscode.window.showErrorMessage(err.toString());
+      //   }
+      // }
 
       this._document = text;
-      return;
       linesChanged = this.syncWithFileChanges(
         linesChanged,
         changedComments,
