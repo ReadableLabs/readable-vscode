@@ -368,6 +368,8 @@ export default class CommentSyncProvider {
           //   lineChanged.symbol.range
           // );
 
+          console.log("generating");
+
           let docstring = await generateDocstring(
             code,
             language,
@@ -415,7 +417,7 @@ export default class CommentSyncProvider {
           vscode.window.activeTextEditor.edit((editBuilder) => {
             editBuilder.replace(
               lineChanged.range,
-              formattedDocstring
+              formattedDocstring.trimEnd()
               // newFormatText(data, spaces, language).trimEnd()
             );
           });
