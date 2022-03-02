@@ -5,10 +5,10 @@ import { IChange, IParsedChange } from "./interfaces";
 const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   // set decoration range behavior
   {
-    backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
-    overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
-    // gutterIconPath: vscode.Uri.file("testGutter.png"),
-    // gutterIconSize: "auto",
+    // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
+    // overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
+    gutterIconPath: vscode.Uri.file("/Users/nevin/Downloads/pixil.png"),
+    gutterIconSize: "contain",
     // outlineColor: "yellow",
     // outlineWidth: "1px",
     // borderStyle: "solid",
