@@ -467,6 +467,7 @@ export default class CommentSyncProvider {
     const diff = Diff.diffLines(document, text1, {
       ignoreWhitespace: true,
     });
+    console.log(diff);
     const patch = Diff.createPatch(fileName, document, text1);
     let format = Diff.parsePatch(patch);
     return format;
