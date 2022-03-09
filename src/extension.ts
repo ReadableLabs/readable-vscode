@@ -22,6 +22,7 @@ import {
   insertCommentCommand,
   insertDocstringCommand,
 } from "./commands/commands";
+import { getBranch } from "./gitApi/git";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -341,6 +342,8 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   console.log("sync");
+
+  await getBranch();
 
   const session = await vscode.authentication.getSession(
     CodeCommentAuthenticationProvider.id,
