@@ -7,7 +7,8 @@ export default class CommentSync {
   constructor() {
     vscode.workspace.onDidSaveTextDocument(async (e) => {
       let dir = "/Users/2023_nevin_puri/Desktop/testinit";
-      await Git.add({ fs, dir, filepath: "*" });
+      await Git.add({ fs, dir, filepath: "." });
+      console.log("done");
     });
   }
 }

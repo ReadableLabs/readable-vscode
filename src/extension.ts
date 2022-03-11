@@ -24,6 +24,7 @@ import {
 } from "./commands/commands";
 import { getBlame } from "./gitApi/git";
 import { parseBlame } from "./blame-parser/blame-parser";
+import CommentSync from "./commentSync/newCommenySyncProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -369,7 +370,8 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
-  const sync = new CommentSyncProvider(codeEditor, session);
+  //   const sync = new CommentSyncProvider(codeEditor, session);
+  const comment = new CommentSync();
   checkAccount();
 
   createSideBar();
