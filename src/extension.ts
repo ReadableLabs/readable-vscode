@@ -22,7 +22,8 @@ import {
   insertCommentCommand,
   insertDocstringCommand,
 } from "./commands/commands";
-import { getBranch } from "./gitApi/git";
+import { getBlame } from "./gitApi/git";
+import { parseBlame } from "./blame-parser/blame-parser";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -343,7 +344,24 @@ export async function activate(context: vscode.ExtensionContext) {
 
   console.log("sync");
 
-  await getBranch();
+  //   await getBranch();
+
+  try {
+    let blame = await getBlame(
+      "/Users/2023_nevin_puri/Desktop/testinit",
+      "dura/d8ef8f7d1f1a428b83f0b531f2725f1b508a01ce",
+      "myFile.txt"
+    );
+    console.log(blame);
+
+    let splitBlame = blame.split("\n");
+    splitBlame.pop();
+
+    let parsedBlame = parseBlame(splitBlame);
+    console.log(parsedBlame);
+  } catch (err: any) {
+    console.log(err);
+  }
 
   const session = await vscode.authentication.getSession(
     CodeCommentAuthenticationProvider.id,
