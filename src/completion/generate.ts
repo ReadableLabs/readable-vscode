@@ -35,7 +35,7 @@ export const generateAutoComplete = async (
     return data;
   } catch (err: any) {
     // Figure out what went wrong
-    axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
+    axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 5 });
     vscode.window.showErrorMessage("Retried?");
     vscode.window.showErrorMessage(
       "Error: Something went wrong. Try again shortly."
