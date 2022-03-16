@@ -212,6 +212,7 @@
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^0.9.1",
     "axios": "^0.21.4",
+    "axios-retry": "^3.2.4",
     "diff": "^5.0.0",
     "https": "^1.0.0",
     "isomorphic-fetch": "^3.0.0",

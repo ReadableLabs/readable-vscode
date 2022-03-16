@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import axios from "axios";
+import axiosRetry from "axios-retry";
 import { BASE_URL } from "../globals";
 
 /**
@@ -9,14 +10,6 @@ import { BASE_URL } from "../globals";
  * @param {string} language - the language of the code
  * @param {string} accessToken - the access token of the user
  * @returns {Promise<any>} - the autocomplete data
- */
-/**
- * Takes in a string of code and returns the autocomplete suggestions for that code.
- * @param {string} fullCode - the code to get autocomplete suggestions for.
- * @param {string} comment - the comment that the user is currently writing.
- * @param {string} language - the language that the user is currently writing in.
- * @param {string} accessToken - the access token for the user.
- * @returns {Promise<any>} - the autocomplete suggestion for the code.
  */
 export const generateAutoComplete = async (
   fullCode: string,
@@ -38,9 +31,12 @@ export const generateAutoComplete = async (
         },
       }
     );
+
     return data;
   } catch (err: any) {
     // Figure out what went wrong
+    axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
+    vscode.window.showErrorMessage("Retried?");
     vscode.window.showErrorMessage(
       "Error: Something went wrong. Try again shortly."
     );
@@ -66,6 +62,14 @@ export const generateDocstring = async (
   accessToken: string
 ) => {
   try {
+    axiosRetry(axios, {
+      retries: 5, // number of retries
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        // if retry condition is not specified, by default idempotent requests are retried
+        return error.response?.status === 500;
+      },
+    });
     const { data } = await axios.post(
       BASE_URL + "/complete/right-click/",
       {
@@ -79,9 +83,16 @@ export const generateDocstring = async (
         },
       }
     );
+
     return data;
   } catch (err: any) {
     // Figure out what went wrong
+    if (err.response.status !== 200) {
+      throw new Error(
+        `API call failed with status code: ${err.response.status} after 100 retry attempts`
+      );
+    }
+    vscode.window.showErrorMessage("Retried?");
     vscode.window.showErrorMessage(
       "Error: Something went wrong. Try again shortly."
     );
