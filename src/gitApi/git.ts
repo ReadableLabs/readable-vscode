@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
-import * as Git from "isomorphic-git";
 import * as child from "child_process";
 import { GitExtension } from "../@types/git";
 

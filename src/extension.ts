@@ -347,22 +347,22 @@ export async function activate(context: vscode.ExtensionContext) {
 
   //   await getBranch();
 
-  try {
-    let blame = await getBlame(
-      "/Users/2023_nevin_puri/Desktop/testinit",
-      "dura/d8ef8f7d1f1a428b83f0b531f2725f1b508a01ce",
-      "myFile.txt"
-    );
-    console.log(blame);
+  // try {
+  //   let blame = await getBlame(
+  //     "/Users/2023_nevin_puri/Desktop/testinit",
+  //     "dura/d8ef8f7d1f1a428b83f0b531f2725f1b508a01ce",
+  //     "myFile.txt"
+  //   );
+  //   console.log(blame);
 
-    let splitBlame = blame.split("\n");
-    splitBlame.pop();
+  //   let splitBlame = blame.split("\n");
+  //   splitBlame.pop();
 
-    let parsedBlame = parseBlame(splitBlame);
-    console.log(parsedBlame);
-  } catch (err: any) {
-    console.log(err);
-  }
+  //   let parsedBlame = parseBlame(splitBlame);
+  //   console.log(parsedBlame);
+  // } catch (err: any) {
+  //   console.log(err);
+  // }
 
   const session = await vscode.authentication.getSession(
     CodeCommentAuthenticationProvider.id,
