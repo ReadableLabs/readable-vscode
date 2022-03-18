@@ -6,8 +6,10 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   // set decoration range behavior
   {
     // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
-    // overviewRulerColor: "#cea7002D", // get all decorations function, do it on file load, check if over 10, reset if text change is on one of the comments, store comment ranges somewhere in memory after save
-    gutterIconPath: vscode.Uri.file("/Users/nevin/Downloads/pixil.png"),
+    overviewRulerColor: "facc15",
+    gutterIconPath: vscode.Uri.file(
+      "/home/nevin/Desktop/Readable/src/commentSync/pixil.png"
+    ),
     gutterIconSize: "contain",
     // outlineColor: "yellow",
     // outlineWidth: "1px",
@@ -20,27 +22,22 @@ const exponentialDecay = () => {};
 
 const isInComment = (lineNumber: number, changes: IChange[]) => {};
 
-const updateDecorations = async (changes: IChange[]) => {
-  let allRanges: vscode.Range[] = [];
-
-  for (let change of changes) {
-    // on did change active text editor update decorations
-    allRanges.push(change.range);
-    // allRanges.push(
-    //   new vscode.Range(
-    //     new vscode.Position(change.range[0].line, change.range[0].character),
-    //     new vscode.Position(change.range[1].line, change.range[1].character)
-    //   )
-    // );
-  }
+const updateDecorations = async (ranges: vscode.Range[]) => {
+  // for (let change of changes) {
+  // on did change active text editor update decorations
+  // allRanges.push(change.range);
+  // allRanges.push(
+  //   new vscode.Range(
+  //     new vscode.Position(change.range[0].line, change.range[0].character),
+  //     new vscode.Position(change.range[1].line, change.range[1].character)
+  //   )
+  // );
+  // }
 
   if (!vscode.window.activeTextEditor) {
     return;
   }
-  vscode.window.activeTextEditor.setDecorations(
-    highlightDecoratorType,
-    allRanges
-  );
+  vscode.window.activeTextEditor.setDecorations(highlightDecoratorType, ranges);
 };
 
 const getFileChanges = (syncFile: string, fileName: string) => {

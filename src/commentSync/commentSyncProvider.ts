@@ -112,7 +112,7 @@ export default class CommentSyncProvider {
         if (!changes) {
           return;
         }
-        updateDecorations(changes);
+        // updateDecorations(changes);
       } catch (err: any) {
         console.log(err);
         vscode.window.showErrorMessage(err);
@@ -452,7 +452,7 @@ export default class CommentSyncProvider {
         }
         return true;
       }); // check if function name has been changed
-      updateDecorations(filteredChanges); // get initial vscode highlight color
+      // updateDecorations(filteredChanges); // get initial vscode highlight color
       console.log("saving");
     });
   }
