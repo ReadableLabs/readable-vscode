@@ -39,6 +39,18 @@ To generate an inline comment type **//** for C-Sytle languages. For python type
 
 Start Readable with a 15 day free trial. After, purchase Readable for only $19.99 a year.
 
+## Docstring Comments
+
+To generate a docstring press **ctrl '** (**cmd '** on Mac) while your cursor is in any function OR if the function is highlighted.
+
+## Inline Comments
+
+To generate an inline comment type "**//**" for C-Sytle languages. For python type **#**. After hitting space, press **tab** to generate an inline comment. Optionally, type a few words after **//** to generate a more specific comment.
+
+## Pricing
+
+Start Readable with a 15 day free trial. After, purchase Readable for only $19.99 a year.
+
 ## Privacy
 
 Readable does not store or use your code to train any of its models.
