@@ -49,6 +49,10 @@ const acceptedSymbols = [
   vscode.SymbolKind.Constant,
 ];
 
+/**
+ * the epic
+ * @returns
+ */
 const getFunctions = async () => {
   const symbols = await CodeEditor.getAllSymbols();
   let fullSymbols = [];
