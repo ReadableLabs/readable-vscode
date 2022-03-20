@@ -117,11 +117,25 @@ const getOutOfSyncComments = async (
   console.log("done");
 };
 
+const isInlineComment = (document: string[], line: number) => {
+  if (
+    !document[line].includes("//") &&
+    !document[line].includes("*") &&
+    !document[line].includes("/*") &&
+    !document[line].includes("*/")
+  ) {
+    // use refeg
+    return false;
+  }
+  return true;
+  // return document[line].includes("//");
+};
+
 const checkSync = (
-  // call with line + 1 because blame is not 0 index
   line: vscode.Range,
   blame: { [index: number]: number },
-  totalLines: number,
+  // totalLines: number,
+  document: string[],
   amount: number
 ) => {
   let commentTime = blame[line.start.line];
@@ -133,17 +147,22 @@ const checkSync = (
   let safeStart =
     line.start.line - amount > 0 ? line.start.line - amount : line.start.line;
   let safeEnd =
-    line.end.line + amount < totalLines
+    line.end.line + amount < document.length
       ? line.end.line + amount
       : line.end.line;
   for (let i = safeStart; i < line.start.line; i++) {
-    if (blame[i] > commentTime) {
-      return true;
+    // get document, and check if line is comment
+    if (!isInlineComment(document, i)) {
+      if (blame[i] > commentTime) {
+        return true;
+      }
     }
   }
   for (let k = safeEnd; k > line.end.line; k--) {
-    if (blame[k] > commentTime) {
-      return true;
+    if (!isInlineComment(document, k)) {
+      if (blame[k] > commentTime) {
+        return true;
+      }
     }
   }
   return false;
@@ -171,7 +190,7 @@ const getOutOfSyncInlineComments = async (
   const fileBlame = await blame(folder, file);
   const allComments = getAllInlineComments(document);
   for (let inlineComment of allComments) {
-    if (checkSync(inlineComment, fileBlame, document.length, 5)) {
+    if (checkSync(inlineComment, fileBlame, document, 5)) {
       console.log(
         `${inlineComment.start.line} - ${inlineComment.end.line} is out of sync`
       );
@@ -194,15 +213,15 @@ const getInlineCommentGroup = (
     endLine = line;
   let commentIndex = document[line].indexOf("//");
   while (
-    document[startLine].indexOf("//", commentIndex) !== -1 &&
-    startLine > 0
+    startLine > 1 &&
+    document[startLine - 1].indexOf("//", commentIndex) !== -1
   ) {
     // maybe have it at the char index, but idk
     startLine--;
   }
   while (
-    document[endLine].indexOf("//", commentIndex) !== -1 &&
-    endLine < document.length
+    endLine + 1 < document.length &&
+    document[endLine + 1].indexOf("//", commentIndex) !== -1
   ) {
     endLine++;
   }
@@ -218,8 +237,13 @@ const getAllInlineComments = (document: string[]) => {
   let line = 0;
   while (line < document.length) {
     if (document[line].includes("//")) {
+      console.log(`${document[line]} is an inline comment`);
       let range = getInlineCommentGroup(line, document);
-      line = range.end.line;
+      if (range.end.line === line) {
+        line++;
+      } else {
+        line = range.end.line;
+      }
       commentLines.push(range);
     } else {
       line++;
@@ -230,5 +254,7 @@ const getAllInlineComments = (document: string[]) => {
   //     commentLines.push(index);
   //   }
   // }
+  console.log("comments");
+  console.log(commentLines);
   return commentLines;
 };
