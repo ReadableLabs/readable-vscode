@@ -54,16 +54,6 @@ const getFileChanges = (syncFile: string, fileName: string) => {
   return filteredChanges;
 };
 
-const getAllInlineComments = (document: string[]) => {
-  let commentLines: number[] = [];
-  for (let [index, line] of document.entries()) {
-    if (line.includes("//")) {
-      commentLines.push(index);
-    }
-  }
-  return commentLines;
-};
-
 const getCurrentChanges = (file: string) => {
   console.log("here");
   const data = fs.readFileSync(file, "utf-8");
@@ -217,7 +207,6 @@ export {
   updateDecorations,
   getDocumentText,
   getCommentFromRange,
-  getAllInlineComments,
   getFileChanges,
   getParametersRange,
   isInComment,

@@ -4,13 +4,10 @@ import * as path from "path";
 import { blame, sync } from "../commentSyncAPI";
 import CodeEditor from "../CodeEditor";
 import { getCommentRange } from "./comments";
-import {
-  getAllInlineComments,
-  getDocumentTextFromEditor,
-  updateDecorations,
-} from "./utils";
+import { getDocumentTextFromEditor, updateDecorations } from "./utils";
 import { needsUpdating } from "./sync";
 import { composedParent } from "@microsoft/fast-foundation";
+import { allowedNodeEnvironmentFlags } from "process";
 
 export default class CommentSync {
   constructor() {
@@ -121,21 +118,44 @@ const getOutOfSyncComments = async (
 };
 
 const checkSync = (
-  line: number,
+  // call with line + 1 because blame is not 0 index
+  line: vscode.Range,
   blame: { [index: number]: number },
   totalLines: number,
   amount: number
 ) => {
-  let commentTime = blame[line];
-  let safeStart = line - amount > 0 ? line - amount : 0;
-  let safeEnd = line + amount < totalLines ? line + amount : totalLines;
-  for (let i = safeStart; i <= safeEnd; i++) {
-    // check if document[i] is not a comment, and then return true
+  let commentTime = blame[line.start.line];
+  for (let b = line.start.line; b < line.end.line; b++) {
+    if (blame[b] > commentTime) {
+      commentTime = b;
+    }
+  }
+  let safeStart =
+    line.start.line - amount > 0 ? line.start.line - amount : line.start.line;
+  let safeEnd =
+    line.end.line + amount < totalLines
+      ? line.end.line + amount
+      : line.end.line;
+  for (let i = safeStart; i < line.start.line; i++) {
     if (blame[i] > commentTime) {
       return true;
     }
-    return false;
   }
+  for (let k = safeEnd; k > line.end.line; k--) {
+    if (blame[k] > commentTime) {
+      return true;
+    }
+  }
+  return false;
+  // let safeStart = line - amount > 0 ? line - amount : 0;
+  // let safeEnd = line + amount < totalLines ? line + amount : totalLines;
+  // for (let i = safeStart; i <= safeEnd; i++) {
+  //   // check if document[i] is not a comment, and then return true
+  //   if (blame[i] > commentTime) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 };
 
 const getOutOfSyncInlineComments = async (
@@ -150,13 +170,65 @@ const getOutOfSyncInlineComments = async (
   let outOfSyncLines: vscode.Range[] = [];
   const fileBlame = await blame(folder, file);
   const allComments = getAllInlineComments(document);
-  for (let line of allComments) {
-    if (checkSync(line + 1, fileBlame, document.length, 5)) {
-      console.log(`${line + 1} is out of sync`);
-      let comment = toRange(line, document[line].length);
-      outOfSyncLines.push(comment);
+  for (let inlineComment of allComments) {
+    if (checkSync(inlineComment, fileBlame, document.length, 5)) {
+      console.log(
+        `${inlineComment.start.line} - ${inlineComment.end.line} is out of sync`
+      );
+      // let comment = toRange(line, document[line].length);
+      outOfSyncLines.push(inlineComment);
     }
     // line + 1
   }
   return outOfSyncLines;
+};
+
+// so comments
+// like this
+// pass in line + 1
+const getInlineCommentGroup = (
+  line: number,
+  document: string[]
+): vscode.Range => {
+  let startLine = line,
+    endLine = line;
+  let commentIndex = document[line].indexOf("//");
+  while (
+    document[startLine].indexOf("//", commentIndex) !== -1 &&
+    startLine > 0
+  ) {
+    // maybe have it at the char index, but idk
+    startLine--;
+  }
+  while (
+    document[endLine].indexOf("//", commentIndex) !== -1 &&
+    endLine < document.length
+  ) {
+    endLine++;
+  }
+  return new vscode.Range(
+    new vscode.Position(startLine, commentIndex),
+    new vscode.Position(endLine, document[endLine].length)
+  );
+};
+
+const getAllInlineComments = (document: string[]) => {
+  // refactor to be ranges, and get group right here, check if it already has a range
+  let commentLines: vscode.Range[] = [];
+  let line = 0;
+  while (line < document.length) {
+    if (document[line].includes("//")) {
+      let range = getInlineCommentGroup(line, document);
+      line = range.end.line;
+      commentLines.push(range);
+    } else {
+      line++;
+    }
+  }
+  // for (let [index, line] of document.entries()) {
+  //   if (line.includes("//")) {
+  //     commentLines.push(index);
+  //   }
+  // }
+  return commentLines;
 };
