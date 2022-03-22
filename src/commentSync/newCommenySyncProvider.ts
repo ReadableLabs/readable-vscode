@@ -6,8 +6,6 @@ import CodeEditor from "../CodeEditor";
 import { getCommentRange } from "./comments";
 import { getDocumentTextFromEditor, updateDecorations } from "./utils";
 import { needsUpdating } from "./sync";
-import { composedParent } from "@microsoft/fast-foundation";
-import { allowedNodeEnvironmentFlags } from "process";
 
 export default class CommentSync {
   constructor() {
@@ -20,8 +18,20 @@ export default class CommentSync {
       }
       const folder = vscode.workspace.workspaceFolders[0].uri.fsPath;
       const file = path.relative(folder, e.document.uri.fsPath);
-      let ranges = await getOutOfSyncComments(folder, file, e.document);
-      updateDecorations(ranges);
+      const fileBlame = await blame(folder, file);
+      let ranges = await getOutOfSyncComments(
+        folder,
+        file,
+        e.document,
+        fileBlame
+      );
+      let inline = await getOutOfSyncInlineComments(
+        folder,
+        file,
+        e.document,
+        fileBlame
+      );
+      updateDecorations([...ranges, ...inline]);
       // get each out of sync line, add it to  total dict with line and range, and then for each of the changed functions, check the params
     });
     vscode.workspace.onDidSaveTextDocument(async (e) => {
@@ -33,9 +43,10 @@ export default class CommentSync {
       const file = path.relative(folder, e.uri.fsPath);
       console.log(file);
       await sync(folder);
-      let ranges = await getOutOfSyncComments(folder, file, e);
+      const fileBlame = await blame(folder, file);
+      let ranges = await getOutOfSyncComments(folder, file, e, fileBlame);
 
-      let inline = await getOutOfSyncInlineComments(folder, file, e);
+      let inline = await getOutOfSyncInlineComments(folder, file, e, fileBlame);
 
       updateDecorations([...ranges, ...inline]);
     });
@@ -90,9 +101,10 @@ const toRange = (line: number, maxChars: number) => {
 const getOutOfSyncComments = async (
   folder: string,
   file: string,
-  editor: vscode.TextDocument
+  editor: vscode.TextDocument,
+  blame: { [index: number]: number }
 ) => {
-  let blameText = await blame(folder, file);
+  // let blameText = await blame(folder, file);
   const symbols = await getFunctions();
   const document = getDocumentTextFromEditor(editor);
   let updatingRanges: vscode.Range[] = [];
@@ -104,7 +116,7 @@ const getOutOfSyncComments = async (
     if (!commentRange) {
       continue;
     }
-    if (needsUpdating(symbol, commentRange, blameText)) {
+    if (needsUpdating(symbol, commentRange, blame)) {
       // console.log(
       //   `${symbol.name} with comment range ${commentRange.start.line} - ${commentRange.end.line} needs updating`
       // );
@@ -113,13 +125,13 @@ const getOutOfSyncComments = async (
   }
   return updatingRanges;
   updateDecorations(updatingRanges);
-  console.log(blameText);
+  console.log(blame);
   console.log("done");
 };
 
 const isInlineComment = (document: string[], line: number) => {
   if (
-    !document[line].includes("//") &&
+    !document[line].includes("// ") &&
     !document[line].includes("*") &&
     !document[line].includes("/*") &&
     !document[line].includes("*/")
@@ -141,7 +153,7 @@ const checkSync = (
   let commentTime = blame[line.start.line];
   for (let b = line.start.line; b < line.end.line; b++) {
     if (blame[b] > commentTime) {
-      commentTime = b;
+      commentTime = blame[b];
     }
   }
   let safeStart =
@@ -180,17 +192,18 @@ const checkSync = (
 const getOutOfSyncInlineComments = async (
   folder: string,
   file: string,
-  editor: vscode.TextDocument
+  editor: vscode.TextDocument,
+  blame: { [index: number]: number }
 ) => {
   let document = getDocumentText(editor).split("\n");
   if (!document) {
     return [];
   }
   let outOfSyncLines: vscode.Range[] = [];
-  const fileBlame = await blame(folder, file);
+  // const fileBlame = await blame(folder, file);
   const allComments = getAllInlineComments(document);
   for (let inlineComment of allComments) {
-    if (checkSync(inlineComment, fileBlame, document, 5)) {
+    if (checkSync(inlineComment, blame, document, 5)) {
       console.log(
         `${inlineComment.start.line} - ${inlineComment.end.line} is out of sync`
       );

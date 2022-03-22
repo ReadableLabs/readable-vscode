@@ -6,7 +6,7 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
   // set decoration range behavior
   {
     // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
-    overviewRulerColor: "facc15",
+    overviewRulerColor: "#facc15",
     gutterIconPath: vscode.Uri.file(
       "/home/nevin/Desktop/Readable/src/commentSync/pixil.png"
     ),
@@ -14,7 +14,7 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
     // outlineColor: "yellow",
     // outlineWidth: "1px",
     // borderStyle: "solid",
-    overviewRulerLane: vscode.OverviewRulerLane.Right,
+    overviewRulerLane: vscode.OverviewRulerLane.Left,
   }
 );
 
