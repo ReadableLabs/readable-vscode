@@ -8,7 +8,7 @@ const highlightDecoratorType = vscode.window.createTextEditorDecorationType(
     // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
     overviewRulerColor: "facc15",
     gutterIconPath: vscode.Uri.file(
-      "/Users/2023_nevin_puri/Desktop/Readable/src/commentSync/pixil.png"
+      "/home/nevin/Desktop/Readable/src/commentSync/pixil.png"
     ),
     gutterIconSize: "contain",
     // outlineColor: "yellow",

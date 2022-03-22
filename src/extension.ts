@@ -25,9 +25,6 @@ import {
 import { getBlame } from "./gitApi/git";
 import { parseBlame } from "./blame-parser/blame-parser";
 import CommentSync from "./commentSync/newCommenySyncProvider";
-import CommentProvider, {
-  getCommentRanges,
-} from "./commentSync/CommentProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -374,21 +371,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   //   const sync = new CommentSyncProvider(codeEditor, session);
-  const commentProvider = vscode.comments.createCommentController(
-    "Readable-Comments",
-    "Readable Comments"
-  );
-  context.subscriptions.push(commentProvider);
-  commentProvider.commentingRangeProvider = getCommentRanges;
-  //   commentProvider.commentingRangeProvider = {
-  //     provideCommentingRanges: (
-  //       document: vscode.TextDocument,
-  //       token: vscode.CancellationToken
-  //     ) => {
-  //       const lineCount = document.lineCount;
-  //       return [new vscode.Range(0, 0, lineCount - 1, 0)];
-  //     },
-  //   };
   const comment = new CommentSync();
   checkAccount();
 
