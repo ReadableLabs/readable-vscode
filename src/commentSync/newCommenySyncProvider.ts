@@ -210,7 +210,7 @@ const getOutOfSyncInlineComments = async (
       // let comment = toRange(line, document[line].length);
       outOfSyncLines.push(inlineComment);
     }
-    // line + 1
+    // line + 1 adsfafds
   }
   return outOfSyncLines;
 };
