@@ -600,25 +600,7 @@ export default class CommentSyncProvider {
           fs.writeFileSync(sync, "[]");
         }
         fs.writeFileSync(sync, JSON.stringify(changes));
-        // let fileData;
-        // if (!fs.existsSync(sync)) {
-        //   fs.writeFileSync(sync, "[]");
-        //   fileData = [];
-        // } else {
-        //   fileData = JSON.parse(fs.readFileSync(sync, "utf-8"));
-        // }
-        // let updatedChanges = this.syncWithNewChanges(fileData, newChanges);
-        // fs.writeFileSync(sync, JSON.stringify(updatedChanges));
-        // console.log(updatedChanges);
-        // console.log(fileData);
-        // console.log(
-        //   path.join(
-        //     vscode.workspace.workspaceFolders[0].uri.fsPath,
-        //     "sync.json"
-        //   )
-        // );
       }
-      // const fileData = fs.readFileSync()
     } catch (err: any) {
       console.log(err);
       vscode.window.showErrorMessage(err);

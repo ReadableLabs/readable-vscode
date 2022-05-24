@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
+import { StatusType } from "./statusType";
 
 export class StatusBarProvider {
   private statusBarItem: vscode.StatusBarItem;
@@ -11,57 +12,35 @@ export class StatusBarProvider {
     // use events, things like that
     // use vscode events and sync it up with all of this stuff
     this.statusBarItem.text = "$(sync~spin)";
-    this.statusBarItem.show(); // show the s
-    let status = this.getEnabled();
+    this.statusBarItem.show();
     this.updateStatusBar();
   }
 
   public async updateStatusBar() {
-    let status = await this.getEnabled();
+    let status = await this.getStatus();
     this.statusBarItem.text = status.text;
     this.statusBarItem.command = status.command;
   }
 
-  private async getEnabled() {
-    console.log(
-      vscode.workspace
-        .getConfiguration("readable")
-        .get<boolean>("enableAutoComplete")
+  private async getStatus() {
+    let authStatus = await vscode.authentication.getSession(
+      CodeCommentAuthenticationProvider.id,
+      [],
+      { createIfNone: false }
     );
-    if (
-      !(await vscode.authentication.getSession(
-        CodeCommentAuthenticationProvider.id,
-        [],
-        { createIfNone: false }
-      ))
-    ) {
-      return {
-        text: "$(account)  Readable: Login",
-        command: "readable.login",
-      };
-    } else if (
-      vscode.workspace
-        .getConfiguration("readable")
-        .get<boolean>("enableAutoComplete")
-    ) {
-      return {
-        text: "$(check)  Readable: Enabled",
-        command: "readable.disableAutoComplete",
-      };
-    } else if (
-      vscode.workspace
-        .getConfiguration("readable")
-        .get<boolean>("enableAutoComplete") === false
-    ) {
-      return {
-        text: "$(circle-slash)  Readable: Disabled",
-        command: "readable.enableAutoComplete",
-      };
+
+    let enabled = vscode.workspace
+      .getConfiguration("readable")
+      .get<boolean>("enableAutoComplete");
+
+    if (!authStatus) {
+      return StatusType.login;
+    } else if (enabled) {
+      return StatusType.enabled;
+    } else if (!enabled) {
+      return StatusType.disabled;
     } else {
-      return {
-        text: "$(error)  Readable: Error",
-        command: "",
-      };
+      return StatusType.error;
     }
   }
 }

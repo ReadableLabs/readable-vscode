@@ -13,8 +13,6 @@ export default abstract class TrialHelper {
     return diff / (1000 * 60 * 60 * 24);
   }
 
-  public static async checkTrial() {}
-
   public static async checkFirstLaunch(accessToken: string) {
     try {
       const { data } = await axios.post(
@@ -87,8 +85,5 @@ export default abstract class TrialHelper {
         );
       }
     }
-
-    console.log(trialDate);
-    console.log(parsedDate);
   }
 }

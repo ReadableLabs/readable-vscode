@@ -55,7 +55,7 @@ export default class CodeEditor {
    * @returns {number} the number of spaces at the beginning of the string
    */
   public static getSpaces(text: string): number {
-    return text.search(/\S/);
+    return text.search(/\S/); // ok
   }
 
   private wrap = (s: string, w: number, spaces: number) => {
@@ -354,6 +354,9 @@ export default class CodeEditor {
     return null;
   }
 
+  /*
+   * A test comment
+   */
   public static async getSymbolFromPosition(
     symbols: vscode.DocumentSymbol[],
     position: vscode.Position
