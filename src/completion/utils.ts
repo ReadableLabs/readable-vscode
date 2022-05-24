@@ -42,31 +42,6 @@ export const getFormattedCode = (
   return fullCode;
 };
 
-/**
- * Gets the line number of the first line of the prompt.
- * @param {number} startLine - the line number of the first line of the prompt.
- * @returns {number} the line number of the first line of the prompt.
- */
-/**
- * Gets the line number of the first line of the function that the user is currently in.
- * @returns {number} The line number of the first line of the function that the user is currently in.
- */
-/**
- * Gets the line number of the first line of the function that is being called.
- * @param {number} startLine - the line number of the first line of the function that is being called.
- * @returns {number} the line number of the first line of the function that is being called.
- */
-
-/**
- * A class that contains a function that returns the safe position to insert a prompt.
- * @returns None
- */
-
-/**
- * Gets the line number of the first line of the prompt.
- * @param {number} startLine - the line number of the first line of the prompt.
- * @returns {number} the line number of the first line of the prompt.
- */
 export const getSafePromptPosition = (startLine: number) => {
   if (startLine - 2 < 0) {
     return 0;

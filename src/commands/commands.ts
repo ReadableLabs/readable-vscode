@@ -137,7 +137,6 @@ export const insertCommentCommand = (args: IInsertArgs) => {
           );
 
           if (!codeSymbol) {
-            // show an error
             resolve();
             return;
           }

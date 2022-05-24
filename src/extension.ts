@@ -3,7 +3,6 @@
 // import "isomorphic-fetch";
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
-import CommentSyncProvider from "./commentSync/commentSyncProvider";
 import CodeEditor from "./CodeEditor";
 import { provideComments, provideDocstring } from "./completion/Completion";
 import TrialHelper from "./trial/TrialHelper";
@@ -12,19 +11,11 @@ import { emailLogin } from "./authentication/EmailLogin";
 import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
-import { generateAutoComplete, generateDocstring } from "./completion/generate";
-import { getSafeRange, newFormatText } from "./completion/utils";
-import { createSelection, removeSelections } from "./selectionTools";
 import { HelpOptionsProvider } from "./sideBar/HelpOptionsProvider";
-import { getCommentFromLine } from "./completion/formatUtils";
-import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
 import {
   insertCommentCommand,
   insertDocstringCommand,
 } from "./commands/commands";
-import { getBlame } from "./gitApi/git";
-import { parseBlame } from "./blame-parser/blame-parser";
-import CommentSync from "./commentSync/newCommenySyncProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -37,7 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Get the password for the readable account, if it exists, and if it doesn't, prompt the user for it.
   const status = new StatusBarProvider();
   let editor = vscode.window.activeTextEditor;
-  let pass = await context.secrets.get("readable:password");
 
   const isEnabled = () => {
     // check if the extension is enabled
@@ -185,13 +175,6 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  const codeEditor = new CodeEditor(editor);
-  // if (vscode.workspace.name) {
-  //   const dbTools = new DatabaseTools(
-  //     context.globalState,
-  //     vscode.workspace.name
-  //   );
-  // }
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
@@ -204,11 +187,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("readable.login", async () => {
-      // if (await authProvider.getSession()) {
-      //   vscode.window.showInformationMessage("Readable: Already logged in!");
-      //   return;
-      // }
-
       let key: string | undefined;
       const selection = await vscode.window.showQuickPick(loginOptions);
 
@@ -243,11 +221,13 @@ export async function activate(context: vscode.ExtensionContext) {
         );
       }, 500);
     }),
+
     vscode.commands.registerCommand("readable.reportBug", async () => {
       await vscode.env.openExternal(
         vscode.Uri.parse("https://github.com/ReadableLabs/readable/issues")
       );
     }),
+
     vscode.commands.registerCommand("readable.resetPassword", resetPassword),
     vscode.commands.registerCommand("readable.enableAutoComplete", () => {
       vscode.workspace
@@ -266,34 +246,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }, 500);
     }),
 
-    // vscode.commands.registerCommand("readable.giveFeedback", async () => {
-    //   let choice = await vscode.window.showInformationMessage(
-    //     "Readable: Found a bug or have a feature request? Tell us.",
-    //     // "Notice something wrong about Readable? Tell us!",
-    //     "Send Feedback"
-    //   );
-    //   if (!choice) {
-    //     return;
-    //   }
-    //   if (choice === "Send Feedback") {
-    //     const feedback = await vscode.window.showInputBox({
-    //       ignoreFocusOut: true,
-    //       placeHolder: "Feedback",
-    //       prompt: "Enter Feedback:",
-    //     });
-    //     if (!feedback) {
-    //       return;
-    //     }
-    //   }
-    // }),
-
     vscode.commands.registerCommand("readable.version", async () => {
-      await createSelection(
-        new vscode.Range(new vscode.Position(0, 0), new vscode.Position(20, 0))
-      );
-      setTimeout(async () => {
-        await removeSelections();
-      }, 750);
       const version = context.extension.packageJSON.version;
       if (!version) {
         vscode.window.showInformationMessage("Error: Unable to get version");
@@ -343,43 +296,14 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  console.log("sync");
-
-  //   await getBranch();
-
-  // try {
-  //   let blame = await getBlame(
-  //     "/Users/2023_nevin_puri/Desktop/testinit",
-  //     "dura/d8ef8f7d1f1a428b83f0b531f2725f1b508a01ce",
-  //     "myFile.txt"
-  //   );
-  //   console.log(blame);
-
-  //   let splitBlame = blame.split("\n");
-  //   splitBlame.pop();
-
-  //   let parsedBlame = parseBlame(splitBlame);
-  //   console.log(parsedBlame);
-  // } catch (err: any) {
-  //   console.log(err);
-  // }
-
   const session = await vscode.authentication.getSession(
     CodeCommentAuthenticationProvider.id,
     [],
     { createIfNone: false }
   );
 
-  //   const sync = new CommentSyncProvider(codeEditor, session);
-  const comment = new CommentSync();
   checkAccount();
-
   createSideBar();
-
-  // await authProvider.checkAccount();
-
-  // context.subscriptions.push(statusBarProvider.myStatusBar);
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {} // make sure to log out here, and send an api request to delete the key with the token

@@ -1,20 +1,8 @@
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
 import CodeEditor from "../CodeEditor";
-import axios from "axios";
-import { checkSession } from "../authentication/Misc";
-import {
-  getFormattedCode,
-  getFunctionName,
-  getSafeEndPosition,
-  getSafeLine,
-  getSafePromptPosition,
-  getSafeRange,
-} from "./utils";
-import { generateAutoComplete, generateDocstring } from "./generate";
-import { getCommentFromLine } from "./formatUtils";
-
-const codeEditor = new CodeEditor();
+import { generateDocstring } from "./generate";
+import { getFunctionName, getSafeEndPosition, getSafeLine } from "./utils";
 
 export const provideDocstring = async (
   position: vscode.Position,
@@ -116,83 +104,8 @@ export const provideComments = async (
   language: string = "normal"
 ) => {
   try {
-    // const session = await vscode.authentication.getSession(
-    //   CodeCommentAuthenticationProvider.id,
-    //   [],
-    //   { createIfNone: false }
-    // );
-
-    // if (!session) {
-    //   vscode.window.showErrorMessage("Readable: Please log in");
-    //   return;
-    // }
-
-    // let codeSymbol = await codeEditor.getOrCreateSymbolUnderCursor(
-    //   position,
-    //   document.lineCount
-    // );
-
-    // if (!codeSymbol) {
-    //   return;
-    // }
-
-    // let { startLine, endLine } = getSafeRange(
-    //   position.line,
-    //   codeSymbol.range.start.line,
-    //   codeSymbol.range.end.line,
-    //   document.lineCount
-    // );
-
-    // let code = await codeEditor.getTextInRange(
-    //   new vscode.Range(
-    //     new vscode.Position(startLine, 0),
-    //     new vscode.Position(
-    //       endLine,
-    //       document.lineAt(endLine).range.end.character
-    //     )
-    //   )
-    // );
-
-    // console.log(code);
-
-    // const fullCode = code;
-
-    // if (!fullCode) {
-    //   return;
-    // }
-
-    // const line = document.lineAt(position).text;
-    // const comment = getCommentFromLine(line, document.languageId);
-    // console.log(fullCode);
-    // let comments = [];
-    // let comment: string | null = "";
-    // if (language === "python") {
-    //   comments = document.lineAt(position).text.split("#");
-    //   comment =
-    //     comments.length > 1 ? comments[comments.length - 1].trim() : null;
-    // } else {
-    //   comments = document.lineAt(position).text.split("//");
-    //   comment =
-    //     comments.length > 1 ? comments[comments.length - 1].trim() : null;
-    // }
-    // if (!comment) {
-    //   comment = "";
-    // }
-    // console.log(comment);
-
-    // // get the range of the code editor
-    // const autoCode = codeEditor
-    //   .getTextInRange(
-    //     new vscode.Range(
-    //       new vscode.Position(getSafePromptPosition(position.line), 0),
-    //       position
-    //     )
-    //   )
-    //   .trimRight();
-
     // create a completion item for the completion
     let completion = new vscode.CompletionItem(
-      // data.trim(), // without spaces
       "...",
       vscode.CompletionItemKind.Text
     );
@@ -205,10 +118,7 @@ export const provideComments = async (
         {
           document: document,
           cursor: position,
-          // fullCode: fullCode,
-          // comment: comment,
           language: language,
-          // accessToken: session.accessToken,
         },
       ],
       tooltip: "Insert Comment",
