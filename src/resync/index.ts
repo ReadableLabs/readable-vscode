@@ -65,6 +65,11 @@ export class Resync {
       split.pop(); // remove empty last line, might only be for linux
 
       console.log(stdout);
+
+      if (stderr) {
+        vscode.window.showErrorMessage(stderr);
+      }
+
       this.parse(split);
     });
     console.log(this.context.globalStorageUri?.fsPath);
