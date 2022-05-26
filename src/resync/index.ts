@@ -1,15 +1,23 @@
+import * as fs from "fs";
 import * as vscode from "vscode";
 import * as child_process from "child_process";
 import * as path from "path";
+import * as https from "https";
 
 export class Resync {
+  private warningIconPath = path.join(
+    this.context.globalStorageUri.fsPath,
+    "assets/warning.png"
+  );
   private highlightDecoratorType = vscode.window.createTextEditorDecorationType(
     // set decoration range behavior
     {
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
       overviewRulerColor: "#facc15",
       gutterIconPath: vscode.Uri.file(
-        "/home/nevin/Desktop/Readable/src/pixil.png"
+        // "/home/nevin/Desktop/Readable/src/pixil.png"
+        // "../pixil.png"
+        this.warningIconPath
       ),
       gutterIconSize: "contain",
       overviewRulerLane: vscode.OverviewRulerLane.Left,
@@ -28,6 +36,25 @@ export class Resync {
   public checkBin() {}
 
   public download() {
+    let basePath = this.context.globalStorageUri.fsPath;
+    let binPath = path.join(basePath, "bin/");
+    let assetPath = path.join(basePath, "assets/");
+    try {
+      fs.mkdirSync(binPath);
+    } catch (err) {}
+
+    try {
+      fs.mkdirSync(assetPath);
+    } catch (err) {}
+
+    https.get("https://nevin.cc/files/warning.png", (res) => {
+      const file = fs.createWriteStream(this.warningIconPath);
+      res.pipe(file);
+
+      file.on("finish", () => {
+        file.close();
+      });
+    });
     // fs mkdir recursive since the global dir might not exist
   }
 
@@ -35,7 +62,7 @@ export class Resync {
    * Checks the active file for out of sync comments
    */
   public updateActive() {
-    let baseDir = this.context.globalStorageUri?.fsPath;
+    let baseDir = this.context.globalStorageUri.fsPath;
     if (!baseDir) {
       return;
     }
@@ -72,7 +99,7 @@ export class Resync {
 
       this.parse(split);
     });
-    console.log(this.context.globalStorageUri?.fsPath);
+    console.log(this.context.globalStorageUri.fsPath);
   }
 
   public parse(output: string[]) {
