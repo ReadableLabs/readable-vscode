@@ -1,11 +1,13 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
+const CUSTOM_ICONS = ["discord"];
+
 // Must match in package.json
 const HELP_OPTIONS = [
-  "Have a question?",
-  "Configure comment style",
-  "More info",
+  { label: "Join the community", iconPath: "discord" },
+  { label: "Configure comment style", iconPath: "settings-gear" },
+  { label: "More info", iconPath: "info" },
 ];
 
 export class HelpOptionsProvider
@@ -17,58 +19,42 @@ export class HelpOptionsProvider
     return element;
   }
 
-  getIconPath(element: String): string {
-    if (element === "Have a question?") {
-      return "discord";
-    } else if (element === "Configure comment style") {
-      return "settings-gear";
-    }
-    return "info";
-  }
-
   getChildren(): HelpOption[] {
-    const readableConfig = vscode.workspace.getConfiguration("readable");
-    const currentValue = readableConfig.get("help");
     const options = HELP_OPTIONS.map((option) => {
-      const selected = option === currentValue;
-      return new HelpOption(
-        option,
-        vscode.TreeItemCollapsibleState.None,
-        selected,
-        this.getIconPath(option)
-      );
+      return new HelpOption(option.label, option.iconPath);
     });
     return options;
   }
 }
 
 class HelpOption extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly selected: boolean = false,
-    public readonly iconName: string
-  ) {
-    super(label, collapsibleState);
+  constructor(public readonly label: string, public readonly iconName: string) {
+    super(label, vscode.TreeItemCollapsibleState.None);
     this.tooltip = this.label;
-    this.setIconPath();
+    this.iconPath = this.getIconPath();
   }
 
-  setIconPath() {
-    if (this.iconName !== "discord") {
-      this.iconPath = new vscode.ThemeIcon(this.iconName);
-    } else {
-      this.iconPath = {
+  getIconPath() {
+    if (CUSTOM_ICONS.includes(this.iconName)) {
+      return {
         light: path.join(
           __filename,
           "..",
           "..",
           "media",
-          "dark",
-          "discord.svg"
+          "light",
+          `${this.iconName}.svg`
         ),
-        dark: path.join(__filename, "..", "..", "media", "dark", "discord.svg"),
+        dark: path.join(
+          __filename,
+          "..",
+          "..",
+          "media",
+          "dark",
+          `${this.iconName}.svg`
+        ),
       };
     }
+    return new vscode.ThemeIcon(this.iconName);
   }
 }

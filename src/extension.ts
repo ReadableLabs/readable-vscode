@@ -22,13 +22,10 @@ import { Resync } from "./resync";
 // your extension is activated the very first time the command is executed
 
 export async function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "Readable" is now active!');
 
   // Get the password for the readable account, if it exists, and if it doesn't, prompt the user for it.
   const status = new StatusBarProvider();
-  let editor = vscode.window.activeTextEditor;
 
   const isEnabled = () => {
     // check if the extension is enabled
@@ -37,10 +34,8 @@ export async function activate(context: vscode.ExtensionContext) {
       .get<boolean>("enableAutoComplete");
   };
 
-  const createSideBar = () => {
-    const helpTree = new HelpOptionsProvider();
-    vscode.window.createTreeView("help", { treeDataProvider: helpTree });
-  };
+  const helpTree = new HelpOptionsProvider();
+  vscode.window.createTreeView("help", { treeDataProvider: helpTree });
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
@@ -306,7 +301,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const resync = new Resync(context);
 
   checkAccount();
-  createSideBar();
 }
 
 export function deactivate() {} // make sure to log out here, and send an api request to delete the key with the token
