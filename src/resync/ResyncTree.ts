@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { ResyncFileInfo } from "./ResyncItem";
 import { ResyncItemAddedEvent } from "./ResyncItemAddedEvent";
 
-vscode.window.onDidChangeActiveColorTheme;
 export class ResyncTree {
   private _onDidAddResyncItem: vscode.EventEmitter<ResyncItemAddedEvent>;
   private _onDidUpdatePaths: vscode.EventEmitter<string[]>;
@@ -42,5 +41,10 @@ export class ResyncTree {
 
   public getAllUniquePaths() {
     return this.paths;
+  }
+
+  public getFileNameFromRelativePath(relativePath: string) {
+    let item = this.items.find((item) => item.relativePath === relativePath);
+    return item?.fileName;
   }
 }

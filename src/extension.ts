@@ -299,11 +299,9 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
-  const resyncOptionsProvider = new ResyncOptionsProvider();
-  const resync = new Resync(context);
-  resync.checkProject();
-  resync.tree.onDidUpdatePaths(() => {
-    resyncOptionsProvider.refresh();
+  const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  vscode.window.createTreeView("resync", {
+    treeDataProvider: resyncOptionsProvider,
   });
 
   checkAccount();

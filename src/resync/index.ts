@@ -32,7 +32,7 @@ export class Resync {
     vscode.workspace.onDidSaveTextDocument(() => {
       this.updateActive();
     });
-    this.checkProject();
+    // this.checkProject();
   }
 
   public checkBin() {}
@@ -122,7 +122,6 @@ export class Resync {
   }
 
   public checkProject() {
-    console.log(vscode.workspace.workspaceFolders);
     if (!vscode.workspace.workspaceFolders) {
       return;
     }

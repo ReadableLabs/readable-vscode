@@ -144,10 +144,6 @@
       {
         "view": "account",
         "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
-      },
-      {
-        "view": "resync",
-        "contents": "Resync is loading..."
       }
     ],
     "configuration": {
@@ -215,6 +211,8 @@
     "axios-retry": "^3.2.4",
     "diff": "^5.0.0",
     "https": "^1.0.0",
-    "isomorphic-fetch": "^3.0.0"
+    "inversify": "^6.0.1",
+    "isomorphic-fetch": "^3.0.0",
+    "reflect-metadata": "^0.1.13"
   }
 }
