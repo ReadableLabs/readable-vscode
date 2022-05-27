@@ -143,11 +143,11 @@
     "viewsWelcome": [
       {
         "view": "account",
-        "contents": "Log in or Sign Up to use Readable \n [️ Log in ](command:readable.login) \n [ Sign Up ](command:readable.register)"
+        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
       },
       {
         "view": "resync",
-        "contents": "[️ Enable Resync ](command:readable.login)\nPrevent comment rot in your constantly changing codebase.   [Learn More](https://readable.so/resync)"
+        "contents": "Resync is loading..."
       }
     ],
     "configuration": {
@@ -166,7 +166,7 @@
         "readable.help": {
           "type": "string",
           "enum": [
-            "Have a question?",
+            "Join the community",
             "Configure comment style",
             "More info"
           ],

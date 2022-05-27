@@ -13,8 +13,6 @@ export class AccountOptionsProvider
   }
 
   getChildren(): AccountOption[] {
-    const readableConfig = vscode.workspace.getConfiguration("readable");
-    // const currentValue = readableConfig.get(accountConfig);
     const options = ACCOUNT_OPTIONS.map((option) => {
       // const selected = option === currentValue;
       return new AccountOption(

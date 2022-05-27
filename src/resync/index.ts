@@ -3,6 +3,8 @@ import * as vscode from "vscode";
 import * as child_process from "child_process";
 import * as path from "path";
 import * as https from "https";
+import { ResyncFileInfo } from "./ResyncItem";
+import { ResyncTree } from "./ResyncTree";
 
 export class Resync {
   private warningIconPath = path.join(
@@ -10,19 +12,17 @@ export class Resync {
     "assets/warning.png"
   );
   private highlightDecoratorType = vscode.window.createTextEditorDecorationType(
-    // set decoration range behavior
     {
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
       overviewRulerColor: "#facc15",
-      gutterIconPath: vscode.Uri.file(
-        // "/home/nevin/Desktop/Readable/src/pixil.png"
-        // "../pixil.png"
-        this.warningIconPath
-      ),
+      gutterIconPath: vscode.Uri.file(this.warningIconPath),
       gutterIconSize: "contain",
       overviewRulerLane: vscode.OverviewRulerLane.Left,
     }
   );
+  private binDir = path.join(this.context.globalStorageUri.fsPath, "/bin");
+  private process?: child_process.ChildProcessWithoutNullStreams;
+
   constructor(public readonly context: vscode.ExtensionContext) {
     this.updateActive();
     vscode.window.onDidChangeActiveTextEditor(() => {
@@ -31,6 +31,7 @@ export class Resync {
     vscode.workspace.onDidSaveTextDocument(() => {
       this.updateActive();
     });
+    this.checkProject();
   }
 
   public checkBin() {}
@@ -62,11 +63,7 @@ export class Resync {
    * Checks the active file for out of sync comments
    */
   public updateActive() {
-    let baseDir = this.context.globalStorageUri.fsPath;
-    if (!baseDir) {
-      return;
-    }
-
+    // check if exe exists
     if (!vscode.workspace.workspaceFolders) {
       return;
     }
@@ -80,36 +77,33 @@ export class Resync {
     }
 
     let relativeFile = path.relative(currentDir, currentFile);
-    console.log(relativeFile);
-    console.log(currentDir);
 
-    baseDir = path.join(baseDir, "/bin");
-
-    let command = `${baseDir}/resync -s -d ${currentDir} -i ${relativeFile} -p`;
+    let command = `${this.binDir}/resync -s -d ${currentDir} -i ${relativeFile} -p`;
 
     let result = child_process.exec(command, (error, stdout, stderr) => {
       let split = stdout.split("\n");
       split.pop(); // remove empty last line, might only be for linux
 
-      console.log(stdout);
-
       if (stderr) {
         vscode.window.showErrorMessage(stderr);
       }
 
-      this.parse(split);
+      this.parseRanges(split);
     });
-    console.log(this.context.globalStorageUri.fsPath);
   }
 
-  public parse(output: string[]) {
-    let unsynced = [];
-    let l = output.length / 5;
-    for (let i = 0; i < l; i++) {
-      let offset = i * 5;
+  public parseFileInfo(output: string[]) {
+    return new ResyncFileInfo(output);
+  }
 
-      const start = output[offset + 3];
-      const end = output[offset + 4];
+  public parseRanges(output: string[]) {
+    let unsynced = [];
+    let l = output.length / 6;
+    for (let i = 0; i < l; i++) {
+      let offset = i * 6;
+
+      const start = output[offset + 4];
+      const end = output[offset + 5];
 
       const startInt = parseInt(start);
       const endInt = parseInt(end);
@@ -126,7 +120,34 @@ export class Resync {
     this.updateDecorations(unsynced);
   }
 
-  public checkProject() {}
+  public checkProject() {
+    let tree = new ResyncTree();
+    console.log(vscode.workspace.workspaceFolders);
+    if (!vscode.workspace.workspaceFolders) {
+      return;
+    }
+
+    let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    let command = `${this.binDir}/resync`;
+
+    console.log("spawning process");
+    let process = child_process.spawn(command, [
+      "-s",
+      "-d",
+      `${currentDir}`,
+      "-c",
+      "-p",
+    ]);
+
+    // let process = child_process.spawn("ls", ["-lh", "/usr"]);
+
+    process.stdout.on("data", (data) => {
+      let split = data.toString().split("\n");
+      split.pop();
+      console.log(new ResyncFileInfo(split));
+      // console.log(data.toString());
+    });
+  }
 
   private updateDecorations(ranges: vscode.Range[]) {
     vscode.window.activeTextEditor?.setDecorations(
