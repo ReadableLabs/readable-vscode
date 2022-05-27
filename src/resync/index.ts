@@ -117,7 +117,6 @@ export class Resync {
       unsynced.push(range);
     }
 
-    console.log(unsynced);
     this.updateDecorations(unsynced);
   }
 
@@ -149,9 +148,7 @@ export class Resync {
       // console.log(data.toString());
     });
 
-    process.stdout.on("end", () => {
-      console.log(this.tree.getAllUniquePaths());
-    });
+    process.stdout.on("end", () => {});
   }
 
   private updateDecorations(ranges: vscode.Range[]) {
