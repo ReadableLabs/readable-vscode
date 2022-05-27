@@ -17,6 +17,7 @@ import {
   insertDocstringCommand,
 } from "./commands/commands";
 import { Resync } from "./resync";
+import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -298,7 +299,12 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
+  const resyncOptionsProvider = new ResyncOptionsProvider();
   const resync = new Resync(context);
+  resync.checkProject();
+  resync.tree.onDidUpdatePaths(() => {
+    resyncOptionsProvider.refresh();
+  });
 
   checkAccount();
 }

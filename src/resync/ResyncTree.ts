@@ -5,17 +5,29 @@ import { ResyncItemAddedEvent } from "./ResyncItemAddedEvent";
 vscode.window.onDidChangeActiveColorTheme;
 export class ResyncTree {
   private _onDidAddResyncItem: vscode.EventEmitter<ResyncItemAddedEvent>;
+  private _onDidUpdatePaths: vscode.EventEmitter<string[]>;
+  private paths: string[] = [];
   private items: ResyncFileInfo[] = [];
   constructor() {
     this._onDidAddResyncItem = new vscode.EventEmitter<ResyncItemAddedEvent>();
+    this._onDidUpdatePaths = new vscode.EventEmitter<string[]>();
   }
 
   public get onDidAddResyncItem(): vscode.Event<ResyncItemAddedEvent> {
     return this._onDidAddResyncItem.event;
   }
 
+  public get onDidUpdatePaths(): vscode.Event<string[]> {
+    return this._onDidUpdatePaths.event;
+  }
+
   public addItem(item: ResyncFileInfo) {
     this.items.push(item);
+
+    if (!this.paths.includes(item.relativePath)) {
+      this.paths.push(item.relativePath);
+      this._onDidUpdatePaths.fire(this.paths);
+    }
     this._onDidAddResyncItem.fire(item);
   }
 
@@ -29,13 +41,6 @@ export class ResyncTree {
   }
 
   public getAllUniquePaths() {
-    let paths: string[] = [];
-    this.items.map((item) => {
-      if (!paths.includes(item.relativePath)) {
-        paths.push(item.relativePath);
-      }
-    });
-
-    return paths;
+    return this.paths;
   }
 }

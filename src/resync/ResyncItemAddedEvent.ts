@@ -1,5 +1,3 @@
-import { ResyncFileInfo } from "./ResyncItem";
-
 export interface ResyncItemAddedEvent {
   readonly fileName: string;
   readonly relativePath: string;

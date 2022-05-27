@@ -22,6 +22,7 @@ export class Resync {
   );
   private binDir = path.join(this.context.globalStorageUri.fsPath, "/bin");
   private process?: child_process.ChildProcessWithoutNullStreams;
+  public tree = new ResyncTree();
 
   constructor(public readonly context: vscode.ExtensionContext) {
     this.updateActive();
@@ -121,7 +122,6 @@ export class Resync {
   }
 
   public checkProject() {
-    let tree = new ResyncTree();
     console.log(vscode.workspace.workspaceFolders);
     if (!vscode.workspace.workspaceFolders) {
       return;
@@ -144,8 +144,14 @@ export class Resync {
     process.stdout.on("data", (data) => {
       let split = data.toString().split("\n");
       split.pop();
-      console.log(new ResyncFileInfo(split));
+      // console.log("adding item");
+      this.tree.addItem(new ResyncFileInfo(split));
+      // console.log(new ResyncFileInfo(split));
       // console.log(data.toString());
+    });
+
+    process.stdout.on("end", () => {
+      console.log(this.tree.getAllUniquePaths());
     });
   }
 
