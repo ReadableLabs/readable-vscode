@@ -304,6 +304,8 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider: resyncOptionsProvider,
   });
 
+  console.log(context.globalStorageUri.fsPath);
+
   checkAccount();
 }
 
