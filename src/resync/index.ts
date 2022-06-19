@@ -16,7 +16,7 @@ export class Resync {
   public tree = new ResyncTree();
 
   constructor(public readonly context: vscode.ExtensionContext) {
-    this.baseDir = context.globalStorageUri.fsPath.replace(" ", " \\");
+    this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
     this.binLocation = path.join(this.baseDir, "/bin/resync");
     this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
@@ -91,8 +91,8 @@ export class Resync {
       if (stderr) {
         vscode.window.showErrorMessage(stderr);
       }
-
-      this.parseRanges(split);
+      console.log(split);
+      console.log(stdout);
     });
   }
 
@@ -120,6 +120,8 @@ export class Resync {
       unsynced.push(range);
     }
 
+    console.log(unsynced);
+
     this.updateDecorations(unsynced);
   }
 
@@ -132,13 +134,10 @@ export class Resync {
     let command = `${this.binLocation}`;
 
     console.log("spawning process");
-    let process = child_process.spawn(command, [
-      "-s",
-      "-d",
-      `${currentDir}`,
-      "-c",
-      "-p",
-    ]);
+    let process = child_process.spawn(
+      "/home/victor/Desktop/resync/target/debug/resync",
+      ["-s", "-d", `${currentDir}`, "-c", "-p"]
+    );
 
     process.on("error", (err) => {
       vscode.window.showErrorMessage("an error has occured");
