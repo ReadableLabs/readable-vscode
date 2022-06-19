@@ -15,9 +15,11 @@ export class Resync {
   private process?: child_process.ChildProcessWithoutNullStreams;
   public tree = new ResyncTree();
 
+  // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    this.binLocation = path.join(this.baseDir, "/bin/resync");
+    this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
+    // this.binLocation = path.join(this.baseDir, "/bin/resync");
     this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
@@ -91,8 +93,8 @@ export class Resync {
       if (stderr) {
         vscode.window.showErrorMessage(stderr);
       }
-      console.log(split);
-      console.log(stdout);
+
+      this.parseRanges(split);
     });
   }
 
@@ -135,7 +137,8 @@ export class Resync {
 
     console.log("spawning process");
     let process = child_process.spawn(
-      "/home/victor/Desktop/resync/target/debug/resync",
+      // "/home/victor/Desktop/resync/target/debug/resync",
+      this.binLocation,
       ["-s", "-d", `${currentDir}`, "-c", "-p"]
     );
 
