@@ -20,11 +20,15 @@ export class Resync {
       overviewRulerLane: vscode.OverviewRulerLane.Left,
     }
   );
-  private binDir = path.join(this.context.globalStorageUri.fsPath, "/bin");
+  private binDir;
   private process?: child_process.ChildProcessWithoutNullStreams;
   public tree = new ResyncTree();
 
   constructor(public readonly context: vscode.ExtensionContext) {
+    this.binDir = path.join(this.context.globalStorageUri.fsPath, "/bin").replace(/[\\$'"]/g, "\\$&");
+    console.log("ok")
+    console.log(this.binDir);
+    console.log("doke")
     this.updateActive();
     vscode.window.onDidChangeActiveTextEditor(() => {
       this.updateActive();
