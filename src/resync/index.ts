@@ -7,28 +7,27 @@ import { ResyncFileInfo } from "./ResyncItem";
 import { ResyncTree } from "./ResyncTree";
 
 export class Resync {
-  private warningIconPath = path.join(
-    this.context.globalStorageUri.fsPath,
-    "assets/warning.png"
-  );
-  private highlightDecoratorType = vscode.window.createTextEditorDecorationType(
-    {
+  private warningIconPath;
+  private highlightDecoratorType;
+
+  private baseDir;
+  private binLocation;
+  private process?: child_process.ChildProcessWithoutNullStreams;
+  public tree = new ResyncTree();
+
+  constructor(public readonly context: vscode.ExtensionContext) {
+    this.baseDir = context.globalStorageUri.fsPath.replace(" ", " \\");
+    this.binLocation = path.join(this.baseDir, "/bin/resync");
+    this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
+    this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
       overviewRulerColor: "#facc15",
       gutterIconPath: vscode.Uri.file(this.warningIconPath),
       gutterIconSize: "contain",
       overviewRulerLane: vscode.OverviewRulerLane.Left,
-    }
-  );
-  private binDir;
-  private process?: child_process.ChildProcessWithoutNullStreams;
-  public tree = new ResyncTree();
+    });
 
-  constructor(public readonly context: vscode.ExtensionContext) {
-    this.binDir = path.join(this.context.globalStorageUri.fsPath, "/bin").replace(/[\\$'"]/g, "\\$&");
-    console.log("ok")
-    console.log(this.binDir);
-    console.log("doke")
+    console.log(this.baseDir);
     this.updateActive();
     vscode.window.onDidChangeActiveTextEditor(() => {
       this.updateActive();
@@ -42,9 +41,8 @@ export class Resync {
   public checkBin() {}
 
   public download() {
-    let basePath = this.context.globalStorageUri.fsPath;
-    let binPath = path.join(basePath, "bin/");
-    let assetPath = path.join(basePath, "assets/");
+    let binPath = path.join(this.baseDir, "bin/");
+    let assetPath = path.join(this.baseDir, "assets/");
     try {
       fs.mkdirSync(binPath);
     } catch (err) {}
@@ -83,7 +81,8 @@ export class Resync {
 
     let relativeFile = path.relative(currentDir, currentFile);
 
-    let command = `${this.binDir}/resync -s -d ${currentDir} -i ${relativeFile} -p`;
+    // escape current dir as well as relative file
+    let command = `${this.binLocation} -s -d ${currentDir} -i ${relativeFile} -p`;
 
     let result = child_process.exec(command, (error, stdout, stderr) => {
       let split = stdout.split("\n");
@@ -130,7 +129,7 @@ export class Resync {
     }
 
     let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
-    let command = `${this.binDir}/resync`;
+    let command = `${this.binLocation}`;
 
     console.log("spawning process");
     let process = child_process.spawn(command, [
@@ -141,9 +140,15 @@ export class Resync {
       "-p",
     ]);
 
+    process.on("error", (err) => {
+      vscode.window.showErrorMessage("an error has occured");
+      console.log(err.toString());
+    });
+
     // let process = child_process.spawn("ls", ["-lh", "/usr"]);
 
     process.stdout.on("data", (data) => {
+      console.log("data");
       let split = data.toString().split("\n");
       split.pop();
       // console.log("adding item");
