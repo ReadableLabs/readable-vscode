@@ -300,9 +300,10 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  vscode.window.createTreeView("resync", {
+  const view = vscode.window.createTreeView("resync", {
     treeDataProvider: resyncOptionsProvider,
   });
+  // view on did expand element
 
   console.log(context.globalStorageUri.fsPath);
 
