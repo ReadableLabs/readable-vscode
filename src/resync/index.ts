@@ -5,6 +5,7 @@ import * as path from "path";
 import * as https from "https";
 import { ResyncFileInfo } from "./ResyncItem";
 import { ResyncTree } from "./ResyncTree";
+import { report } from "process";
 
 export class Resync {
   private warningIconPath;
@@ -18,9 +19,12 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
+    this.binLocation =
+      "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
     // this.binLocation = path.join(this.baseDir, "/bin/resync");
-    this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
+    this.warningIconPath =
+      "/Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
+    // this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
       overviewRulerColor: "#facc15",
@@ -128,38 +132,55 @@ export class Resync {
   }
 
   public checkProject() {
-    if (!vscode.workspace.workspaceFolders) {
-      return;
-    }
+    vscode.window.withProgress(
+      {
+        title: "Fetching unsynced comments...",
+        location: { viewId: "resync" },
+      },
+      (progess, token) => {
+        let p = new Promise<void>(async (resolve, reject) => {
+          try {
+            if (!vscode.workspace.workspaceFolders) {
+              return;
+            }
 
-    let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
-    let command = `${this.binLocation}`;
+            let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
+            let command = `${this.binLocation}`;
 
-    console.log("spawning process");
-    let process = child_process.spawn(
-      // "/home/victor/Desktop/resync/target/debug/resync",
-      this.binLocation,
-      ["-s", "-d", `${currentDir}`, "-c", "-p"]
+            console.log("spawning process");
+            let process = child_process.spawn(this.binLocation, [
+              "-s",
+              "-d",
+              `${currentDir}`,
+              "-c",
+              "-p",
+            ]);
+
+            process.on("error", (err) => {
+              vscode.window.showErrorMessage("an error has occured");
+              console.log(err.toString());
+            });
+
+            // let process = child_process.spawn("ls", ["-lh", "/usr"]);
+
+            process.stdout.on("data", (data) => {
+              console.log("data");
+              let split = data.toString().split("\n");
+              split.pop();
+              // console.log("adding item");
+              this.tree.addItem(new ResyncFileInfo(split));
+              // console.log(new ResyncFileInfo(split));
+              // console.log(data.toString());
+            });
+
+            process.stdout.on("end", () => {
+              resolve();
+            });
+          } catch (error) {}
+        });
+        return p;
+      }
     );
-
-    process.on("error", (err) => {
-      vscode.window.showErrorMessage("an error has occured");
-      console.log(err.toString());
-    });
-
-    // let process = child_process.spawn("ls", ["-lh", "/usr"]);
-
-    process.stdout.on("data", (data) => {
-      console.log("data");
-      let split = data.toString().split("\n");
-      split.pop();
-      // console.log("adding item");
-      this.tree.addItem(new ResyncFileInfo(split));
-      // console.log(new ResyncFileInfo(split));
-      // console.log(data.toString());
-    });
-
-    process.stdout.on("end", () => {});
   }
 
   private updateDecorations(ranges: vscode.Range[]) {

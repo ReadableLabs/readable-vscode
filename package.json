@@ -92,6 +92,12 @@
           "command": "readable.rightClickComment",
           "group": "1_modification"
         }
+      ],
+      "view/item/context": [
+        {
+          "command": "readable.updateCount",
+          "group": "inline"
+        }
       ]
     },
     "keybindings": [
@@ -138,6 +144,14 @@
       {
         "command": "readable.version",
         "title": "Readable: Version"
+      },
+      {
+        "command": "readable.updateCount",
+        "title": "Readable: Update Count",
+        "icon": {
+          "light": "media/light/count.svg",
+          "dark": "media/dark/count.svg"
+        }
       }
     ],
     "viewsWelcome": [
