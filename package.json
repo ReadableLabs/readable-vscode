@@ -73,14 +73,17 @@
     "views": {
       "readable-sidebar-view": [
         {
+          "type": "tree",
           "id": "account",
           "name": "Account"
         },
         {
+          "type": "webview",
           "id": "resync",
           "name": "Resync"
         },
         {
+          "type": "tree",
           "id": "help",
           "name": "Help"
         }
@@ -91,12 +94,6 @@
         {
           "command": "readable.rightClickComment",
           "group": "1_modification"
-        }
-      ],
-      "view/item/context": [
-        {
-          "command": "readable.updateCount",
-          "group": "inline"
         }
       ]
     },
@@ -220,7 +217,7 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
-    "@vscode/webview-ui-toolkit": "^0.9.1",
+    "@vscode/webview-ui-toolkit": "^1.0.0",
     "axios": "^0.21.4",
     "axios-retry": "^3.2.4",
     "diff": "^5.0.0",

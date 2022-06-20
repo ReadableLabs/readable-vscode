@@ -64,18 +64,33 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@microsoft/fast-element@^1.10.2":
+  version "1.10.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-element/-/fast-element-1.10.2.tgz#34a2faa8a97608e1b7c8024b9aed3deddd5c6ad8"
+  integrity sha512-Nh80AEx/caDe4jhFYNT75sTG4k6MWy1N6XfgyhmejAX0ylivYy0M78WI2JgQOqi2ZRozCiNcpAPLVhYyAVN9sA==
+
 "@microsoft/fast-element@^1.6.2", "@microsoft/fast-element@^1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@microsoft/fast-element/-/fast-element-1.7.0.tgz#7e4b164c77c07d93b28f057231b37e7e2e8fed04"
   integrity sha512-2qpAWuiOSdQfH/XdO8ZtVhlvQVCjHlojWUPoGbvHJDizBccZib+4uGReG87RIBp2Fi0s7ngYPRUioS1Lr+Xe0A==
 
-"@microsoft/fast-foundation@^2.33.1", "@microsoft/fast-foundation@^2.33.2":
+"@microsoft/fast-foundation@^2.33.2":
   version "2.33.2"
   resolved "https://registry.yarnpkg.com/@microsoft/fast-foundation/-/fast-foundation-2.33.2.tgz#884355a6246dfd4b835e5ffb26635e0d14598818"
   integrity sha512-wTVo8u1eG9zUYSGDNPl4R+Yo9MTVJe7LvyI8sOqKmdggsbnYzhEa8wN0uBCnqo7W61nyhRL5FqPSh6WZGT5hUQ==
   dependencies:
     "@microsoft/fast-element" "^1.7.0"
     "@microsoft/fast-web-utilities" "^5.1.0"
+    tabbable "^5.2.0"
+    tslib "^1.13.0"
+
+"@microsoft/fast-foundation@^2.38.0":
+  version "2.46.9"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-foundation/-/fast-foundation-2.46.9.tgz#a4d4ce50861f71aaef5697746e87b8f66b280507"
+  integrity sha512-jgkVT7bAWIV844eDj3V9cmYFsRIcJ8vMuB4h2SlkJ9EmFbCfimvh6RyAhsHv+bC6QZSS0N0bpZHm5A5QsWgi3Q==
+  dependencies:
+    "@microsoft/fast-element" "^1.10.2"
+    "@microsoft/fast-web-utilities" "^5.4.1"
     tabbable "^5.2.0"
     tslib "^1.13.0"
 
@@ -93,6 +108,13 @@
   integrity sha512-S2PCxI4XqtIxLM1N7i/NuIAgx+mJM01+mDzyB3vZlYibAkOT0bzp5YZCp+coXowokSin/nK5T2kqShMXEzI6Jg==
   dependencies:
     exenv-es6 "^1.0.0"
+
+"@microsoft/fast-web-utilities@^5.4.1":
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-web-utilities/-/fast-web-utilities-5.4.1.tgz#8e3082ee2ff2b5467f17e7cb1fb01b0e4906b71f"
+  integrity sha512-ReWYncndjV3c8D8iq9tp7NcFNc1vbVHvcBFPME2nNFKNbS1XCesYZGlIlf3ot5EmuOXPlrzUHOWzQ2vFpIkqDg==
+  dependencies:
+    exenv-es6 "^1.1.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -271,13 +293,13 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@vscode/webview-ui-toolkit@^0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@vscode/webview-ui-toolkit/-/webview-ui-toolkit-0.9.1.tgz#295a9b08a22f15acc32e92174e49dcded441df2c"
-  integrity sha512-nCy9r2PpoLJW9Ie3T6V8zGUAYY1eL/K42eGVYYjwm5ogdYC3OynuiOf7tDBIgzJECRJlJvgVCPZ5S4ky1sjIGg==
+"@vscode/webview-ui-toolkit@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vscode/webview-ui-toolkit/-/webview-ui-toolkit-1.0.0.tgz#b3d13e0a7f4af8df91009a5781faad2bf0e07a80"
+  integrity sha512-/qaHYZXqvIKkao54b7bLzyNH8BC+X4rBmTUx1MvcIiCjqRMxml0BCpqJhnDpfrCb0IOxXRO8cAy1eB5ayzQfBA==
   dependencies:
     "@microsoft/fast-element" "^1.6.2"
-    "@microsoft/fast-foundation" "^2.33.1"
+    "@microsoft/fast-foundation" "^2.38.0"
     "@microsoft/fast-react-wrapper" "^0.1.18"
 
 "@webassemblyjs/ast@1.11.1":
@@ -1016,6 +1038,11 @@ exenv-es6@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/exenv-es6/-/exenv-es6-1.0.0.tgz#bd459136369af17cf33f959b5af58803d4068c80"
   integrity sha512-fcG/TX8Ruv9Ma6PBaiNsUrHRJzVzuFMP6LtPn/9iqR+nr9mcLeEOGzXQGLC5CVQSXGE98HtzW2mTZkrCA3XrDg==
+
+exenv-es6@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/exenv-es6/-/exenv-es6-1.1.1.tgz#80b7a8c5af24d53331f755bac07e84abb1f6de67"
+  integrity sha512-vlVu3N8d6yEMpMsEm+7sUBAI81aqYYuEvfK0jNqmdb/OPXzzH7QWDDnVjMvDSY47JdHEqx/dfC/q8WkfoTmpGQ==
 
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"

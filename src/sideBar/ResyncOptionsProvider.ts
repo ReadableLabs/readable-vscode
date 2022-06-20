@@ -112,6 +112,7 @@ class ResyncItem extends vscode.TreeItem {
   ) {
     super(label, collapsibleState);
     this.tooltip = this.label;
+    this.contextValue = "file";
     if (!hasOpenCommand) {
       return;
     }
