@@ -17,12 +17,32 @@
     {
       id: 2,
       fileName: "main.rs",
-      unsyncedComments: 4,
+      unsyncedComments: 3,
     },
     {
       id: 3,
-      fileName: "CodeEditor.ts",
-      unsyncedComments: 7,
+      fileName: "Destitor.ts",
+      unsyncedComments: 66,
+    },
+    {
+      id: 4,
+      fileName: "homer.js",
+      unsyncedComments: 2,
+    },
+    {
+      id: 5,
+      fileName: "apple-backend.py",
+      unsyncedComments: 10,
+    },
+    {
+      id: 6,
+      fileName: "count.ts",
+      unsyncedComments: 4,
+    },
+    {
+      id: 7,
+      fileName: "old.ts",
+      unsyncedComments: 30,
     },
   ];
 

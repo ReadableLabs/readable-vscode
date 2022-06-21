@@ -110,7 +110,6 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
 			<body>
 				<ul class="resync-list">
 				</ul>
-        <button id="resync-button">hello</button>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
