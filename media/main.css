@@ -44,7 +44,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  line-height: 22px;
+  padding: 0 12px;
 }
 .resync-item:hover {
-  background-color: var(--vscode-button-hoverBackground);
+  background-color: var(--vscode-list-hoverBackground);
+}
+.resync-item:focus {
+  background-color: var(--vscode-list-hoverBackground);
+  outline: var(--vscode-list-focusOutline);
 }
