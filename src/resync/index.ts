@@ -168,6 +168,7 @@ export class Resync {
               let split = data.toString().split("\n");
               split.pop();
               // console.log("adding item");
+              console.log(split);
               this.tree.addItem(new ResyncFileInfo(split));
               // console.log(new ResyncFileInfo(split));
               // console.log(data.toString());

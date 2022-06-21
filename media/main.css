@@ -38,5 +38,10 @@ body {
 	border: none;
 	margin: 0 auto;
 }
+.resync-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
 © 2022 GitHub, Inc.
 Terms
