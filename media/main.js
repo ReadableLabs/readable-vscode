@@ -4,7 +4,7 @@
 // It cannot access the main VS Code APIs directly.
 (function () {
   let comments = ["hello", "hello", "trash"];
-  const ul = document.querySelector(".unsynced-list");
+  const ul = document.querySelector(".resync-list");
   for (const comment in comments) {
     // const li = document.createElement("li");
     // li.className = "file";
@@ -20,7 +20,7 @@
 
     // ul?.appendChild(li);
     const item = `<li class="resync-item">
-    <h3>${comments[comment]}</h3>
+    <h4>${comments[comment]}</h4>
     <vscode-badge>1</vscode-badge>
     </li>`;
     ul?.insertAdjacentHTML("beforeend", item);
