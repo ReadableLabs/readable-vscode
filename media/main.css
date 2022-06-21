@@ -50,7 +50,7 @@ body {
 .resync-item:hover {
   background-color: var(--vscode-list-hoverBackground);
 }
-.resync-item:focus {
-  background-color: var(--vscode-list-hoverBackground);
-  outline: var(--vscode-list-focusOutline);
+.highlight {
+  border: 1px solid var(--vscode-list-focusOutline);
+  background-color: var(--vscode-list-activeSelectionBackground) !important;
 }

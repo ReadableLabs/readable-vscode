@@ -4,9 +4,11 @@ import { Uri } from "vscode";
 
 export class ResyncViewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
+  private _disposables: vscode.Disposable[] = [];
 
   constructor(private readonly _extensionUri: vscode.Uri) {
     if (this._view !== undefined) {
+      console.log("new ewbvoejfwoiejgoiasdj");
       this._view.webview.html = this._getHtmlForWebview(
         this._view.webview,
         this._extensionUri
@@ -31,9 +33,29 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
       webviewView.webview,
       this._extensionUri
     );
+
+    this._setWebviewMessageListener(this._view.webview);
   }
   public revive(panel: vscode.WebviewView) {
     this._view = panel;
+  }
+
+  private _setWebviewMessageListener(webview: vscode.Webview) {
+    console.log("set webiew lsitener");
+    webview.onDidReceiveMessage(
+      (message: any) => {
+        console.log("got messangdsiu hguasdhguasdhuigha");
+        const command = message.command;
+        const text = message.text;
+        switch (command) {
+          case "select":
+            vscode.window.showInformationMessage(text);
+            return;
+        }
+      },
+      undefined,
+      this._disposables
+    );
   }
 
   private _getHtmlForWebview(
@@ -49,6 +71,7 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
       "dist",
       "toolkit.js",
     ]);
+
     // const mainUri = getUri(webview, extensionUri, ["media", "main.js"]);
 
     const scriptUri = webview.asWebviewUri(
@@ -87,6 +110,7 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
 			<body>
 				<ul class="resync-list">
 				</ul>
+        <button id="resync-button">hello</button>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
