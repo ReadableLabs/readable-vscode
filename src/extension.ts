@@ -18,6 +18,7 @@ import {
 } from "./commands/commands";
 import { Resync } from "./resync";
 import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
+import { OPEN_PRIVATECACHE } from "sqlite3";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -242,18 +243,6 @@ export async function activate(context: vscode.ExtensionContext) {
         status.updateStatusBar();
       }, 500);
     }),
-
-    vscode.commands.registerCommand("readable.version", async () => {
-      const version = context.extension.packageJSON.version;
-      if (!version) {
-        vscode.window.showInformationMessage("Error: Unable to get version");
-        return;
-      }
-      vscode.window.showInformationMessage(
-        "Readable is currently on version " + version
-      );
-    }),
-
     vscode.commands.registerCommand("readable.register", async () => {
       const session = await vscode.authentication.getSession(
         CodeCommentAuthenticationProvider.id,
@@ -303,9 +292,19 @@ export async function activate(context: vscode.ExtensionContext) {
   const view = vscode.window.createTreeView("resync", {
     treeDataProvider: resyncOptionsProvider,
   });
-  // view on did expand element
 
-  console.log(context.globalStorageUri.fsPath);
+  vscode.commands.registerCommand("readable.version", async () => {
+    resyncOptionsProvider.resync?.checkProject();
+    const version = context.extension.packageJSON.version;
+    if (!version) {
+      vscode.window.showInformationMessage("Error: Unable to get version");
+      return;
+    }
+    vscode.window.showInformationMessage(
+      "Readable is currently on version " + version
+    );
+  });
+  // view on did expand element
 
   checkAccount();
 }

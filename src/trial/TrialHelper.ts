@@ -26,7 +26,6 @@ export default abstract class TrialHelper {
           },
         }
       );
-      console.log(data);
 
       if (data === false) {
         let response = await vscode.window.showInformationMessage(

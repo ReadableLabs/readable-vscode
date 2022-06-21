@@ -6,6 +6,7 @@ import * as https from "https";
 import { ResyncFileInfo } from "./ResyncItem";
 import { ResyncTree } from "./ResyncTree";
 import { report } from "process";
+import { skeletonTemplate } from "@microsoft/fast-foundation";
 
 export class Resync {
   private warningIconPath;
@@ -19,11 +20,10 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    this.binLocation =
-      "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
+    this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
+    // "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
     // this.binLocation = path.join(this.baseDir, "/bin/resync");
-    this.warningIconPath =
-      "/Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
+    this.warningIconPath = "/home/victor/Desktop/readable-vscode/src/pixil.png";
     // this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
@@ -33,7 +33,6 @@ export class Resync {
       overviewRulerLane: vscode.OverviewRulerLane.Left,
     });
 
-    console.log(this.baseDir);
     this.updateActive();
     vscode.window.onDidChangeActiveTextEditor(() => {
       this.updateActive();
@@ -108,24 +107,21 @@ export class Resync {
 
   public parseRanges(output: string[]) {
     let unsynced = [];
-    let l = output.length / 6;
-    for (let i = 0; i < l; i++) {
-      let offset = i * 6;
 
-      const start = output[offset + 4];
-      const end = output[offset + 5];
-
-      const startInt = parseInt(start);
-      const endInt = parseInt(end);
+    for (let line of output) {
+      let split = line.split("\t");
+      const start = parseInt(split[4]);
+      const end = parseInt(split[5]);
 
       const range = new vscode.Range(
-        new vscode.Position(startInt - 1, 0),
-        new vscode.Position(endInt - 1, 0)
+        new vscode.Position(start - 1, 0),
+        new vscode.Position(end - 1, 0)
       );
 
       unsynced.push(range);
     }
 
+    console.log("unsynced");
     console.log(unsynced);
 
     this.updateDecorations(unsynced);
@@ -141,42 +137,58 @@ export class Resync {
         let p = new Promise<void>(async (resolve, reject) => {
           try {
             if (!vscode.workspace.workspaceFolders) {
+              console.log("no workspace folders");
+              resolve();
               return;
             }
 
             let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
-            let command = `${this.binLocation}`;
 
             console.log("spawning process");
             let process = child_process.spawn(this.binLocation, [
-              "-s",
               "-d",
               `${currentDir}`,
-              "-c",
               "-p",
             ]);
+
+            process.stdout.on("error", (error) => {
+              console.log(error);
+              vscode.window.showErrorMessage("An error has occured");
+            });
 
             process.on("error", (err) => {
               vscode.window.showErrorMessage("an error has occured");
               console.log(err.toString());
+              resolve();
             });
 
-            // let process = child_process.spawn("ls", ["-lh", "/usr"]);
-
             process.stdout.on("data", (data) => {
-              console.log("data");
               let split = data.toString().split("\n");
               split.pop();
-              // console.log("adding item");
-              this.tree.addItem(new ResyncFileInfo(split));
-              // console.log(new ResyncFileInfo(split));
-              // console.log(data.toString());
+
+              // console.log(split);
+              // console.log(split.length / 6);
+
+              for (let line of split) {
+                let chunk = line.split("\t");
+                console.log(chunk);
+                this.tree.addItem(new ResyncFileInfo(chunk));
+              }
+
+              // for (let i = 0; i < split.length; i += 6) {
+              //   let chunk = split.slice(i, i + 6);
+              // this.tree.addItem(new ResyncFileInfo(chunk));
+              // }
             });
 
             process.stdout.on("end", () => {
+              console.log("process end");
               resolve();
             });
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+            vscode.window.showErrorMessage("An error has occured");
+          }
         });
         return p;
       }

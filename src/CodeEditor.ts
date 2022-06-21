@@ -18,13 +18,7 @@ export default class CodeEditor {
 
   private _activeEditor: vscode.TextEditor | undefined;
   constructor(editor?: vscode.TextEditor) {
-    console.log("new codereader");
     // vscode.window.activeTextEditor = vscode.window.activeTextEditor;
-
-    if (editor) {
-      //   vscode.window.activeTextEditor = editor;
-      console.log(editor.document);
-    }
 
     vscode.window.onDidChangeActiveTextEditor((e) => {
       //   vscode.window.activeTextEditor = e;
@@ -290,7 +284,6 @@ export default class CodeEditor {
       );
       return first10Lines + "\n" + last10Lines;
     } else {
-      // console.log(vscode.window.activeTextEditor.document.getText(symbol.range));
       return vscode.window.activeTextEditor.document.getText(symbol.range);
     }
 
@@ -313,7 +306,6 @@ export default class CodeEditor {
     let codeSymbol = await this.getSymbolUnderCusor(position);
     if (!codeSymbol) {
       // if no symbol is found, create a new symbol
-      console.log("creating a new symbol");
       codeSymbol = new vscode.DocumentSymbol(
         "CurrentLineSymbol",
         "The symbol of the current line",
@@ -331,7 +323,6 @@ export default class CodeEditor {
         new vscode.Range(new vscode.Position(position.line, 0), position)
       );
     }
-    console.log(codeSymbol);
     return codeSymbol;
   }
 
@@ -366,14 +357,11 @@ export default class CodeEditor {
         symbols[i].range.start.line <= position.line &&
         symbols[i].range.end.line >= position.line
       ) {
-        console.log("found symbol");
         if (
           symbols[i].kind === vscode.SymbolKind.Class &&
           symbols[i].range.start.line !== position.line
         ) {
-          console.log("symbol is class");
           for (let k = 0; k < symbols[i].children.length; k++) {
-            console.log("going through symbols");
             if (
               (symbols[i].children[k].kind === vscode.SymbolKind.Method ||
                 symbols[i].children[k].kind === vscode.SymbolKind.Function ||
@@ -381,7 +369,6 @@ export default class CodeEditor {
               symbols[i].children[k].range.start.line <= position.line &&
               symbols[i].children[k].range.end.line >= position.line
             ) {
-              console.log("found symbol");
               return symbols[i].children[k];
             }
           }
@@ -398,7 +385,6 @@ export default class CodeEditor {
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
-    // console.log(symbols);
     if (symbols === []) {
       throw new Error("Error: No symbols");
     }

@@ -8,7 +8,7 @@ export class ResyncOptionsProvider
   implements vscode.TreeDataProvider<ResyncItem>
 {
   private root?: string;
-  private resync?: Resync;
+  public resync?: Resync;
   constructor(context: vscode.ExtensionContext) {
     if (!vscode.workspace.workspaceFolders) {
       return;
@@ -112,6 +112,7 @@ class ResyncItem extends vscode.TreeItem {
   ) {
     super(label, collapsibleState);
     this.tooltip = this.label;
+    console.log(commentBounds);
     if (!hasOpenCommand) {
       return;
     }
@@ -124,7 +125,7 @@ class ResyncItem extends vscode.TreeItem {
       title: "Open in Editor",
       command: "vscode.open",
       arguments: [
-        vscode.Uri.file(path.join(rootPath, relativePath)),
+        vscode.Uri.file(relativePath),
         {
           preserveFocus: false,
           preview: false,
