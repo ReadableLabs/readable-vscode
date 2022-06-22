@@ -49,6 +49,14 @@
   const ul = document.querySelector(".resync-list");
   let active = null;
 
+  function addItem(item) {
+    const treeItem = `<li class="resync-item">
+    <h4>${item.fileName}</h4>
+    <vscode-badge>3</vscode-badge>
+    </li>`;
+    ul?.insertAdjacentHTML("beforeend", treeItem);
+  }
+
   function removeHighlight(item, index) {
     if (item.id.toString() !== active) {
       let thing = document.getElementById(item.id.toString());
@@ -62,10 +70,10 @@
   }
   for (const comment in comments) {
     const item = `<li class="resync-item" id="${comments[comment].id}">
-    <h4>${comments[comment].fileName}</h4>
-    <vscode-badge>${comments[comment].unsyncedComments}</vscode-badge>
-    </li>`;
-    window.addEventListener("load", main);
+  <h4>${comments[comment].fileName}</h4>
+  <vscode-badge>${comments[comment].unsyncedComments}</vscode-badge>
+  </li>`;
+
     function main() {
       let thing = document.getElementById(comments[comment].id.toString());
       thing?.addEventListener("click", handleClick);

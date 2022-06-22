@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
       .get<boolean>("enableAutoComplete");
   };
 
-  const provider = new ResyncViewProvider(context.extensionUri);
+  const provider = new ResyncViewProvider(context.extensionUri, context);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("resync", provider)
   );
@@ -293,11 +293,10 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
-  // const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  // vscode.window.createTreeView("resync", {
-  //   treeDataProvider: resyncOptionsProvider,
-  // });
-  //create webview
+  const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  vscode.window.createTreeView("oldresync", {
+    treeDataProvider: resyncOptionsProvider,
+  });
 
   vscode.commands.registerCommand("readable.version", async () => {
     // resyncOptionsProvider.resync?.checkProject();

@@ -4,7 +4,6 @@ import * as child_process from "child_process";
 import * as path from "path";
 import * as https from "https";
 import { ResyncFileInfo } from "./ResyncItem";
-import { ResyncTree } from "./ResyncTree";
 import { report } from "process";
 import { skeletonTemplate } from "@microsoft/fast-foundation";
 
@@ -15,7 +14,6 @@ export class Resync {
   private baseDir;
   private binLocation;
   private process?: child_process.ChildProcessWithoutNullStreams;
-  public tree = new ResyncTree();
 
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
@@ -134,7 +132,7 @@ export class Resync {
     vscode.window.withProgress(
       {
         title: "Fetching unsynced comments...",
-        location: { viewId: "oldresync" },
+        location: { viewId: "resync" },
       },
       (progess, token) => {
         let p = new Promise<void>(async (resolve, reject) => {
@@ -174,7 +172,8 @@ export class Resync {
 
               for (let line of split) {
                 let chunk = line.split("\t");
-                this.tree.addItem(new ResyncFileInfo(chunk));
+                console.log(chunk);
+                // addItem(new ResyncFileInfo(chunk));
               }
 
               // for (let i = 0; i < split.length; i += 6) {

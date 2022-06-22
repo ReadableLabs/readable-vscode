@@ -1,12 +1,22 @@
 import * as vscode from "vscode";
 import { vsCodeBadge } from "@vscode/webview-ui-toolkit";
 import { Uri } from "vscode";
+import { Resync } from "../resync";
+import { ResyncFileInfo } from "./ResyncItem";
+import * as ReactDOMServer from "react-dom/server";
+import Hello from "./components/Hello";
+import React = require("react");
 
 export class ResyncViewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
   private _disposables: vscode.Disposable[] = [];
+  public resync?: Resync;
+  public root?: string;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {
+  constructor(
+    private readonly _extensionUri: vscode.Uri,
+    context: vscode.ExtensionContext
+  ) {
     if (this._view !== undefined) {
       console.log("new ewbvoejfwoiejgoiasdj");
       this._view.webview.html = this._getHtmlForWebview(
@@ -14,7 +24,13 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
         this._extensionUri
       );
     }
+    if (!vscode.workspace.workspaceFolders) {
+      return;
+    }
+    this.root = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    this.resync = new Resync(context);
   }
+
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -99,7 +115,9 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
 					Use a content security policy to only allow loading images from https or from our extension directory,
 					and only allow scripts that have a specific nonce.
 				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${
+          webview.cspSource
+        }; script-src 'nonce-${nonce}';">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
 				<link href="${styleMainUri}" rel="stylesheet">
@@ -108,8 +126,7 @@ export class ResyncViewProvider implements vscode.WebviewViewProvider {
 				<title>Resync</title>
 			</head>
 			<body>
-				<ul class="resync-list">
-				</ul>
+      ${ReactDOMServer.renderToString(<Hello />)}
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;

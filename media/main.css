@@ -4,6 +4,7 @@ body {
 
 .resync-item {
   cursor: pointer;
+  user-select: none;
   overflow: hidden;
   display: flex;
   justify-content: space-between;
@@ -12,6 +13,7 @@ body {
   line-height: 22px;
   padding: 0 12px;
   margin: 1px;
+  color: var(--vscode-foreground);
 }
 .resync-item:hover {
   background-color: var(--vscode-list-hoverBackground);
@@ -19,4 +21,5 @@ body {
 .highlight {
   outline: 1px solid var(--vscode-list-focusOutline);
   background-color: var(--vscode-list-activeSelectionBackground) !important;
+  color: var(--vscode-list-activeSelectionForeground);
 }
