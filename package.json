@@ -84,6 +84,11 @@
         },
         {
           "type": "tree",
+          "id": "oldresync",
+          "name": "Old Resync"
+        },
+        {
+          "type": "tree",
           "id": "help",
           "name": "Help"
         }

@@ -293,10 +293,10 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
-  // const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  // vscode.window.createTreeView("resync", {
-  //   treeDataProvider: resyncOptionsProvider,
-  // });
+  const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  vscode.window.createTreeView("oldresync", {
+    treeDataProvider: resyncOptionsProvider,
+  });
   //create webview
 
   vscode.commands.registerCommand("readable.version", async () => {

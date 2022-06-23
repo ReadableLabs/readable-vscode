@@ -20,11 +20,13 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
-    // "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
+    // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
+    this.binLocation =
+      "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
     // this.binLocation = path.join(this.baseDir, "/bin/resync");
-    this.warningIconPath = "/home/victor/Desktop/readable-vscode/src/pixil.png";
-    // this.warningIconPath = path.join(this.baseDir, "assets/warning.png");
+    // this.warningIconPath = "/home/victor/Desktop/readable-vscode/src/pixil.png";
+    this.warningIconPath =
+      "/Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
       overviewRulerColor: "#facc15",
@@ -131,7 +133,7 @@ export class Resync {
     vscode.window.withProgress(
       {
         title: "Fetching unsynced comments...",
-        location: { viewId: "resync" },
+        location: { viewId: "oldresync" },
       },
       (progess, token) => {
         let p = new Promise<void>(async (resolve, reject) => {
