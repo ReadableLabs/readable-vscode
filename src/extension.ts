@@ -166,6 +166,40 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
+  vscode.commands.registerCommand(
+    "readable.regenerateComment",
+    async (args: any) => {
+      await vscode.commands.executeCommand(
+        "vscode.open",
+        vscode.Uri.file(args.relativePath)
+      );
+      // let editor = await vscode.workspace.openTextDocument(
+      //   vscode.Uri.file(args.relativePath)
+      // );
+
+      let range = new vscode.Range(
+        new vscode.Position(args.commentBounds.end, 0),
+        new vscode.Position(args.commentBounds.end, 0)
+      );
+
+      vscode.window.activeTextEditor?.revealRange(
+        range,
+        vscode.TextEditorRevealType.InCenter
+      );
+
+      if (!vscode.window.activeTextEditor) {
+        vscode.window.showErrorMessage("Failed to navigate to file");
+        return;
+      }
+
+      vscode.window.activeTextEditor.selection = new vscode.Selection(
+        range.start,
+        range.end
+      );
+      vscode.commands.executeCommand("readable.rightClickComment");
+    }
+  );
+
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
@@ -286,6 +320,8 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.window.createTreeView("resync", {
     treeDataProvider: resyncOptionsProvider,
   });
+
+  resyncOptionsProvider.getChildren;
 
   vscode.commands.registerCommand("readable.version", async () => {
     // resyncOptionsProvider.resync?.checkProject();

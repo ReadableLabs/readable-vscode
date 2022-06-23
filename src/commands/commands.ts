@@ -222,3 +222,5 @@ export const insertCommentCommand = (args: IInsertArgs) => {
     }
   );
 };
+
+export const regenerateComment = async (range: vscode.Range) => {};

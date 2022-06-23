@@ -106,8 +106,8 @@ class ResyncItem extends vscode.TreeItem {
     public readonly label: string,
     public readonly relativePath: string,
     public readonly rootPath: string,
-    hasOpenCommand: boolean,
-    commentBounds: CommentBounds | undefined,
+    public readonly hasOpenCommand: boolean,
+    public readonly commentBounds: CommentBounds | undefined,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState
   ) {
     super(label, collapsibleState);
