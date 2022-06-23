@@ -119,6 +119,7 @@ class ResyncItem extends vscode.TreeItem {
     if (!commentBounds) {
       return;
     }
+    this.contextValue = "comment";
 
     this.command = {
       title: "Open in Editor",

@@ -74,11 +74,6 @@
       "readable-sidebar-view": [
         {
           "type": "tree",
-          "id": "account",
-          "name": "Account"
-        },
-        {
-          "type": "webview",
           "id": "resync",
           "name": "Resync"
         },
@@ -90,6 +85,13 @@
       ]
     },
     "menus": {
+      "view/item/context": [
+        {
+          "command": "readable.regenerateComment",
+          "group": "inline",
+          "when": "view == resync && viewItem == comment"
+        }
+      ],
       "editor/context": [
         {
           "command": "readable.rightClickComment",
@@ -106,6 +108,11 @@
       }
     ],
     "commands": [
+      {
+        "command": "readable.regenerateComment",
+        "title": "Readable: Regenerate Comment",
+        "icon": "$(sync)"
+      },
       {
         "command": "readable.enableAutoComplete",
         "title": "Readable: Enable Comment Suggestions"

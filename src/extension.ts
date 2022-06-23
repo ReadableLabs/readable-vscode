@@ -1,6 +1,3 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-// import "isomorphic-fetch";
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
@@ -18,10 +15,6 @@ import {
 } from "./commands/commands";
 import { Resync } from "./resync";
 import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
-import { ResyncViewProvider } from "./webview/index";
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
@@ -35,11 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
       .getConfiguration("readable")
       .get<boolean>("enableAutoComplete");
   };
-
-  const provider = new ResyncViewProvider(context.extensionUri);
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider("resync", provider)
-  );
 
   const helpTree = new HelpOptionsProvider();
   vscode.window.createTreeView("help", { treeDataProvider: helpTree });
@@ -293,11 +281,11 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
-  // const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  // vscode.window.createTreeView("resync", {
-  //   treeDataProvider: resyncOptionsProvider,
-  // });
-  //create webview
+  // create tree view
+  const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  vscode.window.createTreeView("resync", {
+    treeDataProvider: resyncOptionsProvider,
+  });
 
   vscode.commands.registerCommand("readable.version", async () => {
     // resyncOptionsProvider.resync?.checkProject();
