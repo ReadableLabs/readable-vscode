@@ -109,13 +109,13 @@ export const getSafeLine = (line: number, lineCount: number): number => {
 
 /**
  * Takes in a string of code and adds the correct amount of spaces to the beginning of each line.
- * Warning: don't touch
+ * @note don't touch
  * @param {string} code - the code to format
  * @param {number} [spaces=0] - the number of spaces to indent the code
  * @param {string} [language="normal"] - the language of the code
  * @returns None
  */
-export const newFormatText = (
+export const formatComment = (
   code: string,
   _spaces: number = 0,
   language = "normal"
@@ -170,4 +170,58 @@ export const getCommentFromLine = (line: string, language: string): string => {
   comments = line.split(delimiter);
   comment = comments.length > 1 ? comments[comments.length - 1].trim() : "";
   return comment;
+};
+
+export const hasSelection = (): boolean => {
+  if (!vscode.window.activeTextEditor) {
+    throw new Error("Error: No active text editor");
+  }
+  if (
+    vscode.window.activeTextEditor.selection.start.line ===
+      vscode.window.activeTextEditor.selection.end.line &&
+    vscode.window.activeTextEditor.selection.start.character ===
+      vscode.window.activeTextEditor.selection.end.character
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+export const getFirstAndLastText = (symbol: vscode.DocumentSymbol) => {
+  if (!vscode.window.activeTextEditor) {
+    throw new Error("Error: Unable to get active editor");
+  }
+  let startLine = 0,
+    endLine = 0;
+  if (symbol.range.start.line + 20 <= symbol.range.end.line) {
+    // get the first 10 lines of the symbol's range.
+    let startStart = symbol.range.start.line;
+    let startEnd = symbol.range.start.line + 10;
+
+    // get the end line of the symbol
+    let endStart = symbol.range.end.line - 10;
+    let endEnd = symbol.range.end.line;
+
+    const first10Lines = vscode.window.activeTextEditor.document.getText(
+      new vscode.Range(
+        new vscode.Position(startStart, 0),
+        new vscode.Position(startEnd, 0)
+      )
+    );
+    const last10Lines = vscode.window.activeTextEditor.document.getText(
+      new vscode.Range(
+        new vscode.Position(endStart, 0),
+        new vscode.Position(endEnd, 0)
+      )
+    );
+    return first10Lines + "\n" + last10Lines;
+  } else {
+    return vscode.window.activeTextEditor.document.getText(symbol.range);
+  }
+
+  // if (symbol.range.end.line - 10 <= symbol.range.start.line) {
+  //   endLine = symbol.range.start.line; // } else {
+  //   endLine = symbol.range.end.line - 11;
+  // }
 };

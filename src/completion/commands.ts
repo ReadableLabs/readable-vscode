@@ -2,15 +2,19 @@ import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
 import CodeEditor from "../CodeEditor";
 import { IInsertArgs } from "./interfaces";
-import { createSelection, removeSelections } from "../selectionTools";
-import { getCommentFromLine } from "./utils";
-import { generateAutoComplete, generateDocstring } from "./generate";
-import { getSafeRange, newFormatText } from "./utils";
+import { generateInlineComment, generateDocstring } from "./generate";
+import {
+  hasSelection,
+  getSafeRange,
+  getCommentFromLine,
+  formatComment,
+  getFirstAndLastText,
+} from "./utils";
 
 export const insertInlineCommentCommand = (args: IInsertArgs) => {
   vscode.window.withProgress(
     {
-      title: "Readable: Generating an inline comment",
+      title: "Readable: Generating inline comment...",
       location: vscode.ProgressLocation.Notification,
       cancellable: true,
     },
@@ -81,7 +85,7 @@ export const insertInlineCommentCommand = (args: IInsertArgs) => {
               }
             });
           }
-          let data = await generateAutoComplete(
+          let data = await generateInlineComment(
             fullCode,
             // args.fullCode,
             comment,
@@ -143,7 +147,7 @@ export const insertDocstringCommand = async () => {
   }
   vscode.window.withProgress(
     {
-      title: "Readable: Generating Docstring...",
+      title: "Readable: Generating docstring...",
       location: vscode.ProgressLocation.Notification,
       cancellable: false,
     },
@@ -160,14 +164,16 @@ export const insertDocstringCommand = async () => {
           let _position = 0;
           let codeSpaces = 0;
           let fullCode;
-          let language = CodeEditor.getLanguageId();
-          if (CodeEditor.hasSelection()) {
-            fullCode = CodeEditor.getSelectedText(); // split by \n and then check for out of range, and make codeSpaces the first line of the selection
-            const selection = CodeEditor.getSelection();
+          let language = vscode.window.activeTextEditor.document.languageId;
+          if (hasSelection()) {
+            fullCode = vscode.window.activeTextEditor.document.getText(
+              vscode.window.activeTextEditor.selection
+            ); // split by \n and then check for out of range, and make codeSpaces the first line of the selection
+            const selection = vscode.window.activeTextEditor.selection;
             _position = selection.start.line - 1;
             codeSpaces = CodeEditor.getSpacesFromLine(selection.start.line);
           } else {
-            const position = CodeEditor.getCursor();
+            const position = vscode.window.activeTextEditor.selection.active;
             let symbol = await CodeEditor.getSymbolUnderCusor(position);
             if (!symbol) {
               vscode.window.showErrorMessage(
@@ -193,7 +199,7 @@ export const insertDocstringCommand = async () => {
             setTimeout(async () => {
               await removeSelections();
             }, 200);
-            fullCode = await CodeEditor.getFirstAndLastText(symbol);
+            fullCode = await getFirstAndLastText(symbol);
             codeSpaces = CodeEditor.getSpacesFromLine(symbol.range.start.line);
             _position = symbol.range.start.line - 1; // TODO: check for line count
           }
@@ -204,7 +210,7 @@ export const insertDocstringCommand = async () => {
             "",
             session.accessToken
           );
-          let newFormattedText = newFormatText(docstring, codeSpaces, language);
+          let formattedComment = formatComment(docstring, codeSpaces, language);
           await vscode.window.activeTextEditor.edit((editBuilder) => {
             // insert the snippet
             editBuilder.insert(
@@ -212,7 +218,7 @@ export const insertDocstringCommand = async () => {
                 language === "python" ? _position + 2 : _position + 1,
                 0
               ),
-              newFormattedText
+              formattedComment
             );
           });
 
@@ -227,4 +233,56 @@ export const insertDocstringCommand = async () => {
       return p;
     }
   );
+};
+
+export const regenerateCommentCommand = async (args: any) => {
+  // Open the file in VS Code
+  await vscode.commands.executeCommand(
+    "vscode.open",
+    vscode.Uri.file(args.relativePath)
+  );
+  let editor = vscode.window.activeTextEditor;
+
+  // If no editor is open, we can't navigate to the file.
+  if (!editor) {
+    vscode.window.showErrorMessage("Failed to navigate to file");
+    return;
+  }
+  let range = new vscode.Range(
+    new vscode.Position(args.commentBounds.end, 0),
+    new vscode.Position(args.commentBounds.end, 0)
+  );
+
+  // Reveal the range in the editor, and select it.
+  editor?.revealRange(range, vscode.TextEditorRevealType.InCenter);
+
+  editor.selection = new vscode.Selection(range.start, range.end);
+
+  let oldCommentRange = new vscode.Range(
+    new vscode.Position(args.commentBounds.start - 1, 0),
+    new vscode.Position(args.commentBounds.end, 0)
+  );
+
+  //Deletes old comment
+  let edit = new vscode.WorkspaceEdit();
+  edit.delete(editor.document.uri, oldCommentRange);
+  vscode.workspace.applyEdit(edit);
+
+  //Generates new docstring
+  vscode.commands.executeCommand("readable.rightClickComment");
+};
+
+const selectionColor = new vscode.ThemeColor("editor.selectionBackground");
+const smallDecorator = vscode.window.createTextEditorDecorationType({
+  overviewRulerColor: selectionColor,
+  backgroundColor: selectionColor,
+  overviewRulerLane: vscode.OverviewRulerLane.Left,
+});
+
+const createSelection = async (range: vscode.Range) => {
+  await vscode.window.activeTextEditor?.setDecorations(smallDecorator, [range]);
+};
+
+const removeSelections = async () => {
+  await vscode.window.activeTextEditor?.setDecorations(smallDecorator, []);
 };

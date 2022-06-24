@@ -7,23 +7,6 @@ import { getLineNumber, getSafeStartPosition } from "./completion/utils";
  * @returns {Promise<vscode.DocumentSymbol[]>}
  */
 export default class CodeEditor {
-  private languages = [
-    "typescript",
-    "javascript",
-    "cpp",
-    "csharp",
-    "python",
-    "php",
-  ];
-
-  private _activeEditor: vscode.TextEditor | undefined;
-  constructor(editor?: vscode.TextEditor) {
-    // vscode.window.activeTextEditor = vscode.window.activeTextEditor;
-
-    vscode.window.onDidChangeActiveTextEditor((e) => {
-      //   vscode.window.activeTextEditor = e;
-    });
-  }
   public static getSpacesFromLine(lineNumber: number): number {
     return this.getSpaces(this.getLine(lineNumber));
   }
@@ -36,13 +19,6 @@ export default class CodeEditor {
     return vscode.window.activeTextEditor.document.lineAt(lineNumber).text;
   }
 
-  public static getLanguageId() {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: No active text editor");
-    }
-    return vscode.window.activeTextEditor.document.languageId; //returns the language id of the active editor
-  }
-
   /**
    * Returns the number of spaces at the beginning of the string.
    * @param {string} text - the string to get the number of spaces from
@@ -52,219 +28,9 @@ export default class CodeEditor {
     return text.search(/\S/); // ok
   }
 
-  public static formatText(
-    comment: string,
-    _spaces: number,
-    language?: string
-  ): string {
-    let spaces = 0; // a comment4
-    let currentLanguage = language // 2
-      ? language
-      : vscode.window.activeTextEditor?.document.languageId;
-    if (!currentLanguage) {
-      throw new Error("Error: Unable to retrieve language");
-    }
-
-    if (_spaces < 0) {
-      spaces = 0;
-    } else {
-      spaces = _spaces + 1;
-    }
-
-    // check if \n is at end to not insert comment into text which will clip
-    let formattedText = "";
-
-    formattedText = formattedText.trim();
-    let formattedArray = comment.split("\n");
-    for (let k = 0; k < formattedArray.length; k++) {
-      formattedArray[k] = formattedArray[k].trim();
-      if (!/^\s+$/.test(formattedArray[k])) {
-        // if the line is not empty
-        formattedText += " ".repeat(spaces) + formattedArray[k].trim();
-        if (k !== formattedArray[k].length) {
-          formattedText += "\n";
-        }
-      }
-    }
-
-    // formattedText = formattedText.replace(/\*\//, "");
-
-    // let languageIndex = this.languages.indexOf(currentLanguage);
-
-    // if (languageIndex === -1) {
-    //   throw new Error("Error: unsupported language."); // send axios request here for language
-    // }
-
-    // this.languageInfo[languageIndex].replace.map((item) => {
-    //   formattedText = formattedText.replace(item.start, item.end);
-    // });
-
-    // formattedText = this.wrap(formattedText, 110, spaces); // 38
-    // stop writing mundane comments
-
-    if (!formattedText.trimLeft().startsWith("/*")) {
-      formattedText = " ".repeat(spaces) + "/**" + formattedText;
-    }
-
-    if (!formattedText.trimRight().endsWith("*/")) {
-      formattedText += " ".repeat(spaces) + "*/";
-    }
-
-    // formattedText = " ".repeat(spaces) + "/**\n" + formattedText + " */\n"; // whenever there is a ., append new line to separate the comments better
-
-    formattedText = "\n" + formattedText;
-    return formattedText;
-  }
-
-  /**
-   * Gets the text from the current selection.
-   * @param {vscode.Selection} selection - the current selection.
-   * @returns {string} the text from the current selection.
-   */
-  public static getTextFromSelection(selection: vscode.Selection): string {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: Unable to get active editor");
-    }
-    return vscode.window.activeTextEditor.document.getText(
-      new vscode.Range(selection.start, selection.end)
-    );
-  }
-
-  /**
-   * Gets the text from the given symbol.
-   * @param {vscode.DocumentSymbol} symbol - the symbol to get the text from.
-   * @returns {string} the text from the given symbol.
-   */
-  public static getTextFromSymbol(symbol: vscode.DocumentSymbol) {
-    if (!vscode.window.activeTextEditor) {
-      // if there's no active editor, throw an error
-      throw new Error("Error: Unable to get active editor");
-    }
-    return vscode.window.activeTextEditor.document.getText(symbol.range);
-  }
-
-  // public static async insertTextAtPosition(
-  //   text: string,
-  //   position: vscode.Position
-  // ): Promise<void> {
-  //   if (!vscode.window.activeTextEditor) {
-  //     throw new Error("Error: No active text editor");
-  //   }
-
-  //   await vscode.window.activeTextEditor.edit((editBuilder) => {
-  //     // insert the snippet
-  //     editBuilder.insert(position, text);
-  //   });
-  //   // let snippet = new vscode.SnippetString(text); // create a snippet
-  //   // let result = await vscode.window.activeTextEditor?.insertSnippet(snippet, position); // insert the snippet
-  //   // if (!result) {
-  //   // if the snippet failed to insert
-  //   // throw new Error("Error: unable to insert text");
-  //   // }
-  //   // return result;
-  // }
-
-  public static getSelectedText(): string {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: No active text editor");
-    }
-    return vscode.window.activeTextEditor.document.getText(
-      vscode.window.activeTextEditor.selection
-    );
-  }
-
-  public static hasSelection(): boolean {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: No active text editor");
-    }
-    if (
-      vscode.window.activeTextEditor.selection.start.line ===
-        vscode.window.activeTextEditor.selection.end.line &&
-      vscode.window.activeTextEditor.selection.start.character ===
-        vscode.window.activeTextEditor.selection.end.character
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  public static getSelection() {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: No active text editor");
-    }
-    return vscode.window.activeTextEditor.selection;
-  }
-
-  public static getCursor(): vscode.Position {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: Unable to get cursor position");
-    }
-
-    return vscode.window.activeTextEditor.selection.active;
-  }
-
-  public static getCursorPosition(): number {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: Unable to get cursor position");
-    }
-
-    return vscode.window.activeTextEditor.selection.active.line;
-  }
-
-  public static getTextInRange(range: vscode.Range): string {
-    // if (!vscode.window.activeTextEditor) {
-    //   throw new Error("Error: Unable to get active editor");
-    // }
-
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: Unable to get active editor");
-    }
-
-    return vscode.window.activeTextEditor.document.getText(range);
-  }
-
   // Two scenarios.
   // 1st: The function is less than 20 lines
   // 2nd: THe function is greater than 20 lines
-
-  public static getFirstAndLastText(symbol: vscode.DocumentSymbol) {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: Unable to get active editor");
-    }
-    let startLine = 0,
-      endLine = 0;
-    if (symbol.range.start.line + 20 <= symbol.range.end.line) {
-      // get the first 10 lines of the symbol's range.
-      let startStart = symbol.range.start.line;
-      let startEnd = symbol.range.start.line + 10;
-
-      // get the end line of the symbol
-      let endStart = symbol.range.end.line - 10;
-      let endEnd = symbol.range.end.line;
-
-      const first10Lines = vscode.window.activeTextEditor.document.getText(
-        new vscode.Range(
-          new vscode.Position(startStart, 0),
-          new vscode.Position(startEnd, 0)
-        )
-      );
-      const last10Lines = vscode.window.activeTextEditor.document.getText(
-        new vscode.Range(
-          new vscode.Position(endStart, 0),
-          new vscode.Position(endEnd, 0)
-        )
-      );
-      return first10Lines + "\n" + last10Lines;
-    } else {
-      return vscode.window.activeTextEditor.document.getText(symbol.range);
-    }
-
-    // if (symbol.range.end.line - 10 <= symbol.range.start.line) {
-    //   endLine = symbol.range.start.line; // } else {
-    //   endLine = symbol.range.end.line - 11;
-    // }
-  }
 
   public static async getOrCreateSymbolUnderCursor(
     position: vscode.Position,
@@ -297,25 +63,6 @@ export default class CodeEditor {
       );
     }
     return codeSymbol;
-  }
-
-  public static getSymbolFromName(
-    symbols: vscode.DocumentSymbol[],
-    name: string
-  ) {
-    for (let symbol of symbols) {
-      if (symbol.name === name) {
-        return symbol;
-      }
-      if (symbol.children) {
-        for (let child of symbol.children) {
-          if (child.name === name) {
-            return child;
-          }
-        }
-      }
-    }
-    return null;
   }
 
   /*

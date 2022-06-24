@@ -46,7 +46,8 @@ export const inlineProvider = vscode.languages.registerCompletionItemProvider(
         ) {
           return new Promise<vscode.CompletionItem[] | undefined>(
             async (resolve, reject) => {
-              let language = CodeEditor.getLanguageId();
+              let language =
+                vscode.window.activeTextEditor?.document.languageId;
 
               let updatedText =
                 vscode.window.activeTextEditor?.document.lineAt(position).text;

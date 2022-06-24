@@ -3,15 +3,7 @@ import axios from "axios";
 import axiosRetry from "axios-retry";
 import { BASE_URL } from "../globals";
 
-/**
- * Takes in a string of code and sends it to the server for autocomplete.
- * @param {string} fullCode - the code to autocomplete
- * @param {string} comment - the comment to autocomplete
- * @param {string} language - the language of the code
- * @param {string} accessToken - the access token of the user
- * @returns {Promise<any>} - the autocomplete data
- */
-export const generateAutoComplete = async (
+export const generateInlineComment = async (
   fullCode: string,
   comment: string,
   language: string,

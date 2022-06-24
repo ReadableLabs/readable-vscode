@@ -1,19 +1,17 @@
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
-import CodeEditor from "./CodeEditor";
-import TrialHelper from "./trial/TrialHelper";
 import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
 import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { HelpOptionsProvider } from "./sideBar/HelpOptionsProvider";
-import { Resync } from "./resync";
 import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
 import { inlineProvider } from "./completion/providers";
 import {
   insertDocstringCommand,
   insertInlineCommentCommand,
+  regenerateCommentCommand,
 } from "./completion/commands";
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -37,42 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand(
     "readable.regenerateComment",
-    async (args: any) => {
-      // Open the file in VS Code
-      await vscode.commands.executeCommand(
-        "vscode.open",
-        vscode.Uri.file(args.relativePath)
-      );
-      let editor = vscode.window.activeTextEditor;
-
-      // If no editor is open, we can't navigate to the file.
-      if (!editor) {
-        vscode.window.showErrorMessage("Failed to navigate to file");
-        return;
-      }
-      let range = new vscode.Range(
-        new vscode.Position(args.commentBounds.end, 0),
-        new vscode.Position(args.commentBounds.end, 0)
-      );
-
-      // Reveal the range in the editor, and select it.
-      editor?.revealRange(range, vscode.TextEditorRevealType.InCenter);
-
-      editor.selection = new vscode.Selection(range.start, range.end);
-
-      let oldCommentRange = new vscode.Range(
-        new vscode.Position(args.commentBounds.start - 1, 0),
-        new vscode.Position(args.commentBounds.end, 0)
-      );
-
-      //Deletes old comment
-      let edit = new vscode.WorkspaceEdit();
-      edit.delete(editor.document.uri, oldCommentRange);
-      vscode.workspace.applyEdit(edit);
-
-      //Generates new docstring
-      vscode.commands.executeCommand("readable.rightClickComment");
-    }
+    regenerateCommentCommand
   );
 
   context.subscriptions.push(
