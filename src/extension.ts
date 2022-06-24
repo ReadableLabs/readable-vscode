@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
 import CodeEditor from "./CodeEditor";
-import { provideComments, provideDocstring } from "./completion/Completion";
 import TrialHelper from "./trial/TrialHelper";
 import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
@@ -9,23 +8,16 @@ import { githubLogin } from "./authentication/GitHubLogin";
 import { checkAccount, register, resetPassword } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { HelpOptionsProvider } from "./sideBar/HelpOptionsProvider";
-import {
-  insertCommentCommand,
-  insertDocstringCommand,
-} from "./commands/commands";
 import { Resync } from "./resync";
 import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
 import { inlineProvider } from "./completion/providers";
-// import { inlineProvider } from "./completion/providers";
+import {
+  insertDocstringCommand,
+  insertInlineCommentCommand,
+} from "./completion/commands";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
-  const isEnabled = () => {
-    // check if the extension is enabled
-    return vscode.workspace
-      .getConfiguration("readable")
-      .get<boolean>("enableAutoComplete");
-  };
 
   let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
@@ -33,8 +25,8 @@ export async function activate(context: vscode.ExtensionContext) {
     inlineProvider,
 
     vscode.commands.registerCommand(
-      "readable.insertComment",
-      insertCommentCommand
+      "readable.insertInlineComment",
+      insertInlineCommentCommand
     ),
 
     vscode.commands.registerCommand(

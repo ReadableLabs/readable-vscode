@@ -52,33 +52,6 @@ export default class CodeEditor {
     return text.search(/\S/); // ok
   }
 
-  private wrap = (s: string, w: number, spaces: number) => {
-    // make wrapPython
-    // make sure to append to the front and the bottom with the find and replace thing with the spaces string format
-    // let formatted = s.replace(
-    //   new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, "g"),
-    //   " ".repeat(spaces) + " $1\n"
-    // );
-    // let formatted = s.replace(/\*/, "");
-    // formatted = formatted.replace(/\n/, "\n" + " ".repeat(spaces));
-    // let formattedArray = formatted.split(""); // todo: replace \t with ""
-    // let indexLast = formattedArray.lastIndexOf("\n");
-    // formattedArray.splice(indexLast + 1, 0, " ".repeat(spaces), " ", "*", " ");
-    // formatted = formattedArray.join("");
-    // return formatted;
-    // let formatted = s.replace(/\n/, "\n" + " ".repeat(spaces));
-    // formatted = " ".repeat(spaces) + formatted;
-    // return formatted;
-    return s;
-  };
-
-  /**
-   * something
-   * @param comment
-   * @param _spaces
-   * @param language
-   * @returns hafjsdhfuadf
-   */
   public static formatText(
     comment: string,
     _spaces: number,
@@ -170,26 +143,26 @@ export default class CodeEditor {
     return vscode.window.activeTextEditor.document.getText(symbol.range);
   }
 
-  public static async insertTextAtPosition(
-    text: string,
-    position: vscode.Position
-  ): Promise<void> {
-    if (!vscode.window.activeTextEditor) {
-      throw new Error("Error: No active text editor");
-    }
+  // public static async insertTextAtPosition(
+  //   text: string,
+  //   position: vscode.Position
+  // ): Promise<void> {
+  //   if (!vscode.window.activeTextEditor) {
+  //     throw new Error("Error: No active text editor");
+  //   }
 
-    await vscode.window.activeTextEditor.edit((editBuilder) => {
-      // insert the snippet
-      editBuilder.insert(position, text);
-    });
-    // let snippet = new vscode.SnippetString(text); // create a snippet
-    // let result = await vscode.window.activeTextEditor?.insertSnippet(snippet, position); // insert the snippet
-    // if (!result) {
-    // if the snippet failed to insert
-    // throw new Error("Error: unable to insert text");
-    // }
-    // return result;
-  }
+  //   await vscode.window.activeTextEditor.edit((editBuilder) => {
+  //     // insert the snippet
+  //     editBuilder.insert(position, text);
+  //   });
+  //   // let snippet = new vscode.SnippetString(text); // create a snippet
+  //   // let result = await vscode.window.activeTextEditor?.insertSnippet(snippet, position); // insert the snippet
+  //   // if (!result) {
+  //   // if the snippet failed to insert
+  //   // throw new Error("Error: unable to insert text");
+  //   // }
+  //   // return result;
+  // }
 
   public static getSelectedText(): string {
     if (!vscode.window.activeTextEditor) {

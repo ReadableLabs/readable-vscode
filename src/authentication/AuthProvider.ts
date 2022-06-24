@@ -49,12 +49,6 @@ export class CodeCommentAuthenticationProvider
       detail: "Log in with Email",
       picked: false,
     },
-    // {
-    //   label: "$(person-add)  Register",
-    //   detail:
-    //     "Create an account. Note: if you sign in with GitHub, an account is created automatically",
-    //   picked: false,
-    // },
   ];
 
   private currentToken: Promise<string | undefined> | undefined;

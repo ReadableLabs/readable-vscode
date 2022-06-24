@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import CodeEditor from "../CodeEditor";
 import TrialHelper from "../trial/TrialHelper";
-import { provideComments } from "./Completion";
 
 export const inlineProvider = vscode.languages.registerCompletionItemProvider(
   [
@@ -52,7 +51,7 @@ export const inlineProvider = vscode.languages.registerCompletionItemProvider(
               let updatedText =
                 vscode.window.activeTextEditor?.document.lineAt(position).text;
               if (updatedText === line) {
-                let comment = await provideComments(
+                let comment = await displayInlineComment(
                   position,
                   document,
                   language
@@ -82,4 +81,36 @@ const getCommentChar = (language: string) => {
   }
 
   return "//";
+};
+
+export const displayInlineComment = async (
+  position: vscode.Position,
+  document: vscode.TextDocument,
+  language: string = "normal"
+) => {
+  try {
+    // create a completion item for the completion
+    let completion = new vscode.CompletionItem(
+      "...",
+      vscode.CompletionItemKind.Text
+    );
+    completion.detail = "Readable";
+    completion.insertText = "";
+    completion.command = {
+      command: "readable.insertInlineComment",
+      title: "Insert Inline Comment",
+      arguments: [
+        {
+          document: document,
+          cursor: position,
+          language: language,
+        },
+      ],
+      tooltip: "Insert Inline Comment",
+    };
+    return [completion];
+  } catch (err: any) {
+    vscode.window.showErrorMessage(err.response);
+    console.log(err.response);
+  }
 };

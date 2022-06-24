@@ -12,9 +12,6 @@ export const getLineNumber = (code: string[], currentLine: string) => {
       return true;
     }
   });
-  // this is a freaking line gamer play
-  // gaming epic gaming  part 11
-  // ok
   return lineNumber;
 };
 
@@ -70,14 +67,6 @@ export const getSafeEndPosition = (
     : endLine;
 };
 
-/**
- * Gets the safe start and end positions for a given position.
- * @param {number} position - the position to get the safe range for.
- * @param {number} _startLine - the start line of the range.
- * @param {number} _endLine - the end line of the range.
- * @param {number} lineCount - the number of lines in the file.
- * @returns {number} - the start and end positions of the safe range.
- */
 export const getSafeRange = (
   position: number,
   _startLine: number,
@@ -118,6 +107,14 @@ export const getSafeLine = (line: number, lineCount: number): number => {
   return line + 1 < lineCount ? line + 1 : line;
 };
 
+/**
+ * Takes in a string of code and adds the correct amount of spaces to the beginning of each line.
+ * Warning: don't touch
+ * @param {string} code - the code to format
+ * @param {number} [spaces=0] - the number of spaces to indent the code
+ * @param {string} [language="normal"] - the language of the code
+ * @returns None
+ */
 export const newFormatText = (
   code: string,
   _spaces: number = 0,
@@ -164,4 +161,13 @@ export const newFormatText = (
     }
   }
   return fullCode;
+};
+
+export const getCommentFromLine = (line: string, language: string): string => {
+  let delimiter = language === "python" ? "#" : "//";
+  let comments = [];
+  let comment: string | null = "";
+  comments = line.split(delimiter);
+  comment = comments.length > 1 ? comments[comments.length - 1].trim() : "";
+  return comment;
 };
