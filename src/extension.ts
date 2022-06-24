@@ -169,33 +169,39 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     "readable.regenerateComment",
     async (args: any) => {
+      // Open the file in VS Code
       await vscode.commands.executeCommand(
         "vscode.open",
         vscode.Uri.file(args.relativePath)
       );
-      // let editor = await vscode.workspace.openTextDocument(
-      //   vscode.Uri.file(args.relativePath)
-      // );
+      let editor = vscode.window.activeTextEditor;
 
+      // If no editor is open, we can't navigate to the file.
+      if (!editor) {
+        vscode.window.showErrorMessage("Failed to navigate to file");
+        return;
+      }
       let range = new vscode.Range(
         new vscode.Position(args.commentBounds.end, 0),
         new vscode.Position(args.commentBounds.end, 0)
       );
 
-      vscode.window.activeTextEditor?.revealRange(
-        range,
-        vscode.TextEditorRevealType.InCenter
+      // Reveal the range in the editor, and select it.
+      editor?.revealRange(range, vscode.TextEditorRevealType.InCenter);
+
+      editor.selection = new vscode.Selection(range.start, range.end);
+
+      let oldCommentRange = new vscode.Range(
+        new vscode.Position(args.commentBounds.start - 1, 0),
+        new vscode.Position(args.commentBounds.end, 0)
       );
 
-      if (!vscode.window.activeTextEditor) {
-        vscode.window.showErrorMessage("Failed to navigate to file");
-        return;
-      }
+      //Deletes old comment
+      let edit = new vscode.WorkspaceEdit();
+      edit.delete(editor.document.uri, oldCommentRange);
+      vscode.workspace.applyEdit(edit);
 
-      vscode.window.activeTextEditor.selection = new vscode.Selection(
-        range.start,
-        range.end
-      );
+      //Generates new docstring
       vscode.commands.executeCommand("readable.rightClickComment");
     }
   );
