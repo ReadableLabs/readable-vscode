@@ -15,13 +15,11 @@ import {
 } from "./commands/commands";
 import { Resync } from "./resync";
 import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
+import { inlineProvider } from "./completion/providers";
+// import { inlineProvider } from "./completion/providers";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
-
-  // Get the password for the readable account, if it exists, and if it doesn't, prompt the user for it.
-  const status = new StatusBarProvider();
-
   const isEnabled = () => {
     // check if the extension is enabled
     return vscode.workspace
@@ -29,132 +27,11 @@ export async function activate(context: vscode.ExtensionContext) {
       .get<boolean>("enableAutoComplete");
   };
 
-  const helpTree = new HelpOptionsProvider();
-  vscode.window.createTreeView("help", { treeDataProvider: helpTree });
+  let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      [{ language: "python" }],
-      {
-        async provideCompletionItems(
-          document: vscode.TextDocument,
-          position: vscode.Position,
-          token: vscode.CancellationToken,
-          context: vscode.CompletionContext
-        ) {
-          if (!isEnabled()) {
-            return;
-          }
-          const linePrefix = document
-            .lineAt(position)
-            .text.substring(0, position.character);
+    inlineProvider,
 
-          const line = document.lineAt(position).text;
-
-          try {
-            if (
-              linePrefix.includes("#") &&
-              position.character > line.trimLeft().indexOf("#")
-            ) {
-              return new Promise<vscode.CompletionItem[] | undefined>(
-                async (resolve, reject) => {
-                  let updatedText =
-                    vscode.window.activeTextEditor?.document.lineAt(
-                      position
-                    ).text;
-                  if (updatedText === line) {
-                    let comment = await provideComments(
-                      position,
-                      document,
-                      "python"
-                    );
-                    resolve(comment);
-                  } else {
-                    resolve(undefined);
-                  }
-                }
-              );
-            } else {
-              return undefined;
-            }
-          } catch (err: any) {
-            console.log(err);
-          }
-        },
-      },
-      " ",
-      ","
-    ),
-
-    vscode.languages.registerCompletionItemProvider(
-      [
-        { language: "javascript" },
-        { language: "typescript" },
-        { language: "cpp" },
-        { language: "c" },
-        { language: "csharp" },
-        { language: "php" },
-        { language: "java" },
-        { language: "javascriptreact" },
-        { language: "typescriptreact" },
-        { language: "php" },
-      ],
-      {
-        async provideCompletionItems(
-          document: vscode.TextDocument,
-          position: vscode.Position,
-          token: vscode.CancellationToken,
-          context: vscode.CompletionContext
-        ) {
-          let isEnabled = vscode.workspace // get the configuration
-            .getConfiguration("readable")
-            .get<boolean>("enableAutoComplete");
-          if (!isEnabled || TrialHelper.TrialEnded) {
-            return;
-          }
-
-          const linePrefix = document // get the line prefix
-            .lineAt(position)
-            .text.substring(0, position.character);
-
-          const line = document.lineAt(position).text;
-
-          try {
-            if (
-              line.includes("//") &&
-              position.character > line.trimLeft().indexOf("//")
-            ) {
-              return new Promise<vscode.CompletionItem[] | undefined>(
-                async (resolve, reject) => {
-                  let updatedText =
-                    vscode.window.activeTextEditor?.document.lineAt(
-                      position
-                    ).text;
-                  let language = CodeEditor.getLanguageId();
-                  if (updatedText === line) {
-                    let comment = await provideComments(
-                      position,
-                      document,
-                      language
-                    );
-                    resolve(comment);
-                  } else {
-                    resolve(undefined);
-                  }
-                }
-              );
-            } else {
-              return undefined;
-            }
-          } catch (err: any) {
-            console.log(err);
-            vscode.window.showErrorMessage(err.message);
-          }
-        },
-      },
-      " ",
-      ","
-    ),
     vscode.commands.registerCommand(
       "readable.insertComment",
       insertCommentCommand
@@ -205,8 +82,6 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand("readable.rightClickComment");
     }
   );
-
-  let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
@@ -321,14 +196,6 @@ export async function activate(context: vscode.ExtensionContext) {
     { createIfNone: false }
   );
 
-  // create tree view
-  const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  vscode.window.createTreeView("resync", {
-    treeDataProvider: resyncOptionsProvider,
-  });
-
-  resyncOptionsProvider.getChildren;
-
   vscode.commands.registerCommand("readable.version", async () => {
     // resyncOptionsProvider.resync?.checkProject();
     const version = context.extension.packageJSON.version;
@@ -341,6 +208,16 @@ export async function activate(context: vscode.ExtensionContext) {
     );
   });
   // view on did expand element
+
+  const status = new StatusBarProvider();
+
+  const helpTree = new HelpOptionsProvider();
+  vscode.window.createTreeView("help", { treeDataProvider: helpTree });
+
+  const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  vscode.window.createTreeView("resync", {
+    treeDataProvider: resyncOptionsProvider,
+  });
 
   checkAccount();
 }

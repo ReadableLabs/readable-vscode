@@ -231,8 +231,6 @@
     "https": "^1.0.0",
     "inversify": "^6.0.1",
     "isomorphic-fetch": "^3.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-dom-server": "^0.0.5",
     "reflect-metadata": "^0.1.13"
   }

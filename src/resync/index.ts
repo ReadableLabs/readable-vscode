@@ -89,7 +89,7 @@ export class Resync {
     let relativeFile = path.relative(currentDir, currentFile);
 
     // escape current dir as well as relative file
-    let command = `${this.binLocation} -s -d ${currentDir} -i ${relativeFile} -p`;
+    let command = `${this.binLocation} -d ${currentDir} -i ${relativeFile} -p`;
 
     let result = child_process.exec(command, (error, stdout, stderr) => {
       let split = stdout.split("\n");
@@ -127,6 +127,7 @@ export class Resync {
     console.log(unsynced);
 
     this.updateDecorations(unsynced);
+    //Do SOMETHING
   }
 
   public checkProject() {

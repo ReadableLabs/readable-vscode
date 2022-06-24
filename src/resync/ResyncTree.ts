@@ -5,11 +5,18 @@ import { ResyncItemAddedEvent } from "./ResyncItemAddedEvent";
 export class ResyncTree {
   private _onDidAddResyncItem: vscode.EventEmitter<ResyncItemAddedEvent>;
   private _onDidUpdatePaths: vscode.EventEmitter<string[]>;
+  private _onDidChangeFileData: vscode.EventEmitter<ResyncItemAddedEvent>;
   private paths: string[] = [];
   private items: ResyncFileInfo[] = [];
+
   constructor() {
     this._onDidAddResyncItem = new vscode.EventEmitter<ResyncItemAddedEvent>();
     this._onDidUpdatePaths = new vscode.EventEmitter<string[]>();
+    this._onDidChangeFileData = new vscode.EventEmitter<ResyncItemAddedEvent>();
+  }
+
+  public get onDidChangeFileData(): vscode.Event<ResyncItemAddedEvent> {
+    return this._onDidChangeFileData.event;
   }
 
   public get onDidAddResyncItem(): vscode.Event<ResyncItemAddedEvent> {
