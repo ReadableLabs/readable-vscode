@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
+import { ReadableAuthenticationProvider } from "../authentication/AuthProvider";
 import CodeEditor from "../CodeEditor";
 import { IInsertArgs } from "./interfaces";
 import { generateInlineComment, generateDocstring } from "./generate";
@@ -28,7 +28,7 @@ export const insertInlineCommentCommand = (args: IInsertArgs) => {
           const position = args.cursor as vscode.Position;
           const document = args.document as vscode.TextDocument;
           const session = await vscode.authentication.getSession(
-            CodeCommentAuthenticationProvider.id,
+            ReadableAuthenticationProvider.id,
             [],
             { createIfNone: false }
           );
@@ -137,7 +137,7 @@ export const insertInlineCommentCommand = (args: IInsertArgs) => {
 
 export const insertDocstringCommand = async () => {
   const session = await vscode.authentication.getSession(
-    CodeCommentAuthenticationProvider.id,
+    ReadableAuthenticationProvider.id,
     [],
     { createIfNone: false }
   );

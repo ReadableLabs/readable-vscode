@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { CodeCommentAuthenticationProvider } from "./authentication/AuthProvider";
+import { ReadableAuthenticationProvider } from "./authentication/AuthProvider";
 import { loginOptions, registerOptions } from "./authentication/Prompts";
 import { emailLogin } from "./authentication/EmailLogin";
 import { githubLogin } from "./authentication/GitHubLogin";
@@ -17,7 +17,7 @@ import {
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
 
-  let authProvider = new CodeCommentAuthenticationProvider(context.secrets);
+  let authProvider = new ReadableAuthenticationProvider(context.secrets);
 
   context.subscriptions.push(
     inlineProvider,
@@ -40,7 +40,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
-      CodeCommentAuthenticationProvider.id,
+      ReadableAuthenticationProvider.id,
       "Readable-Auth",
       authProvider
     )
@@ -70,7 +70,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       await vscode.authentication.getSession(
-        CodeCommentAuthenticationProvider.id,
+        ReadableAuthenticationProvider.id,
         [key],
         { createIfNone: true }
       );
@@ -108,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("readable.register", async () => {
       const session = await vscode.authentication.getSession(
-        CodeCommentAuthenticationProvider.id,
+        ReadableAuthenticationProvider.id,
         [],
         { createIfNone: false }
       );
@@ -132,7 +132,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         await vscode.authentication.getSession(
-          CodeCommentAuthenticationProvider.id,
+          ReadableAuthenticationProvider.id,
           [key],
           { createIfNone: true }
         );
@@ -146,7 +146,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const session = await vscode.authentication.getSession(
-    CodeCommentAuthenticationProvider.id,
+    ReadableAuthenticationProvider.id,
     [],
     { createIfNone: false }
   );

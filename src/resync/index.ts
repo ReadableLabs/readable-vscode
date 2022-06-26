@@ -91,7 +91,7 @@ export class Resync {
     // escape current dir as well as relative file
     let command = `${this.binLocation} -d ${currentDir} -i ${relativeFile} -p`;
 
-    let result = child_process.exec(command, (error, stdout, stderr) => {
+    child_process.exec(command, (error, stdout, stderr) => {
       let split = stdout.split("\n");
       split.pop(); // remove empty last line, might only be for linux
 

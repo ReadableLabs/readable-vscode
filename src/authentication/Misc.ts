@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import TrialHelper from "../trial/TrialHelper";
 import Account from "./api/Account";
-import { CodeCommentAuthenticationProvider } from "./AuthProvider";
+import { ReadableAuthenticationProvider } from "./AuthProvider";
 import { emailLogin } from "./EmailLogin";
 
 export const checkSession = async () => {};
@@ -9,7 +9,7 @@ export const checkSession = async () => {};
 export const checkAccount = async () => {
   try {
     const session = await vscode.authentication.getSession(
-      CodeCommentAuthenticationProvider.id,
+      ReadableAuthenticationProvider.id,
       [],
       { createIfNone: false }
     );

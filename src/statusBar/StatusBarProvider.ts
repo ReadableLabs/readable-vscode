@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { CodeCommentAuthenticationProvider } from "../authentication/AuthProvider";
+import { ReadableAuthenticationProvider } from "../authentication/AuthProvider";
 import { StatusType } from "./statusType";
 
 export class StatusBarProvider {
@@ -24,7 +24,7 @@ export class StatusBarProvider {
 
   private async getStatus() {
     let authStatus = await vscode.authentication.getSession(
-      CodeCommentAuthenticationProvider.id,
+      ReadableAuthenticationProvider.id,
       [],
       { createIfNone: false }
     );

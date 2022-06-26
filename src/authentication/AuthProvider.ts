@@ -18,20 +18,20 @@ import TrialHelper from "../trial/TrialHelper";
 import { loginOptions } from "./Prompts";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
-class CodeCommentPatSession implements AuthenticationSession {
+class ReadablePatSession implements AuthenticationSession {
   readonly account = {
-    id: CodeCommentAuthenticationProvider.id,
-    label: "Readable",
+    id: ReadableAuthenticationProvider.id,
+    label: "Readable Access Token",
   };
 
-  readonly id = CodeCommentAuthenticationProvider.id;
+  readonly id = ReadableAuthenticationProvider.id;
 
   readonly scopes = ["user:email"];
 
   constructor(public readonly accessToken: string) {}
 }
 
-export class CodeCommentAuthenticationProvider
+export class ReadableAuthenticationProvider
   implements AuthenticationProvider, Disposable
 {
   static id = "CodeCommentPAT";
@@ -52,7 +52,6 @@ export class CodeCommentAuthenticationProvider
   ];
 
   private currentToken: Promise<string | undefined> | undefined;
-
   private initializedDisposable: Disposable | undefined;
 
   private _onDidChangeSessions =
@@ -70,7 +69,7 @@ export class CodeCommentAuthenticationProvider
 
   public async getSession(): Promise<AuthenticationSession | undefined> {
     return await vscode.authentication.getSession(
-      CodeCommentAuthenticationProvider.id,
+      ReadableAuthenticationProvider.id,
       [],
       { createIfNone: false }
     );
@@ -115,12 +114,12 @@ export class CodeCommentAuthenticationProvider
 
         this.initializedDisposable = Disposable.from(
           this.secretStorage.onDidChange((e) => {
-            if (e.key === CodeCommentAuthenticationProvider.secretKey) {
+            if (e.key === ReadableAuthenticationProvider.secretKey) {
               void this.checkForUpdates();
             }
           }),
           authentication.onDidChangeSessions((e) => {
-            if (e.provider.id === CodeCommentAuthenticationProvider.id) {
+            if (e.provider.id === ReadableAuthenticationProvider.id) {
               void this.checkForUpdates();
             }
           })
@@ -163,7 +162,7 @@ export class CodeCommentAuthenticationProvider
   private cacheTokenFromStorage() {
     this.currentToken = this.secretStorage.get(
       // get the current token
-      CodeCommentAuthenticationProvider.secretKey
+      ReadableAuthenticationProvider.secretKey
     ) as Promise<string | undefined>;
     return this.currentToken;
   }
@@ -174,10 +173,10 @@ export class CodeCommentAuthenticationProvider
     try {
       this.ensureInitialized();
       const token = await this.cacheTokenFromStorage();
-      return token ? [new CodeCommentPatSession(token)] : []; // return a session
+      return token ? [new ReadablePatSession(token)] : []; // return a session
     } catch (err: any) {
       console.log(err);
-      await this.removeSession(CodeCommentAuthenticationProvider.id);
+      await this.removeSession(ReadableAuthenticationProvider.id);
       vscode.window.showErrorMessage(err.message);
       vscode.window.showInformationMessage(
         "Readable: Error getting account info. Please try logging in again."
@@ -196,16 +195,14 @@ export class CodeCommentAuthenticationProvider
     const session = _scopes[0];
 
     await this.secretStorage.store(
-      CodeCommentAuthenticationProvider.secretKey,
+      ReadableAuthenticationProvider.secretKey,
       session
     );
 
-    return new CodeCommentPatSession(session);
+    return new ReadablePatSession(session);
   }
 
   async removeSession(_sessionId: string): Promise<void> {
-    await this.secretStorage.delete(
-      CodeCommentAuthenticationProvider.secretKey
-    );
+    await this.secretStorage.delete(ReadableAuthenticationProvider.secretKey);
   }
 }

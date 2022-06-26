@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import Account from "./api/Account";
-import { CodeCommentAuthenticationProvider } from "./AuthProvider";
+import { ReadableAuthenticationProvider } from "./AuthProvider";
 import { ILoginCredentials, LoginOption } from "./types";
 
 const promptEmail = async (): Promise<ILoginCredentials | undefined> => {
