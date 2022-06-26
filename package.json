@@ -94,14 +94,14 @@
       ],
       "editor/context": [
         {
-          "command": "readable.rightClickComment",
+          "command": "readable.insertDocstringComment",
           "group": "1_modification"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "readable.rightClickComment",
+        "command": "readable.insertDocstringComment",
         "key": "ctrl+'",
         "mac": "cmd+'",
         "when": "editorTextFocus"
@@ -134,7 +134,7 @@
         "title": "Readable: Reset Password"
       },
       {
-        "command": "readable.rightClickComment",
+        "command": "readable.insertDocstringComment",
         "title": "Readable: Generate Docstring"
       },
       {

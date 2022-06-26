@@ -1,9 +1,6 @@
 import * as vscode from "vscode";
 import { ReadableAuthenticationProvider } from "./authentication/AuthProvider";
-import { loginOptions, registerOptions } from "./authentication/Prompts";
-import { emailLogin } from "./authentication/EmailLogin";
-import { githubLogin } from "./authentication/GitHubLogin";
-import { checkAccount, register, resetPassword } from "./authentication/Misc";
+import { checkAccount } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
 import { HelpOptionsProvider } from "./sideBar/HelpOptionsProvider";
 import { ResyncOptionsProvider } from "./sideBar/ResyncOptionsProvider";
@@ -13,6 +10,7 @@ import {
   insertInlineCommentCommand,
   regenerateCommentCommand,
 } from "./completion/commands";
+import { login, register, resetPassword } from "./authentication/commands";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
@@ -28,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
 
     vscode.commands.registerCommand(
-      "readable.rightClickComment",
+      "readable.insertDocstringComment",
       insertDocstringCommand
     )
   );
@@ -47,41 +45,9 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("readable.login", async () => {
-      let key: string | undefined;
-      const selection = await vscode.window.showQuickPick(loginOptions);
-
-      if (!selection) {
-        return;
-      }
-
-      if (selection === loginOptions[0]) {
-        const _key = await githubLogin();
-        key = _key;
-      } else if (selection === loginOptions[1]) {
-        const _key = await emailLogin();
-        key = _key;
-      } else {
-        return;
-      }
-
-      if (!key) {
-        return;
-      }
-
-      await vscode.authentication.getSession(
-        ReadableAuthenticationProvider.id,
-        [key],
-        { createIfNone: true }
-      );
-      vscode.window.showInformationMessage("Readable: Successfully logged in!");
-      setTimeout(() => {
-        status.updateStatusBar();
-        vscode.window.showInformationMessage(
-          "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is in any function OR if the function is highlighted."
-        );
-      }, 500);
-    }),
+    vscode.commands.registerCommand("readable.login", login),
+    vscode.commands.registerCommand("readable.register", register),
+    vscode.commands.registerCommand("readable.resetPassword", resetPassword),
 
     vscode.commands.registerCommand("readable.reportBug", async () => {
       await vscode.env.openExternal(
@@ -89,7 +55,6 @@ export async function activate(context: vscode.ExtensionContext) {
       );
     }),
 
-    vscode.commands.registerCommand("readable.resetPassword", resetPassword),
     vscode.commands.registerCommand("readable.enableAutoComplete", () => {
       vscode.workspace
         .getConfiguration("readable")
@@ -105,50 +70,7 @@ export async function activate(context: vscode.ExtensionContext) {
       setTimeout(() => {
         status.updateStatusBar();
       }, 500);
-    }),
-    vscode.commands.registerCommand("readable.register", async () => {
-      const session = await vscode.authentication.getSession(
-        ReadableAuthenticationProvider.id,
-        [],
-        { createIfNone: false }
-      );
-      if (session) {
-        vscode.window.showInformationMessage(
-          "Readable: You are already logged in!"
-        );
-        return;
-      }
-      let choice = await vscode.window.showQuickPick(registerOptions);
-
-      if (!choice) {
-        return;
-      }
-
-      if (choice === registerOptions[0]) {
-        const key = await githubLogin();
-
-        if (!key) {
-          return;
-        }
-
-        await vscode.authentication.getSession(
-          ReadableAuthenticationProvider.id,
-          [key],
-          { createIfNone: true }
-        );
-        await vscode.window.showInformationMessage("Readable: Logged in!");
-      } else if (choice === registerOptions[1]) {
-        await register();
-      } else {
-        return;
-      }
     })
-  );
-
-  const session = await vscode.authentication.getSession(
-    ReadableAuthenticationProvider.id,
-    [],
-    { createIfNone: false }
   );
 
   vscode.commands.registerCommand("readable.version", async () => {
@@ -166,6 +88,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const status = new StatusBarProvider();
 
+  //Side bar
   const helpTree = new HelpOptionsProvider();
   vscode.window.createTreeView("help", { treeDataProvider: helpTree });
 

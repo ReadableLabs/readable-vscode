@@ -10,12 +10,8 @@ import {
   window,
   QuickPickItem,
 } from "vscode";
-import axios from "axios";
 const https = require("https");
 import * as vscode from "vscode";
-import { IProfile } from "./types";
-import TrialHelper from "../trial/TrialHelper";
-import { loginOptions } from "./Prompts";
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
 class ReadablePatSession implements AuthenticationSession {
@@ -95,15 +91,6 @@ export class ReadableAuthenticationProvider
       } else if (result === "Sign up") {
         await vscode.commands.executeCommand("readable.register");
       }
-    } else {
-      // let profile = await this.getProfile();
-      // if (!profile) {
-      //   return;
-      // }
-      // if (profile.plan === "Premium") {
-      //   return;
-      // }
-      // await TrialHelper.showTrialNotification(profile.trial_end);
     }
   }
 

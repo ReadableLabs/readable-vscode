@@ -269,7 +269,7 @@ export const regenerateCommentCommand = async (args: any) => {
   vscode.workspace.applyEdit(edit);
 
   //Generates new docstring
-  vscode.commands.executeCommand("readable.rightClickComment");
+  vscode.commands.executeCommand("readable.insertDocstringComment");
 };
 
 const selectionColor = new vscode.ThemeColor("editor.selectionBackground");

@@ -43,7 +43,7 @@ export const checkAccount = async () => {
   }
 };
 
-export const register = async () => {
+export const emailRegister = async () => {
   try {
     const email = await vscode.window.showInputBox({
       ignoreFocusOut: true,
@@ -96,43 +96,4 @@ export const register = async () => {
   } catch (err: any) {
     vscode.window.showErrorMessage(err.message);
   }
-};
-
-export const resetPassword = async () => {
-  const email = await vscode.window.showInputBox({
-    ignoreFocusOut: true,
-    placeHolder: "Email",
-    prompt: "Enter in your email",
-  });
-
-  if (!email) {
-    return;
-  }
-
-  const detail = await vscode.window.withProgress(
-    {
-      title: "Sending Password Reset Email",
-      cancellable: false,
-      location: vscode.ProgressLocation.Notification,
-    },
-    (progress, token) => {
-      const p = new Promise<string>(async (resolve, reject) => {
-        try {
-          const detail = await Account.ResetPassword(email);
-          if (!detail) {
-            reject();
-            return;
-          }
-          resolve(detail);
-        } catch (err: any) {
-          vscode.window.showErrorMessage(err.message);
-          if (err.response) {
-            vscode.window.showErrorMessage(err.response);
-          }
-        }
-      });
-      return p;
-    }
-  );
-  vscode.window.showInformationMessage(detail);
 };
