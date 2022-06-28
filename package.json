@@ -73,6 +73,10 @@
     "views": {
       "readable-sidebar-view": [
         {
+          "id": "account",
+          "name": "Account"
+        },
+        {
           "type": "tree",
           "id": "resync",
           "name": "Resync"
@@ -93,6 +97,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "readable.stopResync",
+          "group": "navigation",
+          "when": "view == resync"
+        },
         {
           "command": "readable.refreshResync",
           "group": "navigation",
@@ -116,10 +125,14 @@
     ],
     "commands": [
       {
+        "command": "readable.stopResync",
+        "title": "Readable: Stop Resync",
+        "icon": "$(close)"
+      },
+      {
         "command": "readable.refreshResync",
-        "title": "Readable: Refreshing Resync",
+        "title": "Readable: Refresh Resync",
         "icon": "$(refresh)"
-
       },
       {
         "command": "readable.regenerateComment",

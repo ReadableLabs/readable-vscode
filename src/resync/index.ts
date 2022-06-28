@@ -210,6 +210,18 @@ export class Resync {
     );
   }
 
+  public stopResync() {
+    if (!this.process) {
+      vscode.window.showInformationMessage(
+        "No resync process currently running"
+      );
+      return;
+    }
+    this.process.kill("SIGINT");
+    console.log(this.process.killed);
+    this.process = undefined;
+  }
+
   private updateDecorations(ranges: vscode.Range[]) {
     vscode.window.activeTextEditor?.setDecorations(
       this.highlightDecoratorType,
