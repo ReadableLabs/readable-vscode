@@ -144,28 +144,27 @@ export class Resync {
               resolve();
               return;
             }
-
             let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
             console.log("spawning process");
-            let process = child_process.spawn(this.binLocation, [
+            this.process = child_process.spawn(this.binLocation, [
               "-d",
               `${currentDir}`,
               "-p",
             ]);
 
-            process.stdout.on("error", (error) => {
+            this.process.stdout.on("error", (error) => {
               console.log(error);
               vscode.window.showErrorMessage("An error has occured");
             });
 
-            process.on("error", (err) => {
+            this.process.on("error", (err) => {
               vscode.window.showErrorMessage("an error has occured");
               console.log(err.toString());
               resolve();
             });
 
-            process.stdout.on("data", (data) => {
+            this.process.stdout.on("data", (data) => {
               let split = data.toString().split("\n");
               split.pop();
 
@@ -184,8 +183,9 @@ export class Resync {
               // }
             });
 
-            process.stdout.on("end", () => {
+            this.process.stdout.on("end", () => {
               console.log("process end");
+              this.process = undefined;
               resolve();
             });
           } catch (error) {
@@ -195,6 +195,18 @@ export class Resync {
         });
         return p;
       }
+    );
+  }
+
+  public refreshResync() {
+    if (!this.process) {
+      this.tree.resetItems();
+      this.checkProject();
+      return;
+    }
+
+    vscode.window.showInformationMessage(
+      "Try again when the resync process has concluded"
     );
   }
 

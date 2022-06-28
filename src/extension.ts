@@ -11,6 +11,7 @@ import {
   regenerateCommentCommand,
 } from "./completion/commands";
 import { login, register, resetPassword } from "./authentication/commands";
+import { Resync } from "./resync/index";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
@@ -95,6 +96,10 @@ export async function activate(context: vscode.ExtensionContext) {
   const resyncOptionsProvider = new ResyncOptionsProvider(context);
   vscode.window.createTreeView("resync", {
     treeDataProvider: resyncOptionsProvider,
+  });
+
+  vscode.commands.registerCommand("readable.refreshResync", async () => {
+    resyncOptionsProvider.resync?.refreshResync();
   });
 
   checkAccount();

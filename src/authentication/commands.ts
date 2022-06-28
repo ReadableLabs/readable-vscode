@@ -124,16 +124,16 @@ export const resetPassword = async () => {
   vscode.window.showInformationMessage(detail);
 };
 
-// export const logout = async () => {
-//   const session = await vscode.authentication.getSession(
-//     ReadableAuthenticationProvider.id,
-//     [],
-//     { createIfNone: false }
-//   );
-//   if (!session) {
-//     vscode.window.showInformationMessage(
-//       "Readable: You are already logged out"
-//     );
-//     return;
-//   }
-// };
+export const logout = async () => {
+  const session = await vscode.authentication.getSession(
+    ReadableAuthenticationProvider.id,
+    [],
+    { createIfNone: false }
+  );
+  if (!session) {
+    vscode.window.showInformationMessage(
+      "Readable: You are already logged out"
+    );
+    return;
+  }
+};

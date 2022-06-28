@@ -27,6 +27,11 @@ export class ResyncTree {
     return this._onDidUpdatePaths.event;
   }
 
+  public resetItems() {
+    this.items = [];
+    this.paths = [];
+  }
+
   public addItem(item: ResyncFileInfo) {
     this.items.push(item);
 
