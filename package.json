@@ -152,6 +152,10 @@
         "title": "Readable: Login"
       },
       {
+        "command": "readable.logout",
+        "title": "Readable: Logout"
+      },
+      {
         "command": "readable.register",
         "title": "Readable: Register"
       },

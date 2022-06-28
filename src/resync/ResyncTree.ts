@@ -39,7 +39,7 @@ export class ResyncTree {
       this.addItem(item);
     }
 
-    this._onDidUpdatePaths.fire(path);
+    this._onDidUpdatePaths.fire([path]);
   }
 
   public resetItems() {

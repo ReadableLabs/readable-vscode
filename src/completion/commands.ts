@@ -34,7 +34,9 @@ export const insertInlineCommentCommand = (args: IInsertArgs) => {
           );
 
           if (!session) {
-            vscode.window.showErrorMessage("Readable: Please log in");
+            vscode.window.showErrorMessage(
+              "Readable: Please log in to use inline comments"
+            );
             resolve();
             return;
           }
@@ -142,7 +144,9 @@ export const insertDocstringCommand = async () => {
     { createIfNone: false }
   );
   if (!session) {
-    vscode.window.showErrorMessage("Readable: Please log in");
+    vscode.window.showErrorMessage(
+      "Readable: Please log in to use docstring comments"
+    );
     return;
   }
   vscode.window.withProgress(

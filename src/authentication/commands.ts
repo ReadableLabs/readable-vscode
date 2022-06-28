@@ -124,7 +124,7 @@ export const resetPassword = async () => {
   vscode.window.showInformationMessage(detail);
 };
 
-export const logout = async () => {
+export const logout = async (authProvider: ReadableAuthenticationProvider) => {
   const session = await vscode.authentication.getSession(
     ReadableAuthenticationProvider.id,
     [],
@@ -136,4 +136,8 @@ export const logout = async () => {
     );
     return;
   }
+  Account.emailLogout(session.accessToken);
+  authProvider.logoutRemoveSession();
+  vscode.window.showInformationMessage("Readable: Successfully logged out");
+  return;
 };

@@ -162,23 +162,25 @@ export default class Account {
     }
   }
 
-  // public static async emailLogout(
-  //   accessToken: string
-  // ): Promise<string | undefined> {
-  //   try {
-  //     const { data } = await axios.post(
-  //       BASE_URL + "/api/v1/users/auth/logout/",
-  //       {},
-  //       {
-  //         headers: {
-  //           Authorization: `Token ${accessToken}`,
-  //         },
-  //       }
-  //     );
-  //     if (!data) {
-  //     }
-  //   } catch (err: any) {
-  //     vscode.window.showErrorMessage(err.response);
-  //   }
-  // }
+  public static async emailLogout(
+    accessToken: string
+  ): Promise<string | undefined> {
+    try {
+      const { data } = await axios.post(
+        BASE_URL + "/api/v1/users/auth/logout/",
+        {},
+        {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        }
+      );
+      if (!data) {
+        return;
+      }
+      return data;
+    } catch (err: any) {
+      vscode.window.showErrorMessage(err.response);
+    }
+  }
 }

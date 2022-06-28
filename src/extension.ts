@@ -10,7 +10,12 @@ import {
   insertInlineCommentCommand,
   regenerateCommentCommand,
 } from "./completion/commands";
-import { login, register, resetPassword } from "./authentication/commands";
+import {
+  login,
+  logout,
+  register,
+  resetPassword,
+} from "./authentication/commands";
 import { Resync } from "./resync/index";
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -47,6 +52,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("readable.login", login),
+    vscode.commands.registerCommand("readable.logout", async () => {
+      logout(authProvider);
+    }),
     vscode.commands.registerCommand("readable.register", register),
     vscode.commands.registerCommand("readable.resetPassword", resetPassword),
 

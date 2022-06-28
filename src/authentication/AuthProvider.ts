@@ -79,7 +79,7 @@ export class ReadableAuthenticationProvider
     const session = await this.getSession();
     if (!session) {
       const result = await vscode.window.showInformationMessage(
-        "No account detected. Make an account or log in to use Readable.",
+        "No account detected. Make an account or log in to use AI generated comments. Resync is available in the sidebar.",
         "Log in",
         "Sign up"
       );
@@ -191,5 +191,8 @@ export class ReadableAuthenticationProvider
 
   async removeSession(_sessionId: string): Promise<void> {
     await this.secretStorage.delete(ReadableAuthenticationProvider.secretKey);
+  }
+  public logoutRemoveSession() {
+    this.removeSession(ReadableAuthenticationProvider.id);
   }
 }
