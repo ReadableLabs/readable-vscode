@@ -27,6 +27,21 @@ export class ResyncTree {
     return this._onDidUpdatePaths.event;
   }
 
+  public updatePath(items: ResyncFileInfo[]) {
+    if (items.length === 0) {
+      return;
+    }
+
+    let path = items[0].relativePath;
+    this.clearItemsByPath(path);
+
+    for (let item of items) {
+      this.addItem(item);
+    }
+
+    this._onDidUpdatePaths.fire(path);
+  }
+
   public resetItems() {
     this.items = [];
     this.paths = [];
@@ -40,6 +55,15 @@ export class ResyncTree {
       this._onDidUpdatePaths.fire(this.paths);
     }
     this._onDidAddResyncItem.fire(item);
+  }
+
+  public clearItemsByPath(path: string) {
+    this.items = this.items.filter((item) => {
+      if (item.relativePath !== path) {
+        return true;
+      }
+      return false;
+    });
   }
 
   public getItemsByRelativePath(path: string) {

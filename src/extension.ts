@@ -75,6 +75,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.commands.registerCommand("readable.version", async () => {
+    resyncOptionsProvider.refresh();
     // resyncOptionsProvider.resync?.checkProject();
     const version = context.extension.packageJSON.version;
     if (!version) {

@@ -20,15 +20,11 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
     this.binLocation =
       "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
-    // this.binLocation = path.join(this.baseDir, "/bin/resync");
-    // this.warningIconPath = "/home/victor/Desktop/readable-vscode/src/pixil.png";
     this.warningIconPath =
       "Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
-      // backgroundColor: "#cea7002D", // don't write file on change, just append to array to commit
       overviewRulerColor: "#facc15",
       gutterIconPath: vscode.Uri.file(this.warningIconPath),
       gutterIconSize: "contain",
@@ -99,12 +95,21 @@ export class Resync {
         vscode.window.showErrorMessage(stderr);
       }
 
+      this.updateTree(split);
       this.parseRanges(split);
     });
   }
 
-  public parseFileInfo(output: string[]) {
-    return new ResyncFileInfo(output);
+  public updateTree(output: string[]) {
+    let unsynced = [];
+
+    for (let line of output) {
+      let split = line.split("\t");
+      unsynced.push(new ResyncFileInfo(split));
+    }
+
+    this.tree.updatePath(unsynced);
+    // return new ResyncFileInfo(output);
   }
 
   public parseRanges(output: string[]) {
