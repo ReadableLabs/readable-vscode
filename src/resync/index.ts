@@ -20,10 +20,15 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    this.binLocation =
-      "/Users/victorchapman/Desktop/p/resync/target/debug/resync";
-    this.warningIconPath =
-      "Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
+    this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
+    this.warningIconPath = path.join(
+      __filename,
+      "..",
+      "..",
+      "media",
+      "warning_icon.png"
+    );
+    // "Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       overviewRulerColor: "#facc15",
       gutterIconPath: vscode.Uri.file(this.warningIconPath),
@@ -41,17 +46,16 @@ export class Resync {
     // this.checkProject();
   }
 
-  public checkBin() {}
+  public checkBin() {
+    if (!fs.existsSync(path.join(this.baseDir, "bin/", "resync"))) {
+      this.download();
+    }
+  }
 
   public download() {
-    let binPath = path.join(this.baseDir, "bin/");
-    let assetPath = path.join(this.baseDir, "assets/");
+    let binPath = path.join(this.baseDir, "bin/", "resync");
     try {
       fs.mkdirSync(binPath);
-    } catch (err) {}
-
-    try {
-      fs.mkdirSync(assetPath);
     } catch (err) {}
 
     https.get("https://nevin.cc/files/warning.png", (res) => {
@@ -128,11 +132,7 @@ export class Resync {
       unsynced.push(range);
     }
 
-    console.log("unsynced");
-    console.log(unsynced);
-
     this.updateDecorations(unsynced);
-    //Do SOMETHING
   }
 
   public checkProject() {
