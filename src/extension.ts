@@ -17,6 +17,7 @@ import {
   resetPassword,
 } from "./authentication/commands";
 import { Resync } from "./resync/index";
+import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
@@ -94,13 +95,20 @@ export async function activate(context: vscode.ExtensionContext) {
       "Readable is currently on version " + version
     );
   });
+
   // view on did expand element
 
   const status = new StatusBarProvider();
-
   //Side bar
   const helpTree = new HelpOptionsProvider();
   vscode.window.createTreeView("help", { treeDataProvider: helpTree });
+
+  const accountTree = new AccountOptionsProvider();
+  let view = vscode.window.createTreeView("account", {
+    treeDataProvider: accountTree,
+  });
+
+  view.message = "sdoaijhgoihasdoigj";
 
   const resyncOptionsProvider = new ResyncOptionsProvider(context);
   vscode.window.createTreeView("resync", {

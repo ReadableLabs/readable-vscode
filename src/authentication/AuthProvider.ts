@@ -71,29 +71,6 @@ export class ReadableAuthenticationProvider
     );
   }
 
-  /**
-   * Checks if the user has a session
-   * @returns true if there is a session
-   */
-  public async checkAccount(): Promise<void> {
-    const session = await this.getSession();
-    if (!session) {
-      const result = await vscode.window.showInformationMessage(
-        "No account detected. Make an account or log in to use AI generated comments. Resync is available in the sidebar.",
-        "Log in",
-        "Sign up"
-      );
-      if (!result) {
-        return;
-      }
-      if (result === "Log In") {
-        await vscode.commands.executeCommand("readable.login");
-      } else if (result === "Sign up") {
-        await vscode.commands.executeCommand("readable.register");
-      }
-    }
-  }
-
   private ensureInitialized(): void {
     try {
       if (this.initializedDisposable === undefined) {

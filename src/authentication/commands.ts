@@ -38,6 +38,8 @@ export const login = async () => {
     [key],
     { createIfNone: true }
   );
+
+  vscode.workspace.getConfiguration("readable").update("loggedIn", true, true);
   vscode.window.showInformationMessage("Readable: Successfully logged in!");
   setTimeout(() => {
     status.updateStatusBar();
@@ -138,6 +140,7 @@ export const logout = async (authProvider: ReadableAuthenticationProvider) => {
   }
   Account.emailLogout(session.accessToken);
   authProvider.logoutRemoveSession();
+  vscode.workspace.getConfiguration("readable").update("loggedIn", false, true);
   vscode.window.showInformationMessage("Readable: Successfully logged out");
   return;
 };

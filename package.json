@@ -191,12 +191,23 @@
     "viewsWelcome": [
       {
         "view": "account",
-        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
+        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)",
+        "when": "config.readable.loggedIn == false"
+      },
+      {
+        "view": "account",
+        "contents": "You have sucessfully logged in.",
+        "when": "config.readable.loggedIn == true"
       }
     ],
     "configuration": {
       "title": "Readable",
       "properties": {
+        "readable.loggedIn": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enables or disables welcome view"
+        },
         "readable.enableAutoComplete": {
           "type": "boolean",
           "default": true,

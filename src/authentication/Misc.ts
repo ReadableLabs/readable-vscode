@@ -30,8 +30,14 @@ export const checkAccount = async () => {
     } else {
       const profile = await Account.GetProfile(session.accessToken);
       if (!profile) {
+        vscode.workspace
+          .getConfiguration("readable")
+          .update("loggedIn", false, true);
         return;
       }
+      vscode.workspace
+        .getConfiguration("readable")
+        .update("loggedIn", true, true);
       if (profile.plan === "Premium") {
         return;
       }
