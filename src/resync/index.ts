@@ -13,6 +13,7 @@ export class Resync {
   private highlightDecoratorType;
 
   private baseDir;
+  private executableName;
   private binLocation;
   private process?: child_process.ChildProcessWithoutNullStreams;
   public tree = new ResyncTree();
@@ -20,7 +21,9 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
-    this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
+    this.executableName = `resync_${process.platform}_${process.arch}`;
+    this.binLocation = path.join(this.baseDir, this.executableName);
+    // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
     this.warningIconPath = path.join(
       __filename,
       "..",
@@ -28,6 +31,7 @@ export class Resync {
       "media",
       "warning_icon.png"
     );
+
     // "Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       overviewRulerColor: "#facc15",
