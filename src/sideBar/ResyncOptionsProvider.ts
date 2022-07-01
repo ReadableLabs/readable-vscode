@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { ResyncTree } from "../resync/ResyncTree";
 import { Resync } from "../resync";
+import { ReadableAuthenticationProvider } from "../authentication/AuthProvider";
 
 export class ResyncOptionsProvider
   implements vscode.TreeDataProvider<ResyncItem>
@@ -20,6 +21,19 @@ export class ResyncOptionsProvider
     this.resync.tree.onDidUpdatePaths((paths) => {
       this.refresh();
     });
+    this.checkAccountPanel();
+  }
+
+  private async checkAccountPanel() {
+    const session = await vscode.authentication.getSession(
+      ReadableAuthenticationProvider.id,
+      [],
+      { createIfNone: false }
+    );
+
+    if (session) {
+      vscode.commands.executeCommand("readable.setLoggedIn");
+    }
   }
 
   private _onDidChangeTreeData: vscode.EventEmitter<

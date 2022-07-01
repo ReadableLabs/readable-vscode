@@ -18,11 +18,13 @@ import {
 } from "./authentication/commands";
 import { Resync } from "./resync/index";
 import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
+import { vsCodePanels } from "@vscode/webview-ui-toolkit";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
 
   let authProvider = new ReadableAuthenticationProvider(context.secrets);
+  // might break so put it lower
 
   context.subscriptions.push(
     inlineProvider,
@@ -84,8 +86,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.commands.registerCommand("readable.version", async () => {
-    resyncOptionsProvider.refresh();
-    // resyncOptionsProvider.resync?.checkProject();
     const version = context.extension.packageJSON.version;
     if (!version) {
       vscode.window.showInformationMessage("Error: Unable to get version");
@@ -108,7 +108,13 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider: accountTree,
   });
 
-  view.message = "sdoaijhgoihasdoigj";
+  vscode.commands.registerCommand("readable.setLoggedIn", () => {
+    view.message = "You have successfully logged in";
+  });
+
+  vscode.commands.registerCommand("readable.setLoggedOut", () => {
+    view.message = "You are logged out";
+  });
 
   const resyncOptionsProvider = new ResyncOptionsProvider(context);
   vscode.window.createTreeView("resync", {

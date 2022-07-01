@@ -13,15 +13,16 @@ export class AccountOptionsProvider
   }
 
   getChildren(): AccountOption[] {
-    const options = ACCOUNT_OPTIONS.map((option) => {
-      // const selected = option === currentValue;
-      return new AccountOption(
-        option,
-        vscode.TreeItemCollapsibleState.None,
-        false
-      );
-    });
-    return options;
+    // const options = ACCOUNT_OPTIONS.map((option) => {
+    // const selected = option === currentValue;
+    //   return new AccountOption(
+    //     option,
+    //     vscode.TreeItemCollapsibleState.None,
+    //     false
+    //   );
+    // });
+    // return options;
+    return [];
   }
 }
 

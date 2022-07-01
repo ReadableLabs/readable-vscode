@@ -8,7 +8,7 @@ import { loginOptions } from "./Prompts";
 import { registerOptions } from "./Prompts";
 import { emailRegister } from "./Misc";
 import { SecretStorage } from "vscode";
-import { vsCodeDivider } from "@vscode/webview-ui-toolkit";
+import { vsCodeDivider, vsCodePanels } from "@vscode/webview-ui-toolkit";
 
 const status = new StatusBarProvider();
 export const login = async () => {
@@ -39,7 +39,7 @@ export const login = async () => {
     { createIfNone: true }
   );
 
-  vscode.workspace.getConfiguration("readable").update("loggedIn", true, true);
+  vscode.commands.executeCommand("readable.setLoggedIn");
   vscode.window.showInformationMessage("Readable: Successfully logged in!");
   setTimeout(() => {
     status.updateStatusBar();
@@ -140,7 +140,7 @@ export const logout = async (authProvider: ReadableAuthenticationProvider) => {
   }
   Account.emailLogout(session.accessToken);
   authProvider.logoutRemoveSession();
-  vscode.workspace.getConfiguration("readable").update("loggedIn", false, true);
+  vscode.commands.executeCommand("readable.setLoggedOut");
   vscode.window.showInformationMessage("Readable: Successfully logged out");
   return;
 };
