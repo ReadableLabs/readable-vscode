@@ -7,6 +7,7 @@ import { ResyncFileInfo } from "./ResyncItem";
 import { ResyncTree } from "./ResyncTree";
 import { report } from "process";
 import { skeletonTemplate } from "@microsoft/fast-foundation";
+import { request } from "http";
 
 export class Resync {
   private warningIconPath;
@@ -20,7 +21,7 @@ export class Resync {
 
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
-    this.baseDir = context.globalStorageUri.fsPath.replace(" ", "\\ ");
+    this.baseDir = context.globalStorageUri.fsPath;
     this.executableName = `resync_${process.platform}_${process.arch}`;
     this.binLocation = path.join(this.baseDir, this.executableName);
     // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
@@ -47,6 +48,8 @@ export class Resync {
     vscode.workspace.onDidSaveTextDocument(() => {
       this.updateActive();
     });
+
+    this.checkBin();
     // this.checkProject();
   }
 
@@ -57,19 +60,57 @@ export class Resync {
   }
 
   public download() {
-    let binPath = path.join(this.baseDir, "bin/", "resync");
     try {
-      fs.mkdirSync(binPath);
-    } catch (err) {}
+      vscode.window.showInformationMessage("Downloading Resync");
+      let platform = `resync_${process.platform}_${process.arch}`;
+      let downloadUrl = `https://github.com/ReadableLabs/resync/releases/download/1.0/${platform}`;
 
-    https.get("https://nevin.cc/files/warning.png", (res) => {
-      const file = fs.createWriteStream(this.warningIconPath);
-      res.pipe(file);
+      console.log(downloadUrl);
 
-      file.on("finish", () => {
-        file.close();
+      let binPath = path.join(this.baseDir, "resync");
+      console.log(binPath);
+      try {
+        fs.mkdirSync(this.baseDir);
+      } catch (err) {
+        console.log(err);
+      }
+
+      // check if file exists
+
+      let request = https.get(downloadUrl, (res) => {
+        console.log("getting file");
+        const file = fs.createWriteStream(binPath);
+        res.pipe(file);
+
+        file.on("finish", () => {
+          vscode.window.showInformationMessage("Downloaded Resync");
+          file.close();
+        });
+
+        file.on("error", (e) => {
+          console.log("error");
+          console.log(e);
+        });
       });
-    });
+
+      request.on("response", (data) => {
+        console.log(data.headers["content-length"]);
+      });
+
+      request.on("error", (e) => {
+        console.log("error");
+        console.log(e);
+      });
+
+      request.on("abort", () => {
+        console.log("aborted");
+      });
+    } catch (err) {
+      vscode.window.showErrorMessage(
+        "An error has occured while downloading the file"
+      );
+      console.log(err);
+    }
     // fs mkdir recursive since the global dir might not exist
   }
 
