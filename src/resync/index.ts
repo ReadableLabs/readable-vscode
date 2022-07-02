@@ -54,7 +54,7 @@ export class Resync {
   }
 
   public checkBin() {
-    if (!fs.existsSync(path.join(this.baseDir, "bin/", "resync"))) {
+    if (!fs.existsSync(path.join(this.baseDir, "resync"))) {
       this.download();
     }
   }
@@ -72,28 +72,47 @@ export class Resync {
       try {
         fs.mkdirSync(this.baseDir);
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       }
 
       // check if file exists
 
-      let request = https.get(downloadUrl, (res) => {
-        console.log("getting file");
-        const file = fs.createWriteStream(binPath);
-        res.pipe(file);
+      let request = https.get(
+        downloadUrl,
+        { rejectUnauthorized: false },
+        (res) => {
+          console.log("getting file");
+          let file = fs.createWriteStream(binPath);
+          file.on("error", (e) => {
+            console.log("error");
+            console.log(e);
+          });
 
-        file.on("finish", () => {
-          vscode.window.showInformationMessage("Downloaded Resync");
-          file.close();
-        });
+          res.on("error", (e) => {
+            console.log("res error");
+            console.log(e);
+          });
 
-        file.on("error", (e) => {
-          console.log("error");
-          console.log(e);
-        });
-      });
+          res.on("data", (e) => {
+            console.log("data");
+            console.log(e);
+          });
+          res.pipe(file);
+
+          file.on("finish", () => {
+            vscode.window.showInformationMessage("Downloaded Resync");
+            file.close();
+          });
+
+          file.on("error", (e) => {
+            console.log("error");
+            console.log(e);
+          });
+        }
+      );
 
       request.on("response", (data) => {
+        console.log(data);
         console.log(data.headers["content-length"]);
       });
 
