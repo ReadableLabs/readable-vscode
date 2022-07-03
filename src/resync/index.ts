@@ -65,38 +65,16 @@ export class Resync {
       let platform = `resync_${process.platform}_${process.arch}`;
       let downloadUrl = `https://github.com/ReadableLabs/resync/releases/download/1.0/${platform}`;
 
-      console.log(downloadUrl);
-
       let binPath = path.join(this.baseDir, "resync");
-      console.log(binPath);
       try {
         fs.mkdirSync(this.baseDir);
-      } catch (err) {
-        // console.log(err);
-      }
-
-      // check if file exists
+      } catch (err) {}
 
       let request = https.get(
         downloadUrl,
         { rejectUnauthorized: false },
         (res) => {
-          console.log("getting file");
           let file = fs.createWriteStream(binPath);
-          file.on("error", (e) => {
-            console.log("error");
-            console.log(e);
-          });
-
-          res.on("error", (e) => {
-            console.log("res error");
-            console.log(e);
-          });
-
-          res.on("data", (e) => {
-            console.log("data");
-            console.log(e);
-          });
           res.pipe(file);
 
           file.on("finish", () => {
@@ -115,22 +93,12 @@ export class Resync {
         console.log(data);
         console.log(data.headers["content-length"]);
       });
-
-      request.on("error", (e) => {
-        console.log("error");
-        console.log(e);
-      });
-
-      request.on("abort", () => {
-        console.log("aborted");
-      });
     } catch (err) {
       vscode.window.showErrorMessage(
         "An error has occured while downloading the file"
       );
       console.log(err);
     }
-    // fs mkdir recursive since the global dir might not exist
   }
 
   /**
