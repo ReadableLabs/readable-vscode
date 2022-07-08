@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as open from "open";
 import { ReadableAuthenticationProvider } from "./authentication/AuthProvider";
 import { checkAccount } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
@@ -16,9 +17,7 @@ import {
   register,
   resetPassword,
 } from "./authentication/commands";
-import { Resync } from "./resync/index";
 import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
-import { vsCodePanels } from "@vscode/webview-ui-toolkit";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
@@ -109,11 +108,17 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   vscode.commands.registerCommand("readable.setLoggedIn", () => {
+    status.updateStatusBar();
     view.message = "You have successfully logged in";
   });
 
   vscode.commands.registerCommand("readable.setLoggedOut", () => {
+    status.updateStatusBar();
     view.message = "You are logged out";
+  });
+
+  vscode.commands.registerCommand("readable.openLink", (args) => {
+    open(args);
   });
 
   const resyncOptionsProvider = new ResyncOptionsProvider(context);

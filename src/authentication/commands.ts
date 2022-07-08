@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { StatusBarProvider } from "../statusBar/StatusBarProvider";
 import Account from "./api/Account";
 import { ReadableAuthenticationProvider } from "./AuthProvider";
 import { emailLogin } from "./EmailLogin";
@@ -10,7 +9,6 @@ import { emailRegister } from "./Misc";
 import { SecretStorage } from "vscode";
 import { vsCodeDivider, vsCodePanels } from "@vscode/webview-ui-toolkit";
 
-const status = new StatusBarProvider();
 export const login = async () => {
   let key: string | undefined;
   const selection = await vscode.window.showQuickPick(loginOptions);
@@ -42,7 +40,7 @@ export const login = async () => {
   vscode.commands.executeCommand("readable.setLoggedIn");
   vscode.window.showInformationMessage("Readable: Successfully logged in!");
   setTimeout(() => {
-    status.updateStatusBar();
+    // status.updateStatusBar();
     vscode.window.showInformationMessage(
       "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is in any function OR if the function is highlighted."
     );

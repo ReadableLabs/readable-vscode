@@ -203,8 +203,8 @@ npm manifest:
             "type": "string",
             "enum": [
               "Join the community",
-              "Configure comment style",
-              "More info"
+              "Manage your account",
+              "Open an Issue"
             ],
             "enumDescriptions": [
               "Discord",
