@@ -8,7 +8,8 @@ export class StatusBarProvider {
     this.statusBarItem = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Right,
       10
-    ); // implement functions for file on change, language check, and when the user clicks the status bar item
+    );
+    // implement functions for file on change, language check, and when the user clicks the status bar item
     // use events, things like that
     // use vscode events and sync it up with all of this stuff
     this.statusBarItem.text = "$(sync~spin)";

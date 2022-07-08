@@ -129,7 +129,6 @@ export const insertInlineCommentCommand = (args: IInsertArgs) => {
             vscode.window.showErrorMessage(err.message);
           }
           resolve();
-          console.log(err);
         }
       });
       return p;

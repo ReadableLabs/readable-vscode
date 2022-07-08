@@ -191,8 +191,7 @@
     "viewsWelcome": [
       {
         "view": "account",
-        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)",
-        "when": "isMac"
+        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
       }
     ],
     "configuration": {

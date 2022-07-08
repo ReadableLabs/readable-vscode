@@ -13,7 +13,6 @@ export const checkAccount = async () => {
       [],
       { createIfNone: false }
     );
-    console.log(session);
     if (!session) {
       // const result = await vscode.window.showInformationMessage(
       //   "Readable: No account detected. Make an account or login to continue.",

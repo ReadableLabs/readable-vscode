@@ -23,7 +23,7 @@ export class Resync {
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath;
     this.executableName = `resync_${process.platform}_${process.arch}`;
-    this.binLocation = path.join(this.baseDir, this.executableName);
+    this.binLocation = path.join(this.baseDir, "resync");
     // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
     this.warningIconPath = path.join(
       __filename,
@@ -33,6 +33,8 @@ export class Resync {
       "warning_icon.png"
     );
 
+    // set status bar
+    this.checkBin();
     // "Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       overviewRulerColor: "#facc15",
@@ -49,7 +51,6 @@ export class Resync {
       this.updateActive();
     });
 
-    this.checkBin();
     // this.checkProject();
   }
 
@@ -60,45 +61,61 @@ export class Resync {
   }
 
   public download() {
-    try {
-      vscode.window.showInformationMessage("Downloading Resync");
-      let platform = `resync_${process.platform}_${process.arch}`;
-      let downloadUrl = `https://github.com/ReadableLabs/resync/releases/download/1.0/${platform}`;
+    vscode.window.withProgress(
+      {
+        title: "Downloading Resync",
+        location: vscode.ProgressLocation.Notification,
+        cancellable: false,
+      },
+      (progress, token) => {
+        return new Promise<void>((resolve, reject) => {
+          try {
+            let platform = `resync_${process.platform}_${process.arch}`;
+            let downloadUrl = `https://resync.readable.workers.dev/${platform}`;
 
-      let binPath = path.join(this.baseDir, "resync");
-      try {
-        fs.mkdirSync(this.baseDir);
-      } catch (err) {}
+            let binPath = path.join(this.baseDir, "resync");
+            try {
+              fs.mkdirSync(this.baseDir);
+            } catch (err) {}
 
-      let request = https.get(
-        downloadUrl,
-        { rejectUnauthorized: false },
-        (res) => {
-          let file = fs.createWriteStream(binPath);
-          res.pipe(file);
+            let request = https.get(
+              downloadUrl,
+              { rejectUnauthorized: false },
+              (res) => {
+                let file = fs.createWriteStream(binPath);
+                res.pipe(file);
 
-          file.on("finish", () => {
-            vscode.window.showInformationMessage("Downloaded Resync");
-            file.close();
-          });
+                file.on("finish", () => {
+                  vscode.window.showInformationMessage("Downloaded Resync");
+                  file.close();
+                  fs.chmodSync(binPath, 0o755);
+                  resolve();
+                });
 
-          file.on("error", (e) => {
-            console.log("error");
-            console.log(e);
-          });
-        }
-      );
+                file.on("error", (e) => {
+                  vscode.window.showErrorMessage(
+                    "Error writing file. Check the log for details"
+                  );
+                  console.log(e);
+                  resolve();
+                });
+              }
+            );
 
-      request.on("response", (data) => {
-        console.log(data);
-        console.log(data.headers["content-length"]);
-      });
-    } catch (err) {
-      vscode.window.showErrorMessage(
-        "An error has occured while downloading the file"
-      );
-      console.log(err);
-    }
+            // request.on("response", (data) => {
+            //   console.log(data);
+            //   console.log(data.headers["content-length"]);
+            // });
+          } catch (err) {
+            vscode.window.showErrorMessage(
+              "An error has occured while downloading the file"
+            );
+            console.log(err);
+            resolve();
+          }
+        });
+      }
+    );
   }
 
   /**
@@ -210,7 +227,6 @@ export class Resync {
 
               for (let line of split) {
                 let chunk = line.split("\t");
-                console.log(chunk);
                 this.tree.addItem(new ResyncFileInfo(chunk));
               }
 
@@ -226,7 +242,6 @@ export class Resync {
               resolve();
             });
           } catch (error) {
-            console.log(error);
             vscode.window.showErrorMessage("An error has occured");
           }
         });
@@ -255,7 +270,6 @@ export class Resync {
       return;
     }
     this.process.kill("SIGINT");
-    console.log(this.process.killed);
     this.process = undefined;
   }
 
