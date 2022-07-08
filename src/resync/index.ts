@@ -9,12 +9,17 @@ import { report } from "process";
 import { skeletonTemplate } from "@microsoft/fast-foundation";
 import { request } from "http";
 
+enum DownloadState {
+  Downloading,
+  Ok,
+}
+
 export class Resync {
   private warningIconPath;
   private highlightDecoratorType;
 
   private baseDir;
-  private executableName;
+  private downloading = false;
   private binLocation;
   private process?: child_process.ChildProcessWithoutNullStreams;
   public tree = new ResyncTree();
@@ -22,7 +27,6 @@ export class Resync {
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath;
-    this.executableName = `resync_${process.platform}_${process.arch}`;
     this.binLocation = path.join(this.baseDir, "resync");
     // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
     this.warningIconPath = path.join(
@@ -33,9 +37,6 @@ export class Resync {
       "warning_icon.png"
     );
 
-    // set status bar
-    this.checkBin();
-    // "Users/victorchapman/Desktop/p/readable-vscode/src/pixil.png";
     this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
       overviewRulerColor: "#facc15",
       gutterIconPath: vscode.Uri.file(this.warningIconPath),
@@ -43,25 +44,29 @@ export class Resync {
       overviewRulerLane: vscode.OverviewRulerLane.Left,
     });
 
-    this.updateActive();
-    vscode.window.onDidChangeActiveTextEditor(() => {
-      this.updateActive();
+    // this.updateActive();
+    vscode.window.onDidChangeActiveTextEditor(async () => {
+      await this.updateActive();
     });
-    vscode.workspace.onDidSaveTextDocument(() => {
-      this.updateActive();
+    vscode.workspace.onDidSaveTextDocument(async () => {
+      await this.updateActive();
     });
 
-    // this.checkProject();
+    this.checkProject();
   }
 
-  public checkBin() {
+  public async checkBin(): Promise<DownloadState> {
     if (!fs.existsSync(path.join(this.baseDir, "resync"))) {
-      this.download();
+      if (this.downloading === true) {
+        return DownloadState.Downloading;
+      }
+      await this.download();
     }
+    return DownloadState.Ok;
   }
 
-  public download() {
-    vscode.window.withProgress(
+  public async download() {
+    await vscode.window.withProgress(
       {
         title: "Downloading Resync",
         location: vscode.ProgressLocation.Notification,
@@ -70,6 +75,7 @@ export class Resync {
       (progress, token) => {
         return new Promise<void>((resolve, reject) => {
           try {
+            this.downloading = true;
             let platform = `resync_${process.platform}_${process.arch}`;
             let downloadUrl = `https://resync.readable.workers.dev/${platform}`;
 
@@ -86,9 +92,9 @@ export class Resync {
                 res.pipe(file);
 
                 file.on("finish", () => {
-                  vscode.window.showInformationMessage("Downloaded Resync");
                   file.close();
                   fs.chmodSync(binPath, 0o755);
+                  this.downloading = false;
                   resolve();
                 });
 
@@ -97,19 +103,16 @@ export class Resync {
                     "Error writing file. Check the log for details"
                   );
                   console.log(e);
+                  this.downloading = false;
                   resolve();
                 });
               }
             );
-
-            // request.on("response", (data) => {
-            //   console.log(data);
-            //   console.log(data.headers["content-length"]);
-            // });
           } catch (err) {
             vscode.window.showErrorMessage(
-              "An error has occured while downloading the file"
+              "An error has occured while downloading resync"
             );
+            this.downloading = false;
             console.log(err);
             resolve();
           }
@@ -121,8 +124,13 @@ export class Resync {
   /**
    * Checks the active file for out of sync comments
    */
-  public updateActive() {
+  public async updateActive() {
     // check if exe exists
+    let status = await this.checkBin();
+    if (status === DownloadState.Downloading) {
+      return;
+    }
+
     if (!vscode.workspace.workspaceFolders) {
       return;
     }
@@ -184,7 +192,13 @@ export class Resync {
     this.updateDecorations(unsynced);
   }
 
-  public checkProject() {
+  public async checkProject() {
+    let status = await this.checkBin();
+
+    if (status === DownloadState.Downloading) {
+      return;
+    }
+
     vscode.window.withProgress(
       {
         title: "Fetching unsynced comments...",
@@ -192,6 +206,7 @@ export class Resync {
       },
       (progess, token) => {
         let p = new Promise<void>(async (resolve, reject) => {
+          console.log("checking");
           try {
             if (!vscode.workspace.workspaceFolders) {
               console.log("no workspace folders");

@@ -117,9 +117,7 @@ export async function activate(context: vscode.ExtensionContext) {
     view.message = "You are logged out";
   });
 
-  vscode.commands.registerCommand("readable.openLink", (args) => {
-    open(args);
-  });
+  vscode.commands.registerCommand("readable.openLink", open);
 
   const resyncOptionsProvider = new ResyncOptionsProvider(context);
   vscode.window.createTreeView("resync", {
