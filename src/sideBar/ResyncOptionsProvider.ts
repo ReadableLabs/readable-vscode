@@ -72,7 +72,9 @@ export class ResyncOptionsProvider
             this.root,
             true,
             new CommentBounds(item.commentStart, item.commentEnd),
-            vscode.TreeItemCollapsibleState.None
+            vscode.TreeItemCollapsibleState.None,
+            item.lastUpdate,
+            item.commitDiff
           )
         );
       }
@@ -98,7 +100,9 @@ export class ResyncOptionsProvider
           this.root,
           false,
           undefined,
-          vscode.TreeItemCollapsibleState.Collapsed
+          vscode.TreeItemCollapsibleState.Collapsed,
+          "",
+          0
         )
       );
     }
@@ -122,10 +126,11 @@ class ResyncItem extends vscode.TreeItem {
     public readonly rootPath: string,
     public readonly hasOpenCommand: boolean,
     public readonly commentBounds: CommentBounds | undefined,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly lastUpdate: string,
+    public readonly commitDiff: number
   ) {
     super(label, collapsibleState);
-    this.tooltip = this.label;
     if (!hasOpenCommand) {
       return;
     }
@@ -134,6 +139,7 @@ class ResyncItem extends vscode.TreeItem {
       return;
     }
     this.contextValue = "comment";
+    this.description = this.lastUpdate;
 
     this.command = {
       title: "Open in Editor",
