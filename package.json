@@ -192,6 +192,10 @@
       {
         "view": "account",
         "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
+      },
+      {
+        "view": "resync",
+        "contents": "Resync detects and shows out of sync comments in your source code. It currently supports Rust, Typescript, Javascript, as well as JSX. \n [Learn More](https://github.com/ReadableLabs/resync), or [Open an Issue](https://github.com/ReadableLabs/readable-vscode/issues) if your language isn't supported"
       }
     ],
     "configuration": {
