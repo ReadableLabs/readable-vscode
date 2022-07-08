@@ -26,7 +26,7 @@ export class Resync {
 
   // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
-    this.baseDir = context.globalStorageUri.fsPath;
+    this.baseDir = context.globalStorageUri.fsPath; // make sure to format
     this.binLocation = path.join(this.baseDir, "resync");
     // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
     this.warningIconPath = path.join(
@@ -146,14 +146,18 @@ export class Resync {
     let relativeFile = path.relative(currentDir, currentFile);
 
     // escape current dir as well as relative file
-    let command = `${this.binLocation} -d ${currentDir} -i ${relativeFile} -p`;
+    let command = `${this.binLocation.replace(
+      " ",
+      "\\ "
+    )} -d ${currentDir} -i ${relativeFile} -p`;
 
     child_process.exec(command, (error, stdout, stderr) => {
       let split = stdout.split("\n");
       split.pop(); // remove empty last line, might only be for linux
 
       if (stderr) {
-        vscode.window.showErrorMessage(stderr);
+        console.log(stderr);
+        // vscode.window.showErrorMessage(stderr);
       }
 
       this.updateTree(split);

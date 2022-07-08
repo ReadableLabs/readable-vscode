@@ -84,13 +84,20 @@ const getCommentChar = (language: string) => {
   return "//";
 };
 
+/**
+ * Displays the inline comment completion item.
+ * @param {vscode.Position} position - the position of the cursor.
+ * @param {vscode.TextDocument} document - the document that the completion is being displayed in.
+ * @param {string} language - the language of the document.
+ * @returns {vscode.CompletionItem[]} - the completion items to display.
+ */
 export const displayInlineComment = async (
   position: vscode.Position,
   document: vscode.TextDocument,
   language: string = "normal"
 ) => {
   try {
-    // create a completion item for the completion
+    // hello asdgsadgdsauhg
     let completion = new vscode.CompletionItem(
       "...",
       vscode.CompletionItemKind.Text
