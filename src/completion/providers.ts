@@ -15,6 +15,7 @@ export const inlineProvider = vscode.languages.registerCompletionItemProvider(
     { language: "typescriptreact" },
     { language: "php" },
     { language: "python" },
+    { language: "rust" },
   ],
   {
     async provideCompletionItems(
@@ -97,7 +98,6 @@ export const displayInlineComment = async (
   language: string = "normal"
 ) => {
   try {
-    // hello asdgsadgdsauhg
     let completion = new vscode.CompletionItem(
       "...",
       vscode.CompletionItemKind.Text

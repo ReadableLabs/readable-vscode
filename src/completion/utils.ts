@@ -148,7 +148,7 @@ export const formatComment = (
     if (!codeSplit[codeSplit.length - 1].includes('"""')) {
       fullCode += " ".repeat(spaces === tabSize ? spaces : spaces) + '"""\n';
     }
-  } else if (language === "csharp") {
+  } else if (language === "csharp" || language === "rust") {
     if (!codeSplit[0].includes("///")) {
       fullCode = " ".repeat(spaces) + "/// " + fullCode.trimLeft();
     }

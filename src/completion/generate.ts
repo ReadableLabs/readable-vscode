@@ -77,10 +77,11 @@ export const generateDocstring = async (
 
     return data;
   } catch (err: any) {
+    console.log(err);
     // Figure out what went wrong
     if (err.response.status !== 200) {
       throw new Error(
-        `API call failed with status code: ${err.response.status} after 100 retry attempts`
+        `API call failed with status code: ${err.response.status} after 5 retry attempts`
       );
     }
     vscode.window.showErrorMessage(
