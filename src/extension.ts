@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as open from "open";
 import { ReadableAuthenticationProvider } from "./authentication/AuthProvider";
 import { checkAccount } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
@@ -117,7 +116,9 @@ export async function activate(context: vscode.ExtensionContext) {
     view.message = "You are logged out";
   });
 
-  vscode.commands.registerCommand("readable.openLink", open);
+  vscode.commands.registerCommand("readable.openLink", async (args) => {
+    await vscode.env.openExternal(vscode.Uri.parse(args));
+  });
 
   const resyncOptionsProvider = new ResyncOptionsProvider(context);
   vscode.window.createTreeView("resync", {
