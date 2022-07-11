@@ -220,13 +220,13 @@
           "type": "string",
           "enum": [
             "Join the community",
-            "Follow us on Twitter",
-            "More info"
+            "More info",
+            "Follow us on Twitter"
           ],
           "enumDescriptions": [
             "Discord",
-            "Twitter",
-            "More info"
+            "More info",
+            "Twitter"
           ],
           "description": "Help"
         }

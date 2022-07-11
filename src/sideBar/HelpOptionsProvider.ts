@@ -21,20 +21,20 @@ const HELP_OPTIONS: IHelpOption[] = [
     },
   },
   {
-    label: "Manage your account",
-    iconPath: "account",
-    command: {
-      command: "readable.openLink",
-      arguments: ["https://readable.so/account"],
-      title: "Manage Account",
-    },
-  },
-  {
     label: "Open an Issue",
     iconPath: "github",
     command: {
       command: "readable.openLink",
       arguments: ["https://github.com/ReadableLabs/readable-vscode"],
+      title: "Manage Account",
+    },
+  },
+  {
+    label: "Manage your account",
+    iconPath: "account",
+    command: {
+      command: "readable.openLink",
+      arguments: ["https://readable.so/account"],
       title: "Manage Account",
     },
   },

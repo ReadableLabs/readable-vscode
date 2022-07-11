@@ -9,11 +9,15 @@
 [![Discord][discord-shield]][discord-url]
 [![Twitter][twitter-shield]][twitter-url]
 
-# Save Time Writing Comments with AI
+# Save Time With Comments
 
-Readable is a VSCode extension which generates comments using **GPT-3**. It's fast, reliable, consistent, and saves you loads of time.
+Readable is a VSCode extension which generates comments using Ai. It's fast, reliable, consistent, and saves you loads of time.
 
 ![Readable Demo](https://github.com/ReadableLabs/readable/blob/main/output.gif?raw=true)
+
+# Prevent Comment Rot
+
+Readable stale comments, and lets you easily regenerate them.
 
 ## Works in 9 Languages
 
