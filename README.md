@@ -17,7 +17,9 @@ Readable is a VSCode extension which generates comments using Ai. It's fast, rel
 
 # Prevent Comment Rot
 
-Readable stale comments, and lets you easily regenerate them.
+Readable shows you stale comments, and lets you easily regenerate them.
+
+![Sidebar Demo]()
 
 ## Works in 9 Languages
 
@@ -33,7 +35,7 @@ Readable stale comments, and lets you easily regenerate them.
 
 ## Docstring Comments
 
-To generate a docstring press **ctrl '** (**cmd '** on Mac) while your cursor is in any function OR if the function is highlighted.
+To generate a docstring press **ctrl '** (**cmd '** on Mac) while your cursor is in any function. Alternatively highlight a piece of code and generate a comment.
 
 ## Inline Comments
 
@@ -41,19 +43,7 @@ To generate an inline comment type **//** for C-Sytle languages. For python type
 
 ## Pricing
 
-Start Readable with a 15 day free trial. After, purchase Readable for only $19.99 a year.
-
-## Docstring Comments
-
-To generate a docstring press **ctrl '** (**cmd '** on Mac) while your cursor is in any function OR if the function is highlighted.
-
-## Inline Comments
-
-To generate an inline comment type "**//**" for C-Sytle languages. For python type **#**. After hitting space, press **tab** to generate an inline comment. Optionally, type a few words after **//** to generate a more specific comment.
-
-## Pricing
-
-Start Readable with a 15 day free trial. After, purchase Readable for only $19.99 a year.
+Readable is free to use; it shows stale comments in your codebase. If you want to generate comments with Ai, Readable is $19.99 per year. You can start a free trial on [readable.so](https://readable.so)
 
 ## Privacy
 
@@ -62,8 +52,6 @@ Readable does not store or use your code to train any of its models.
 Note: Read OpenAI's privacy policy if you are unsure about what they do.
 
 ## Getting Set Up
-
-Thanks for trying out Readable!
 
 When you first install Readable, you will be prompted to log in or create an account. Readable supports two forms of authentication: GitHub login and email.
 
@@ -82,13 +70,13 @@ You can configure the following settings:
 
 ## Known Issues
 
-- Generate docstring (**ctrl + '**) on c# code does not work because the c# extension for VSCode has not been updated to work with the latest dotnet.
+- Readable sometimes fails to generate a comment. The issue is currently being worked on.
 
 ## Release Notes
 
-## [1.5.5]
+## [2.0.0]
 
-- Bug fixes
+- Added Resync support; find and regenerate out of sync comments.
 
 ### Contact
 
