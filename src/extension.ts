@@ -17,9 +17,11 @@ import {
   resetPassword,
 } from "./authentication/commands";
 import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
+import ReadableLogger from "./Logger";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
+  ReadableLogger.init();
 
   let authProvider = new ReadableAuthenticationProvider(context.secrets);
   // might break so put it lower

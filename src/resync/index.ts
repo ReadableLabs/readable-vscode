@@ -8,6 +8,7 @@ import { ResyncTree } from "./ResyncTree";
 import { report } from "process";
 import { skeletonTemplate } from "@microsoft/fast-foundation";
 import { request } from "http";
+import ReadableLogger from "../Logger";
 
 enum DownloadState {
   Downloading,
@@ -75,6 +76,7 @@ export class Resync {
       (progress, token) => {
         return new Promise<void>((resolve, reject) => {
           try {
+            ReadableLogger.log("Downloading resync");
             this.downloading = true;
             let platform = `resync_${process.platform}_${process.arch}`;
             let downloadUrl = `https://resync.readable.workers.dev/${platform}`;
@@ -92,6 +94,7 @@ export class Resync {
                 res.pipe(file);
 
                 file.on("finish", () => {
+                  ReadableLogger.log("Finished downloading resync");
                   file.close();
                   fs.chmodSync(binPath, 0o755);
                   this.downloading = false;
@@ -102,18 +105,19 @@ export class Resync {
                   vscode.window.showErrorMessage(
                     "Error writing file. Check the log for details"
                   );
-                  console.log(e);
+                  ReadableLogger.log("Error downloading resync");
+                  ReadableLogger.log(e.message);
                   this.downloading = false;
                   resolve();
                 });
               }
             );
-          } catch (err) {
+          } catch (err: any) {
             vscode.window.showErrorMessage(
               "An error has occured while downloading resync"
             );
             this.downloading = false;
-            console.log(err);
+            ReadableLogger.log(err.toString());
             resolve();
           }
         });
@@ -156,6 +160,7 @@ export class Resync {
       split.pop(); // remove empty last line, might only be for linux
 
       if (stderr) {
+        ReadableLogger.log(stderr);
         console.log(stderr);
         // vscode.window.showErrorMessage(stderr);
       }
@@ -210,16 +215,16 @@ export class Resync {
       },
       (progess, token) => {
         let p = new Promise<void>(async (resolve, reject) => {
-          console.log("checking");
           try {
             if (!vscode.workspace.workspaceFolders) {
-              console.log("no workspace folders");
+              ReadableLogger.log(
+                "Tried to check for out of sync comments, but found no workspace folders"
+              );
               resolve();
               return;
             }
             let currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
-            console.log("spawning process");
             this.process = child_process.spawn(this.binLocation, [
               "-d",
               `${currentDir}`,
@@ -227,13 +232,17 @@ export class Resync {
             ]);
 
             this.process.stdout.on("error", (error) => {
-              console.log(error);
-              vscode.window.showErrorMessage("An error has occured");
+              ReadableLogger.log(error.message);
+              vscode.window.showErrorMessage(
+                "An error has occured, check the log for details"
+              );
             });
 
             this.process.on("error", (err) => {
-              vscode.window.showErrorMessage("an error has occured");
-              console.log(err.toString());
+              vscode.window.showErrorMessage(
+                "An error has occured, check the log for details"
+              );
+              ReadableLogger.log(err.message);
               resolve();
             });
 
@@ -256,12 +265,14 @@ export class Resync {
             });
 
             this.process.stdout.on("end", () => {
-              console.log("process end");
               this.process = undefined;
               resolve();
             });
-          } catch (error) {
-            vscode.window.showErrorMessage("An error has occured");
+          } catch (error: any) {
+            vscode.window.showErrorMessage(
+              "An error has occured, check the log for details"
+            );
+            ReadableLogger.log(error.toString());
           }
         });
         return p;
