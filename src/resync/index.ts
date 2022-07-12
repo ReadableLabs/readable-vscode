@@ -5,9 +5,6 @@ import * as path from "path";
 import * as https from "https";
 import { ResyncFileInfo } from "./ResyncItem";
 import { ResyncTree } from "./ResyncTree";
-import { report } from "process";
-import { skeletonTemplate } from "@microsoft/fast-foundation";
-import { request } from "http";
 import ReadableLogger from "../Logger";
 
 enum DownloadState {
@@ -25,11 +22,9 @@ export class Resync {
   private process?: child_process.ChildProcessWithoutNullStreams;
   public tree = new ResyncTree();
 
-  // years to year
   constructor(public readonly context: vscode.ExtensionContext) {
     this.baseDir = context.globalStorageUri.fsPath; // make sure to format
     this.binLocation = path.join(this.baseDir, "resync");
-    // this.binLocation = "/home/victor/Desktop/resync/target/debug/resync";
     this.warningIconPath = path.join(
       __filename,
       "..",
@@ -45,7 +40,6 @@ export class Resync {
       overviewRulerLane: vscode.OverviewRulerLane.Left,
     });
 
-    // this.updateActive();
     vscode.window.onDidChangeActiveTextEditor(async () => {
       await this.updateActive();
     });
