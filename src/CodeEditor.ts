@@ -75,8 +75,9 @@ export default class CodeEditor {
         symbols[i].range.end.line >= position.line
       ) {
         if (
-          symbols[i].kind === vscode.SymbolKind.Class &&
-          symbols[i].range.start.line !== position.line
+          symbols[i].kind === vscode.SymbolKind.Class ||
+          (symbols[i].kind === vscode.SymbolKind.Object &&
+            symbols[i].range.start.line !== position.line)
         ) {
           for (let k = 0; k < symbols[i].children.length; k++) {
             if (
@@ -102,6 +103,7 @@ export default class CodeEditor {
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
+    console.log(symbols);
     if (symbols === []) {
       throw new Error("Error: No symbols");
     }
