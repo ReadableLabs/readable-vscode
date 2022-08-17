@@ -72,10 +72,10 @@ export class Resync {
           try {
             ReadableLogger.log("Downloading resync");
             this.downloading = true;
+
             let platform = `resync_${process.platform}_${process.arch}`;
             let downloadUrl = `https://resync.readable.workers.dev/${platform}`;
 
-            let binPath = path.join(this.baseDir, "resync");
             try {
               fs.mkdirSync(this.baseDir);
             } catch (err) {}
@@ -84,13 +84,13 @@ export class Resync {
               downloadUrl,
               { rejectUnauthorized: false },
               (res) => {
-                let file = fs.createWriteStream(binPath);
+                let file = fs.createWriteStream(this.binLocation);
                 res.pipe(file);
 
                 file.on("finish", () => {
                   ReadableLogger.log("Finished downloading resync");
                   file.close();
-                  fs.chmodSync(binPath, 0o755);
+                  fs.chmodSync(this.binLocation, 0o755);
                   this.downloading = false;
                   resolve();
                 });

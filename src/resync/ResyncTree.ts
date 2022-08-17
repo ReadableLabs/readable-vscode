@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ResyncFileInfo } from "./ResyncItem";
-import { ResyncItemAddedEvent } from "./ResyncItemAddedEvent";
+import { ResyncItemAddedEvent } from "./events";
 
 export class ResyncTree {
   private _onDidAddResyncItem: vscode.EventEmitter<ResyncItemAddedEvent>;
