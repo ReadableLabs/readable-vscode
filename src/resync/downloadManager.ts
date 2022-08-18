@@ -2,7 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
 import ReadableLogger from "../Logger";
-import { DownloadState } from "./types";
+
+export enum DownloadState {
+  Ok,
+  Err,
+}
 
 export abstract class DownloadManager {
   public static downloading: boolean = false;

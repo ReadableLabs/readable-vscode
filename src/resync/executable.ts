@@ -1,11 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import * as fs from "fs";
-import * as https from "https";
 import * as child_process from "child_process";
 import ReadableLogger from "../Logger";
-import { DownloadState } from "./types";
-import { DownloadManager } from "./downloadManager";
 
 /**
  * provides a wrapper around the resync executable

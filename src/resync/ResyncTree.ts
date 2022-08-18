@@ -1,6 +1,14 @@
 import * as vscode from "vscode";
 import { ResyncFileInfo } from "./ResyncItem";
-import { ResyncItemAddedEvent } from "./events";
+
+export interface ResyncItemAddedEvent {
+  readonly fileName: string;
+  readonly relativePath: string;
+  readonly lastUpdate: string;
+  readonly commitDiff: number;
+  readonly commentStart: number;
+  readonly commentEnd: number;
+}
 
 export class ResyncTree {
   private _onDidAddResyncItem: vscode.EventEmitter<ResyncItemAddedEvent>;
@@ -39,7 +47,6 @@ export class ResyncTree {
       this.addItem(item);
     }
 
-    console.log("updating paths");
     this._onDidUpdatePaths.fire([path]);
   }
 
