@@ -28,7 +28,12 @@ export default class Executable {
     return new Promise<void>(async (resolve, reject) => {
       try {
         ReadableLogger.log("Checking project");
-        this.process = child_process.spawn(this.bin, ["-d", folderPath, "-p"]);
+        this.process = child_process.spawn(this.bin, [
+          "-r",
+          "-d",
+          folderPath,
+          "-p",
+        ]);
 
         this.process.stdout.on("error", (error) => {
           ReadableLogger.log(error.message);

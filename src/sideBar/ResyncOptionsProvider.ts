@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
 import * as path from "path";
 import { ResyncTree } from "../resync/ResyncTree";
-import { Resync } from "../resync";
 import { ReadableAuthenticationProvider } from "../authentication/AuthProvider";
 import { DownloadManager, DownloadState } from "../resync/downloadManager";
 import Executable from "../resync/executable";
@@ -15,7 +13,6 @@ export class ResyncOptionsProvider
   private context: vscode.ExtensionContext;
   private contextDir: string;
   private executable?: Executable;
-  // public resync?: Resync;
   public tree: ResyncTree;
 
   private warningIconPath: string;
@@ -46,6 +43,17 @@ export class ResyncOptionsProvider
     });
     this.checkAccountPanel();
     this.setupResync();
+  }
+
+  public async stopResync() {
+    this.executable?.kill();
+  }
+
+  public async refreshResync() {
+    ReadableLogger.log("Refreshing resync");
+    this.executable?.kill();
+    this.tree.resetItems();
+    this.checkProject();
   }
 
   private async setupResync() {
@@ -86,6 +94,10 @@ export class ResyncOptionsProvider
       await this.checkActiveEditor();
     });
 
+    this.checkProject();
+  }
+
+  private async checkProject() {
     await vscode.window.withProgress(
       {
         title: "Fetching out of sync comments",
@@ -231,7 +243,7 @@ export class ResyncOptionsProvider
         )
       );
     }
-    // for each file in file data
+
     return items;
   }
 
