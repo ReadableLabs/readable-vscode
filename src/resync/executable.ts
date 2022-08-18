@@ -43,7 +43,8 @@ export default class Executable {
         });
 
         this.process.stdout.on("data", (data) => {
-          const split = data.toString().split("\n");
+          let split = data.toString().split("\n");
+          split.pop();
           this._onExecutableData.fire(split);
         });
 
@@ -58,7 +59,31 @@ export default class Executable {
     });
   }
 
-  public checkFile() {}
+  public checkFile(baseDir: string, relativeFilePath: string) {
+    return new Promise<string[]>((resolve, reject) => {
+      try {
+        const command = `${this.bin.replace(
+          " ",
+          "\\ "
+        )} -d ${baseDir} -i ${relativeFilePath} -p`;
+
+        child_process.exec(command, (error, stdout, stderr) => {
+          let split = stdout.split("\n");
+          split.pop();
+
+          if (stderr) {
+            ReadableLogger.log(stderr);
+            console.log(stderr);
+          }
+
+          return resolve(split);
+        });
+      } catch (err: any) {
+        ReadableLogger.log(err.toString());
+        return reject(err.toString());
+      }
+    });
+  }
 
   public kill() {
     this.process?.kill("SIGINT");
