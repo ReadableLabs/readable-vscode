@@ -18,9 +18,11 @@ export abstract class DownloadManager {
     return fs.existsSync(this.bin);
   }
 
-  public static download() {
+  public static download(): Promise<DownloadState> {
     if (this.isDownloaded() || DownloadManager.downloading) {
-      return DownloadState.Ok;
+      return new Promise<DownloadState>((resolve, reject) =>
+        resolve(DownloadState.Ok)
+      );
     }
 
     return new Promise<DownloadState>((resolve, reject) => {
