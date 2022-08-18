@@ -8,22 +8,22 @@ export enum DownloadState {
   Err,
 }
 
-export abstract class DownloadManager {
+export class DownloadManager {
   public static downloading: boolean = false;
   public static dir: string;
   public static bin: string;
 
   public static setDir(directory: string) {
-    this.dir = directory;
-    this.bin = path.join(this.dir, "resync");
+    DownloadManager.dir = directory;
+    DownloadManager.bin = path.join(DownloadManager.dir, "resync");
   }
 
   public static isDownloaded() {
-    return fs.existsSync(this.bin);
+    return fs.existsSync(DownloadManager.bin);
   }
 
   public static download(): Promise<DownloadState> {
-    if (this.isDownloaded() || DownloadManager.downloading) {
+    if (DownloadManager.isDownloaded() || DownloadManager.downloading) {
       return new Promise<DownloadState>((resolve, reject) =>
         resolve(DownloadState.Ok)
       );
@@ -32,23 +32,23 @@ export abstract class DownloadManager {
     return new Promise<DownloadState>((resolve, reject) => {
       try {
         ReadableLogger.log("Downloading resync");
-        this.downloading = true;
+        DownloadManager.downloading = true;
         let platform = `resync_${process.platform}_${process.arch}`;
         let downloadUrl = `https://resync.readable.workers.dev/${platform}`;
 
         try {
-          fs.mkdirSync(this.dir);
+          fs.mkdirSync(DownloadManager.dir);
         } catch (err) {}
 
         https.get(downloadUrl, { rejectUnauthorized: false }, (res) => {
-          let file = fs.createWriteStream(this.bin);
+          let file = fs.createWriteStream(DownloadManager.bin);
           res.pipe(file);
 
           file.on("finish", () => {
             ReadableLogger.log("Finished downloading resync");
             file.close();
-            fs.chmodSync(this.bin, 0o755);
-            this.downloading = false;
+            fs.chmodSync(DownloadManager.bin, 0o755);
+            DownloadManager.downloading = false;
             return resolve(DownloadState.Ok);
           });
 
@@ -58,7 +58,7 @@ export abstract class DownloadManager {
             // );
             ReadableLogger.log("Error downloading resync");
             ReadableLogger.log(e.message);
-            this.downloading = false;
+            DownloadManager.downloading = false;
             return reject(DownloadState.Err);
           });
         });
@@ -66,7 +66,7 @@ export abstract class DownloadManager {
         // vscode.window.showErrorMessage(
         //   "An error has occured while downloading resync"
         // );
-        this.downloading = false;
+        DownloadManager.downloading = false;
         ReadableLogger.log(err.toString());
         return reject(DownloadState.Err);
       }
