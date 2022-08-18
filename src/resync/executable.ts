@@ -21,6 +21,7 @@ export default class Executable {
     this.bin = path.join(this.dir, "resync");
 
     this._onExecutableData = new vscode.EventEmitter<string[]>();
+    ReadableLogger.log("Set up executable");
   }
 
   public get onExecutableData(): vscode.Event<string[]> {
@@ -30,6 +31,7 @@ export default class Executable {
   public async checkProject(folderPath: string) {
     return new Promise<void>(async (resolve, reject) => {
       try {
+        ReadableLogger.log("Checking project");
         this.process = child_process.spawn(this.bin, ["-d", folderPath, "-p"]);
 
         this.process.stdout.on("error", (error) => {
@@ -43,12 +45,14 @@ export default class Executable {
         });
 
         this.process.stdout.on("data", (data) => {
+          ReadableLogger.log(data.toString());
           let split = data.toString().split("\n");
           split.pop();
           this._onExecutableData.fire(split);
         });
 
         this.process.stdout.on("end", () => {
+          ReadableLogger.log("Readable process exited");
           this.process = undefined;
           return resolve();
         });

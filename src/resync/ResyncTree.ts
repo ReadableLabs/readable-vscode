@@ -39,6 +39,7 @@ export class ResyncTree {
       this.addItem(item);
     }
 
+    console.log("updating paths");
     this._onDidUpdatePaths.fire([path]);
   }
 

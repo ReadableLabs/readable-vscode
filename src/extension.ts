@@ -128,10 +128,10 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   vscode.commands.registerCommand("readable.refreshResync", async () => {
-    resyncOptionsProvider.resync?.refreshResync();
+    // resyncOptionsProvider.resync?.refreshResync();
   });
   vscode.commands.registerCommand("readable.stopResync", async () => {
-    resyncOptionsProvider.resync?.stopResync();
+    // resyncOptionsProvider.resync?.stopResync();
   });
 
   checkAccount();

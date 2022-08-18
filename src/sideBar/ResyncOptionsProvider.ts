@@ -8,6 +8,7 @@ import { DownloadManager } from "../resync/downloadManager";
 import { DownloadState } from "../resync/types";
 import Executable from "../resync/executable";
 import { ResyncFileInfo } from "../resync/ResyncItem";
+import ReadableLogger from "../Logger";
 
 export class ResyncOptionsProvider
   implements vscode.TreeDataProvider<ResyncItem>
@@ -15,19 +16,41 @@ export class ResyncOptionsProvider
   private context: vscode.ExtensionContext;
   private contextDir: string;
   private executable?: Executable;
-  public resync?: Resync;
+  // public resync?: Resync;
   public tree: ResyncTree;
+
+  private warningIconPath: string;
+  private highlightDecoratorType: vscode.TextEditorDecorationType;
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.contextDir = context.globalStorageUri.fsPath;
+    this.warningIconPath = path.join(
+      __filename,
+      "..",
+      "..",
+      "media",
+      "warning_icon.png"
+    );
+
+    this.highlightDecoratorType = vscode.window.createTextEditorDecorationType({
+      overviewRulerColor: "#facc15",
+      gutterIconPath: vscode.Uri.file(this.warningIconPath),
+      gutterIconSize: "contain",
+      overviewRulerLane: vscode.OverviewRulerLane.Left,
+    });
     this.tree = new ResyncTree();
+    this.tree.onDidAddResyncItem(() => {
+      this.refresh();
+    });
     this.tree.onDidUpdatePaths(() => {
       this.refresh();
     });
     this.checkAccountPanel();
+    this.setupResync();
   }
 
   private async setupResync() {
+    ReadableLogger.log("setting up resync");
     DownloadManager.setDir(this.contextDir);
 
     if (!DownloadManager.isDownloaded()) {
@@ -56,6 +79,14 @@ export class ResyncOptionsProvider
       }
     });
 
+    vscode.window.onDidChangeActiveTextEditor(async () => {
+      await this.checkActiveEditor();
+    });
+
+    vscode.workspace.onDidSaveTextDocument(async () => {
+      await this.checkActiveEditor();
+    });
+
     await vscode.window.withProgress(
       {
         title: "Fetching out of sync comments",
@@ -74,6 +105,48 @@ export class ResyncOptionsProvider
           return resolve();
         });
       }
+    );
+  }
+
+  private async checkActiveEditor() {
+    if (!vscode.workspace.workspaceFolders) {
+      return;
+    }
+
+    if (!vscode.window.activeTextEditor) {
+      return;
+    }
+
+    if (!this.executable) {
+      return;
+    }
+
+    const currentDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+    const currentFile = vscode.window.activeTextEditor?.document.uri.fsPath;
+    const relative = path.relative(currentDir, currentFile);
+
+    const output = await this.executable.checkFile(currentDir, relative);
+
+    let unsynced = [];
+    let editorUnsynced = [];
+
+    for (let line of output) {
+      let split = line.split("\t");
+      const fileInfo = new ResyncFileInfo(split);
+      unsynced.push(fileInfo);
+      editorUnsynced.push(
+        new vscode.Range(
+          new vscode.Position(fileInfo.commentStart - 1, 0),
+          new vscode.Position(fileInfo.commentEnd - 1, 0)
+        )
+      );
+    }
+
+    this.tree.updatePath(unsynced);
+    vscode.window.activeTextEditor.setDecorations(
+      this.highlightDecoratorType,
+      editorUnsynced
     );
   }
 
@@ -112,9 +185,7 @@ export class ResyncOptionsProvider
 
     if (element) {
       let allItems = [];
-      let items = this.resync?.tree.getItemsByRelativePath(
-        element.relativePath
-      );
+      let items = this.tree.getItemsByRelativePath(element.relativePath);
       if (!items) {
         return [];
       }
@@ -137,13 +208,13 @@ export class ResyncOptionsProvider
       return allItems;
     }
     let items = [];
-    let paths = this.resync?.tree.getAllUniquePaths();
+    let paths = this.tree.getAllUniquePaths();
     if (!paths) {
       return [];
     }
 
     for (let path of paths) {
-      let fileName = this.resync?.tree.getFileNameFromRelativePath(path);
+      let fileName = this.tree.getFileNameFromRelativePath(path);
       if (!fileName) {
         continue;
       }
