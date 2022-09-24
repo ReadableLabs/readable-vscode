@@ -5,7 +5,7 @@ import { ReadableAuthenticationProvider } from "../authentication/AuthProvider";
 import { DownloadManager, DownloadState } from "../resync/downloadManager";
 import Executable from "../resync/executable";
 import { ResyncFileInfo } from "../resync/ResyncItem";
-import ReadableLogger from "../Logger";
+import { logger } from "../extension";
 
 export class ResyncOptionsProvider
   implements vscode.TreeDataProvider<ResyncItem>
@@ -50,14 +50,14 @@ export class ResyncOptionsProvider
   }
 
   public async refreshResync() {
-    ReadableLogger.log("Refreshing resync");
+    logger.info("Refreshing resync");
     this.executable?.kill();
     this.tree.resetItems();
     this.checkProject();
   }
 
   private async setupResync() {
-    ReadableLogger.log("setting up resync");
+    logger.info("setting up resync");
     DownloadManager.setDir(this.contextDir);
 
     if (!DownloadManager.isDownloaded()) {

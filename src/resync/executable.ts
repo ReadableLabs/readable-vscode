@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as child_process from "child_process";
-import ReadableLogger from "../Logger";
+import { logger } from "../extension";
 
 /**
  * provides a wrapper around the resync executable
@@ -17,7 +17,6 @@ export default class Executable {
     this.bin = path.join(this.dir, "resync");
 
     this._onExecutableData = new vscode.EventEmitter<string[]>();
-    ReadableLogger.log("Set up executable");
   }
 
   public get onExecutableData(): vscode.Event<string[]> {
@@ -27,33 +26,33 @@ export default class Executable {
   public async checkProject(folderPath: string) {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        ReadableLogger.log("Checking project");
+        logger.info("Checking project");
         this.process = child_process.spawn(this.bin, ["-d", folderPath, "-p"]);
 
         this.process.stdout.on("error", (error) => {
-          ReadableLogger.log(error.message);
+          logger.error("Error in process stdout", error);
           return reject(error.message);
         });
 
         this.process.on("error", (error) => {
-          ReadableLogger.log(error.message);
+          logger.error("Error in process", error);
           return reject(error.message);
         });
 
         this.process.stdout.on("data", (data) => {
-          ReadableLogger.log(data.toString());
+          logger.info(data.toString());
           let split = data.toString().split("\n");
           split.pop();
           this._onExecutableData.fire(split);
         });
 
         this.process.stdout.on("end", () => {
-          ReadableLogger.log("Readable process exited");
+          logger.info("Readable process exited");
           this.process = undefined;
           return resolve();
         });
       } catch (err: any) {
-        ReadableLogger.log(err.toString());
+        logger.error("Unknown error", err);
         return reject();
       }
     });
@@ -72,14 +71,13 @@ export default class Executable {
           split.pop();
 
           if (stderr) {
-            ReadableLogger.log(stderr);
-            console.log(stderr);
+            logger.log("Error in checking file", stderr);
           }
 
           return resolve(split);
         });
       } catch (err: any) {
-        ReadableLogger.log(err.toString());
+        logger.error("Unknown error", err);
         return reject(err.toString());
       }
     });

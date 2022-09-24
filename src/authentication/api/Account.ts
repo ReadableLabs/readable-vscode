@@ -3,6 +3,7 @@ import axios from "axios";
 import { getVSCodeDownloadUrl } from "vscode-test/out/util";
 import { ILoginCredentials, IProfile } from "../types";
 import { BASE_URL } from "../../globals";
+import { logger } from "../../extension";
 const https = require("https");
 https.globalAgent.options.rejectUnauthorized = false; // once bug gets fixed remove
 
@@ -40,7 +41,6 @@ export default class Account {
         vscode.window.showErrorMessage(errors);
       }
       return;
-      vscode.window.showErrorMessage(err.response);
     }
   }
 
@@ -77,6 +77,7 @@ export default class Account {
 
       return data.key;
     } catch (err: any) {
+      logger.error("Error signing in with github", err);
       vscode.window.showErrorMessage(err.response);
     }
   }

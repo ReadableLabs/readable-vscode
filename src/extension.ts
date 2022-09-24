@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as winston from "winston";
 import { ReadableAuthenticationProvider } from "./authentication/AuthProvider";
 import { checkAccount } from "./authentication/Misc";
 import { StatusBarProvider } from "./statusBar/StatusBarProvider";
@@ -17,11 +18,27 @@ import {
   resetPassword,
 } from "./authentication/commands";
 import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
-import ReadableLogger from "./Logger";
+import VscodeOutputTransport from "./logger/VscodeOutputTransport";
+import { createLogger } from "./logger/ReadableLogger";
+
+// let logger: winston.Logger;
+let logger = createLogger();
 
 export async function activate(context: vscode.ExtensionContext) {
+  // logger = winston.createLogger({
+  //   level: "info",
+  //   format: winston.format.json(),
+  //   defaultMeta: { service: "user_service" },
+  //   transports: [
+  //     new winston.transports.File({ filename: "error.log", level: "error" }),
+  //     new winston.transports.File({ filename: "debug.log" }),
+  //     new winston.transports.Console({ format: winston.format.simple() }),
+  //     new VscodeOutputTransport({ name: "Readable" }),
+  //   ],
+  // });
+  logger.info({ message: "got here", hi: "diasjf" });
+
   console.log('Congratulations, your extension "Readable" is now active!');
-  ReadableLogger.init();
 
   let authProvider = new ReadableAuthenticationProvider(context.secrets);
   // might break so put it lower
@@ -138,3 +155,5 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {} // make sure to log out here, and send an api request to delete the key with the token
+
+export { logger };

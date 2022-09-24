@@ -268,6 +268,8 @@
     "axios-retry": "^3.2.4",
     "https": "^1.0.0",
     "isomorphic-fetch": "^3.0.0",
-    "react-dom-server": "^0.0.5"
+    "react-dom-server": "^0.0.5",
+    "winston": "^3.8.2",
+    "winston-transport": "^4.5.0"
   }
 }

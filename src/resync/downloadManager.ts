@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
-import ReadableLogger from "../Logger";
+import { logger } from "../extension";
 
 export enum DownloadState {
   Ok,
@@ -31,7 +31,7 @@ export class DownloadManager {
 
     return new Promise<DownloadState>((resolve, reject) => {
       try {
-        ReadableLogger.log("Downloading resync");
+        logger.info("Downloading Resync");
         DownloadManager.downloading = true;
         let platform = `resync_${process.platform}_${process.arch}`;
         let downloadUrl = `https://resync.readable.workers.dev/${platform}`;
@@ -45,19 +45,21 @@ export class DownloadManager {
           res.pipe(file);
 
           file.on("finish", () => {
-            ReadableLogger.log("Finished downloading resync");
-            file.close();
-            fs.chmodSync(DownloadManager.bin, 0o755);
-            DownloadManager.downloading = false;
-            return resolve(DownloadState.Ok);
+            try {
+              file.close();
+              // TODO: don't do this on windows
+              fs.chmodSync(DownloadManager.bin, 0o755);
+              DownloadManager.downloading = false;
+              logger.info("Finished downloading resync");
+              return resolve(DownloadState.Ok);
+            } catch (err) {
+              logger.error("Failed chmoding resync executable");
+              return reject();
+            }
           });
 
           file.on("error", (e) => {
-            // vscode.window.showErrorMessage(
-            //   "Error writing file. Check the log for details"
-            // );
-            ReadableLogger.log("Error downloading resync");
-            ReadableLogger.log(e.message);
+            logger.error("Error downloading resync", e);
             DownloadManager.downloading = false;
             return reject(DownloadState.Err);
           });
@@ -66,8 +68,8 @@ export class DownloadManager {
         // vscode.window.showErrorMessage(
         //   "An error has occured while downloading resync"
         // );
+        logger.error("Failed downloading resync", err);
         DownloadManager.downloading = false;
-        ReadableLogger.log(err.toString());
         return reject(DownloadState.Err);
       }
     });
