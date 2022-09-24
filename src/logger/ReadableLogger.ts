@@ -1,13 +1,14 @@
-import * as winston from "winston";
-import VscodeOutputTransport from "./VscodeOutputTransport";
+import axios from "axios";
+import * as Transport from "winston-transport";
 
-export function createLogger(): winston.Logger {
-  let logger = winston.createLogger({
-    level: "info",
-    format: winston.format.json(),
-    defaultMeta: { service: "user_service" },
-    transports: [new VscodeOutputTransport({ name: "Readable" })],
-  });
+export default class ArLog extends Transport {
+  constructor(opts: Transport.TransportStreamOptions | undefined) {
+    super(opts);
+  }
 
-  return logger;
+  log(info: any, callback: () => void) {
+    axios.post("log_url", {
+      info,
+    });
+  }
 }
