@@ -60,6 +60,7 @@ export default class Executable {
 
   public checkFile(baseDir: string, relativeFilePath: string) {
     return new Promise<string[]>((resolve, reject) => {
+      throw Error("Test error");
       try {
         const command = `${this.bin.replace(
           " ",

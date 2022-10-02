@@ -15,7 +15,9 @@ export default class VscodeOutputTransport extends Transport {
   }
 
   log(info: any, callback: () => void) {
-    this.logger.appendLine(`${info.level}: ${JSON.stringify(info.message)}`);
+    this.logger.appendLine(
+      `[${info.timestamp} - ${info.level}]: ${JSON.stringify(info.message)}`
+    );
     setImmediate(() => {
       this.emit("logged");
     });
