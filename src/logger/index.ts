@@ -1,4 +1,5 @@
 import * as winston from "winston";
+import LogOutputTransport from "./LogOutputTransport";
 import VscodeOutputTransport from "./VscodeOutputTransport";
 
 export function createLogger(): winston.Logger {
@@ -9,19 +10,20 @@ export function createLogger(): winston.Logger {
       winston.format.timestamp()
     ),
     defaultMeta: { service: "user_service" },
-    transports: [new VscodeOutputTransport({ name: "Readable" })],
+    transports: [
+      new VscodeOutputTransport({ name: "Readable" }),
+      new LogOutputTransport({}),
+    ],
   });
 
   process.on("uncaughtException", (err) => {
     console.log("uncaught exception got here");
-    // console.log(err);
+    console.log(err);
     logger.error(err);
   });
 
-  process.on("unhandledRejection", (err) => {
-    console.log("unhandled rejection got here");
-    console.log(err);
-    logger.error(err);
+  process.on("unhandledRejection", (reason: Error, Promise: Promise<any>) => {
+    throw reason;
   });
 
   return logger;
