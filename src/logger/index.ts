@@ -16,6 +16,14 @@ export function createLogger(): winston.Logger {
     ],
   });
 
+  process.on("exit", (code) => {
+    console.log("finishing sending logs");
+  });
+
+  process.on("warning", (warning) => {
+    logger.warning(warning);
+  });
+
   process.on("uncaughtException", (err) => {
     console.log("uncaught exception got here");
     console.log(err);
