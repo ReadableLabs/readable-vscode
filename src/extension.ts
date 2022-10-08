@@ -19,7 +19,7 @@ import {
 } from "./authentication/commands";
 import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
 import VscodeOutputTransport from "./logger/VscodeOutputTransport";
-import { createLogger } from "./logger";
+import { createLogger, setLoggerMetadata } from "./logger";
 
 // let logger: winston.Logger;
 let logger = createLogger();
