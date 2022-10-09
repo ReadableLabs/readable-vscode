@@ -16,15 +16,18 @@ export interface ErLogOutputTransportStreamOptions
 }
 
 export default class LogOutputTransport extends Transport {
-  private logQueue: any[] = [];
-  constructor(opts: Transport.TransportStreamOptions | undefined) {
+  private logUrl: string;
+  constructor(opts: ErLogOutputTransportStreamOptions) {
     super(opts);
+    this.logUrl = opts.logUrl;
 
     // if it's async, it's async
     this.on("submitLog", async (info) => {
       try {
+        // remove title message and level from extra info log
         let extraInfo = (({ title, level, message, ...o }) => o)(info);
-        await axios.post("http://localhost:8080/", {
+
+        await axios.post(this.logUrl, {
           logType: info.level,
           title: info.title ? info.title : "Unnamed",
           message: info.stack ? info.stack : info.message,

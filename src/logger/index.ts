@@ -4,11 +4,15 @@ import VscodeOutputTransport from "./VscodeOutputTransport";
 
 let erlog: winston.Logger;
 
+interface ErLogOptions extends winston.LoggerOptions {
+  logUrl: string;
+}
+
 export function setLoggerMetadata(data: object) {
   erlog.defaultMeta = { ...erlog.defaultMeta, ...data };
 }
 
-export function createLogger(options?: winston.LoggerOptions): winston.Logger {
+export function createLogger(options: ErLogOptions): winston.Logger {
   if (erlog) {
     return erlog;
   }
@@ -22,11 +26,11 @@ export function createLogger(options?: winston.LoggerOptions): winston.Logger {
     // defaultMeta: { service: "user_service" },
     transports: [
       new VscodeOutputTransport({ name: "Readable" }),
-      new LogOutputTransport({}),
+      new LogOutputTransport(options),
     ],
 
-    exceptionHandlers: [new LogOutputTransport({})],
-    rejectionHandlers: [new LogOutputTransport({})],
+    exceptionHandlers: [new LogOutputTransport(options)],
+    rejectionHandlers: [new LogOutputTransport(options)],
 
     handleExceptions: true,
     handleRejections: true,

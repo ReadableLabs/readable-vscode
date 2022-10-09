@@ -22,7 +22,9 @@ import VscodeOutputTransport from "./logger/VscodeOutputTransport";
 import { createLogger, setLoggerMetadata } from "./logger";
 
 // let logger: winston.Logger;
-let logger = createLogger();
+let logger = createLogger({
+  logUrl: "http://localhost:8080",
+});
 
 export async function activate(context: vscode.ExtensionContext) {
   // logger = winston.createLogger({
