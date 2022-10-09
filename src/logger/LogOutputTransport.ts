@@ -30,7 +30,7 @@ export default class LogOutputTransport extends Transport {
         await axios.post(this.logUrl, {
           logType: info.level,
           title: info.title ? info.title : "Unnamed",
-          message: info.stack ? info.stack : info.message,
+          message: info.message,
           extraData: extraInfo,
         });
 
