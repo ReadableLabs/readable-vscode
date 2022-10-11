@@ -43,13 +43,6 @@ export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "Readable" is now active!');
 
   let authProvider = new ReadableAuthenticationProvider(context.secrets);
-  setLoggerMetadata({
-    user: await vscode.authentication.getSession(
-      ReadableAuthenticationProvider.id,
-      [],
-      { createIfNone: false }
-    ),
-  });
   // might break so put it lower
 
   context.subscriptions.push(
