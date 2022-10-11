@@ -1,6 +1,7 @@
 import * as Transport from "winston-transport";
 import { setImmediate } from "timers";
 import axios from "axios";
+import { getTitle } from "./utils";
 
 // use kafka and other tools already designed for this stuff, make it easy for the end user
 
@@ -29,7 +30,7 @@ export default class LogOutputTransport extends Transport {
 
         await axios.post(this.logUrl, {
           logType: info.level,
-          title: info.title ? info.title : "Unnamed",
+          title: getTitle(info.title, info.level),
           message: info.message,
           extraData: extraInfo,
         });
