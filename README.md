@@ -21,7 +21,7 @@ Readable shows you stale comments, and lets you easily regenerate them from the 
 
 ![Sidebar Demo](./media/resync_demo.gif)
 
-## Works in 9 Languages
+## Works in 10 Languages
 
 - **Typescript**
 - **Javascript**
@@ -32,6 +32,7 @@ Readable shows you stale comments, and lets you easily regenerate them from the 
 - **C++**
 - **Java**
 - **PHP**
+- **Rust**
 
 ## Docstring Comments
 

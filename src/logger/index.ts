@@ -23,7 +23,7 @@ export function createLogger(options: ErLogOptions): winston.Logger {
       winston.format.json(),
       winston.format.timestamp()
     ),
-    // defaultMeta: { service: "user_service" },
+    defaultMeta: { service: "user_service" },
     transports: [
       new VscodeOutputTransport({ name: "Readable" }),
       new LogOutputTransport(options),
