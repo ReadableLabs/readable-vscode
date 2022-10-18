@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.0.1]
+
+- Bug fixes
+
 ## [2.0.0]
 
 - Added Resync support; find and regenerate out of sync comments.

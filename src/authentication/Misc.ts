@@ -14,18 +14,18 @@ export const checkAccount = async () => {
       { createIfNone: false }
     );
     if (!session) {
-      // const result = await vscode.window.showInformationMessage(
-      //   "Readable: No account detected. Make an account or login to continue.",
-      //   "Log in",
-      //   "Sign up"
-      // );
-      // if (result === "Log in") {
-      //   await vscode.commands.executeCommand("readable.login");
-      // } else if (result === "Sign up") {
-      //   await vscode.commands.executeCommand("readable.register");
-      // } else {
-      //   return;
-      // }
+      const result = await vscode.window.showInformationMessage(
+        "Readable: No account detected. Make an account or login to continue.",
+        "Log in",
+        "Sign up"
+      );
+      if (result === "Log in") {
+        await vscode.commands.executeCommand("readable.login");
+      } else if (result === "Sign up") {
+        await vscode.commands.executeCommand("readable.register");
+      } else {
+        return;
+      }
     } else {
       const profile = await Account.GetProfile(session.accessToken);
       if (!profile) {

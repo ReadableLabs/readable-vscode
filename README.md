@@ -75,9 +75,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [2.0.0]
+## [2.0.1]
 
-- Added Resync support; find and regenerate out of sync comments.
+- Bug fixes
 
 ### Contact
 
