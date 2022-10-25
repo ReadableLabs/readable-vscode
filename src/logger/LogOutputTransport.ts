@@ -27,17 +27,18 @@ export default class LogOutputTransport extends Transport {
       try {
         // remove title message and level from extra info log
         let extraInfo = (({ title, level, message, ...o }) => o)(info);
+        console.log(typeof info.message);
 
         await axios.post(this.logUrl, {
           logType: info.level,
-          title: getTitle(info.title, info.level),
+          title: getTitle(info.title, info.message, info.level),
           message: info.message,
           extraData: extraInfo,
         });
 
         console.log("submitted");
       } catch (err) {
-        console.log("the logger failed");
+        // console.log("the logger failed");
       }
     });
   }
