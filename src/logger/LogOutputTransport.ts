@@ -20,6 +20,7 @@ export default class LogOutputTransport extends Transport {
   private logUrl: string;
   constructor(opts: ErLogOutputTransportStreamOptions) {
     super(opts);
+    this.setMaxListeners(999);
     this.logUrl = opts.logUrl;
 
     // if it's async, it's async
@@ -27,18 +28,26 @@ export default class LogOutputTransport extends Transport {
       try {
         // remove title message and level from extra info log
         let extraInfo = (({ title, level, message, ...o }) => o)(info);
-        console.log(typeof info.message);
+        const logTitle = getTitle(
+          info.title,
+          info.message,
+          info.level,
+          info.extraInfo
+        );
+
+        console.log(logTitle);
 
         await axios.post(this.logUrl, {
           logType: info.level,
-          title: getTitle(info.title, info.message, info.level),
+          title: logTitle,
           message: info.message,
           extraData: extraInfo,
         });
 
         console.log("submitted");
       } catch (err) {
-        // console.log("the logger failed");
+        console.log("the logger failed");
+        console.log(err);
       }
     });
   }
