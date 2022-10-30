@@ -24,7 +24,6 @@ export default class Executable {
   }
 
   public async checkProject(folderPath: string) {
-    throw new Error("Failed checking project");
     return new Promise<void>(async (resolve, reject) => {
       try {
         logger.info("Checking project");
