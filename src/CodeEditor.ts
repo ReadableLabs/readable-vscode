@@ -103,7 +103,7 @@ export default class CodeEditor {
     position: vscode.Position
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
-    if (symbols === []) {
+    if (symbols.length === 0) {
       throw new Error("Error: No symbols");
     }
     return await CodeEditor.getSymbolFromPosition(symbols, position);
