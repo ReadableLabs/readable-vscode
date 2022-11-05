@@ -24,10 +24,13 @@ export function createLogger(options: ErLogOptions): winston.Logger {
       winston.format.timestamp()
     ),
     defaultMeta: { service: "user_service" },
-    transports: [new VscodeOutputTransport({ name: "Readable" })],
+    transports: [
+      new VscodeOutputTransport({ name: "Readable" }),
+      new LogOutputTransport(options),
+    ],
 
-    // exceptionHandlers: [new LogOutputTransport(options)],
-    // rejectionHandlers: [new LogOutputTransport(options)],
+    exceptionHandlers: [new LogOutputTransport(options)],
+    rejectionHandlers: [new LogOutputTransport(options)],
 
     handleExceptions: true,
     handleRejections: true,
