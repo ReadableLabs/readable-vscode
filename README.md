@@ -1,5 +1,5 @@
-[github-shield]: https://img.shields.io/github/stars/ReadableLabs/Readable?style=social
-[github-url]: https://github.com/ReadableLabs/Readable
+[github-shield]: https://img.shields.io/github/stars/ReadableLabs/readable-vscode?style=social
+[github-url]: https://github.com/ReadableLabs/readable-vscode
 [discord-shield]: https://img.shields.io/discord/890351923960627240?label=Discord
 [discord-url]: https://discord.com/invite/UkMNCJu2x3
 [twitter-shield]: https://img.shields.io/twitter/follow/ReadableLabs?style=social
@@ -13,7 +13,7 @@
 
 Readable is a VSCode extension which generates comments using Ai. It's fast, reliable, consistent, and saves you loads of time.
 
-![Readable Demo](https://github.com/ReadableLabs/readable/blob/main/output.gif?raw=true)
+![Readable Demo](https://github.com/ReadableLabs/readable-vscode/blob/main/output.gif?raw=true)
 
 # Find Stale Comments
 
