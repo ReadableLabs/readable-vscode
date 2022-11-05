@@ -75,9 +75,9 @@ You can configure the following settings:
 
 ## Release Notes
 
-## [2.0.1]
+## [2.0.2]
 
-- Bug fixes
+- Update readme + open source
 
 ### Contact
 
