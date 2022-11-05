@@ -17,7 +17,7 @@ Readable is a VSCode extension which generates comments using AI. It's fast, rel
 
 # Find Stale Comments
 
-Readable shows you stale comments, and lets you easily regenerate them from the side bar.
+Readable finds stale comments in your repository, and lets you easily regenerate them from the side bar.
 
 ![Sidebar Demo](./media/resync_demo.gif)
 
@@ -44,7 +44,7 @@ To generate an inline comment type **//** for C-Sytle languages. For python type
 
 ## Pricing
 
-Readable is free to use; it shows stale comments in your codebase. If you want to generate comments with Ai, Readable is $19.99 per year. You can start a free trial on [readable.so](https://readable.so)
+Readable is free to use; it shows stale comments in your codebase. If you want to generate comments with AI, Readable is $19.99 per year. You can start a free trial on [readable.so](https://readable.so)
 
 ## Privacy
 
