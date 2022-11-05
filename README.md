@@ -13,7 +13,7 @@
 
 Readable is a VSCode extension which generates comments using AI. It's fast, reliable, consistent, and will save you loads of time.
 
-![Readable Demo](https://github.com/ReadableLabs/readable-vscode/blob/main/output.gif?raw=true)
+![Readable Demo](./output.gif)
 
 # Find Stale Comments
 
