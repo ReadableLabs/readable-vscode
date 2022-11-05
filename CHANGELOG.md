@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.0.2]
+
+- Update readme + open source
+
 ## [2.0.1]
 
 - Bug fixes
