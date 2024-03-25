@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import axios from "axios";
 import axiosRetry from "axios-retry";
 import { BASE_URL } from "../globals";
+import { getSpan } from "../metrics";
 
 export const generateInlineComment = async (
   fullCode: string,
@@ -52,6 +53,8 @@ export const generateDocstring = async (
   python_functionName: string = "",
   accessToken: string
 ) => {
+  let span = getSpan("generateDocstring");
+  span.report({ status: "generated" });
   try {
     axiosRetry(axios, {
       retries: 5, // number of retries
@@ -77,6 +80,7 @@ export const generateDocstring = async (
 
     return data;
   } catch (err: any) {
+    span.report({ status: "error", error: err });
     console.log(err);
     // Figure out what went wrong
     if (err.response.status !== 200) {

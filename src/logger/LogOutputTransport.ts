@@ -37,14 +37,14 @@ export default class LogOutputTransport extends Transport {
 
         console.log(logTitle);
 
-        await axios.post(this.logUrl, {
-          logType: info.level,
-          title: logTitle,
-          message: info.message,
-          extraData: extraInfo,
-        });
+        // await axios.post(this.logUrl, {
+        //   logType: info.level,
+        //   title: logTitle,
+        //   message: info.message,
+        //   extraData: extraInfo,
+        // });
 
-        console.log("submitted");
+        // console.log("submitted");
       } catch (err) {
         console.log("the logger failed");
         console.log(err);

@@ -10,6 +10,7 @@ import {
   formatComment,
   getFirstAndLastText,
 } from "./utils";
+import { getSpan, report } from "../metrics";
 
 export const insertInlineCommentCommand = (args: IInsertArgs) => {
   vscode.window.withProgress(
@@ -137,6 +138,7 @@ export const insertInlineCommentCommand = (args: IInsertArgs) => {
 };
 
 export const insertDocstringCommand = async () => {
+  let span = getSpan("generateDocstring");
   const session = await vscode.authentication.getSession(
     ReadableAuthenticationProvider.id,
     [],
@@ -146,6 +148,7 @@ export const insertDocstringCommand = async () => {
     vscode.window.showErrorMessage(
       "Readable: Please log in to use docstring comments"
     );
+    span.report({ profile: "none" });
     return;
   }
   vscode.window.withProgress(
@@ -169,6 +172,7 @@ export const insertDocstringCommand = async () => {
           let fullCode;
           let language = vscode.window.activeTextEditor.document.languageId;
           if (hasSelection()) {
+            span.report({ hasSelection: true });
             fullCode = vscode.window.activeTextEditor.document.getText(
               vscode.window.activeTextEditor.selection
             ); // split by \n and then check for out of range, and make codeSpaces the first line of the selection
@@ -207,6 +211,7 @@ export const insertDocstringCommand = async () => {
             _position = symbol.range.start.line - 1; // TODO: check for line count
           }
 
+          span.report({ status: "generating" });
           let docstring = await generateDocstring(
             fullCode,
             language,
@@ -225,11 +230,14 @@ export const insertDocstringCommand = async () => {
             );
           });
 
+          span.send();
           resolve();
         } catch (err: any) {
+          span.report({ status: "error" });
           if (err.message) {
             vscode.window.showErrorMessage(err.message);
           }
+          span.send();
           resolve();
         }
       });

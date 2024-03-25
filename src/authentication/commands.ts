@@ -8,6 +8,7 @@ import { registerOptions } from "./Prompts";
 import { emailRegister } from "./Misc";
 import { SecretStorage } from "vscode";
 import { vsCodeDivider, vsCodePanels } from "@vscode/webview-ui-toolkit";
+import { report } from "../metrics";
 
 export const login = async () => {
   let key: string | undefined;

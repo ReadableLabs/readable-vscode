@@ -250,6 +250,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "14.x",
     "@types/sqlite3": "^3.1.8",
+    "@types/uuid": "^9.0.8",
     "@types/vscode": "1.59.0",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
@@ -272,6 +273,7 @@
     "https": "^1.0.0",
     "isomorphic-fetch": "^3.0.0",
     "react-dom-server": "^0.0.5",
+    "uuid": "^9.0.1",
     "winston": "^3.8.2",
     "winston-transport": "^4.5.0"
   }

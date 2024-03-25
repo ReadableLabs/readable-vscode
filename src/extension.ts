@@ -20,6 +20,7 @@ import {
 import { AccountOptionsProvider } from "./sideBar/AccountOptionsProvider";
 import VscodeOutputTransport from "./logger/VscodeOutputTransport";
 import { createLogger, setLoggerMetadata } from "./logger";
+import { getSpan, report } from "./metrics";
 
 // let logger: winston.Logger;
 let logger = createLogger({
@@ -27,18 +28,9 @@ let logger = createLogger({
 });
 
 export async function activate(context: vscode.ExtensionContext) {
-  // logger = winston.createLogger({
-  //   level: "info",
-  //   format: winston.format.json(),
-  //   defaultMeta: { service: "user_service" },
-  //   transports: [
-  //     new winston.transports.File({ filename: "error.log", level: "error" }),
-  //     new winston.transports.File({ filename: "debug.log" }),
-  //     new winston.transports.Console({ format: winston.format.simple() }),
-  //     new VscodeOutputTransport({ name: "Readable" }),
-  //   ],
-  // });
   logger.info({ message: "got here", hi: "diasjf" });
+  let span = getSpan("readable");
+  span.report({ activated: true });
 
   console.log('Congratulations, your extension "Readable" is now active!');
 
