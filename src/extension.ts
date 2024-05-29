@@ -27,19 +27,6 @@ let logger = createLogger({
 });
 
 export async function activate(context: vscode.ExtensionContext) {
-  // logger = winston.createLogger({
-  //   level: "info",
-  //   format: winston.format.json(),
-  //   defaultMeta: { service: "user_service" },
-  //   transports: [
-  //     new winston.transports.File({ filename: "error.log", level: "error" }),
-  //     new winston.transports.File({ filename: "debug.log" }),
-  //     new winston.transports.Console({ format: winston.format.simple() }),
-  //     new VscodeOutputTransport({ name: "Readable" }),
-  //   ],
-  // });
-  logger.info({ message: "got here", hi: "diasjf" });
-
   console.log('Congratulations, your extension "Readable" is now active!');
 
   let authProvider = new ReadableAuthenticationProvider(context.secrets);
@@ -141,17 +128,17 @@ export async function activate(context: vscode.ExtensionContext) {
     await vscode.env.openExternal(vscode.Uri.parse(args));
   });
 
-  const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  vscode.window.createTreeView("resync", {
-    treeDataProvider: resyncOptionsProvider,
-  });
+  // const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  // vscode.window.createTreeView("resync", {
+  //   treeDataProvider: resyncOptionsProvider,
+  // });
 
-  vscode.commands.registerCommand("readable.refreshResync", async () => {
-    resyncOptionsProvider.refreshResync();
-  });
-  vscode.commands.registerCommand("readable.stopResync", async () => {
-    resyncOptionsProvider.stopResync();
-  });
+  // vscode.commands.registerCommand("readable.refreshResync", async () => {
+  //   resyncOptionsProvider.refreshResync();
+  // });
+  // vscode.commands.registerCommand("readable.stopResync", async () => {
+  //   resyncOptionsProvider.stopResync();
+  // });
 
   checkAccount();
 }
