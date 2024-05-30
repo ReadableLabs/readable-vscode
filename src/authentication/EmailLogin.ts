@@ -34,7 +34,7 @@ export const emailLogin = async (): Promise<string | undefined> => {
   }
   const key = await vscode.window.withProgress(
     {
-      title: "Loggin In",
+      title: "Logging In",
       cancellable: false,
       location: vscode.ProgressLocation.Notification,
     },

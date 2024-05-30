@@ -27,19 +27,6 @@ let logger = createLogger({
 });
 
 export async function activate(context: vscode.ExtensionContext) {
-  // logger = winston.createLogger({
-  //   level: "info",
-  //   format: winston.format.json(),
-  //   defaultMeta: { service: "user_service" },
-  //   transports: [
-  //     new winston.transports.File({ filename: "error.log", level: "error" }),
-  //     new winston.transports.File({ filename: "debug.log" }),
-  //     new winston.transports.Console({ format: winston.format.simple() }),
-  //     new VscodeOutputTransport({ name: "Readable" }),
-  //   ],
-  // });
-  logger.info({ message: "got here", hi: "diasjf" });
-
   console.log('Congratulations, your extension "Readable" is now active!');
 
   let authProvider = new ReadableAuthenticationProvider(context.secrets);
@@ -67,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
       ReadableAuthenticationProvider.id,
-      "Readable-Auth",
+      "Readable Trial. (We do not store your email or any personal information. This is just an internal process to activate the trial)",
       authProvider
     )
   );
@@ -83,6 +70,12 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("readable.reportBug", async () => {
       await vscode.env.openExternal(
         vscode.Uri.parse("https://github.com/ReadableLabs/readable/issues")
+      );
+    }),
+
+    vscode.commands.registerCommand("readable.purchase", async () => {
+      await vscode.env.openExternal(
+        vscode.Uri.parse("https://readable.so/pricing")
       );
     }),
 
@@ -129,7 +122,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand("readable.setLoggedIn", () => {
     status.updateStatusBar();
-    view.message = "You have successfully logged in";
+    // view.message = "You have successfully logged in";
   });
 
   vscode.commands.registerCommand("readable.setLoggedOut", () => {
@@ -141,19 +134,19 @@ export async function activate(context: vscode.ExtensionContext) {
     await vscode.env.openExternal(vscode.Uri.parse(args));
   });
 
-  const resyncOptionsProvider = new ResyncOptionsProvider(context);
-  vscode.window.createTreeView("resync", {
-    treeDataProvider: resyncOptionsProvider,
-  });
+  // const resyncOptionsProvider = new ResyncOptionsProvider(context);
+  // vscode.window.createTreeView("resync", {
+  //   treeDataProvider: resyncOptionsProvider,
+  // });
 
-  vscode.commands.registerCommand("readable.refreshResync", async () => {
-    resyncOptionsProvider.refreshResync();
-  });
-  vscode.commands.registerCommand("readable.stopResync", async () => {
-    resyncOptionsProvider.stopResync();
-  });
+  // vscode.commands.registerCommand("readable.refreshResync", async () => {
+  //   resyncOptionsProvider.refreshResync();
+  // });
+  // vscode.commands.registerCommand("readable.stopResync", async () => {
+  //   resyncOptionsProvider.stopResync();
+  // });
 
-  checkAccount();
+  checkAccount(context);
 }
 
 export function deactivate() {} // make sure to log out here, and send an api request to delete the key with the token

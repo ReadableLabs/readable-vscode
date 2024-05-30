@@ -10,6 +10,7 @@ import { SecretStorage } from "vscode";
 import { vsCodeDivider, vsCodePanels } from "@vscode/webview-ui-toolkit";
 
 export const login = async () => {
+  await vscode.commands.executeCommand("readable.logout");
   let key: string | undefined;
   const selection = await vscode.window.showQuickPick(loginOptions);
 
@@ -39,15 +40,16 @@ export const login = async () => {
 
   vscode.commands.executeCommand("readable.setLoggedIn");
   vscode.window.showInformationMessage("Readable: Successfully logged in!");
-  setTimeout(() => {
+  setTimeout(async () => {
     // status.updateStatusBar();
-    vscode.window.showInformationMessage(
-      "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is in any function OR if the function is highlighted."
+    await vscode.window.showInformationMessage(
+      "Readable: To generate a docstring, press  ctrl ' (cmd ' on Mac) while your cursor is on any function, or click the button on the sidebar."
     );
   }, 500);
 };
 
 export const register = async () => {
+  await vscode.commands.executeCommand("readable.logout");
   const session = await vscode.authentication.getSession(
     ReadableAuthenticationProvider.id,
     [],
@@ -131,14 +133,14 @@ export const logout = async (authProvider: ReadableAuthenticationProvider) => {
     { createIfNone: false }
   );
   if (!session) {
-    vscode.window.showInformationMessage(
-      "Readable: You are already logged out"
-    );
+    // vscode.window.showInformationMessage(
+    //   "Readable: You are already logged out"
+    // );
     return;
   }
   Account.emailLogout(session.accessToken);
   authProvider.logoutRemoveSession();
   vscode.commands.executeCommand("readable.setLoggedOut");
-  vscode.window.showInformationMessage("Readable: Successfully logged out");
+  // vscode.window.showInformationMessage("Readable: Successfully logged out");
   return;
 };

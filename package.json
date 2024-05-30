@@ -16,7 +16,7 @@
   },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -78,36 +78,14 @@
         },
         {
           "type": "tree",
-          "id": "resync",
-          "name": "Resync"
-        },
-        {
-          "type": "tree",
           "id": "help",
           "name": "Help"
         }
       ]
     },
     "menus": {
-      "view/item/context": [
-        {
-          "command": "readable.regenerateComment",
-          "group": "inline",
-          "when": "view == resync && viewItem == comment"
-        }
-      ],
-      "view/title": [
-        {
-          "command": "readable.stopResync",
-          "group": "navigation",
-          "when": "view == resync"
-        },
-        {
-          "command": "readable.refreshResync",
-          "group": "navigation",
-          "when": "view == resync"
-        }
-      ],
+      "view/item/context": [],
+      "view/title": [],
       "editor/context": [
         {
           "command": "readable.insertDocstringComment",
@@ -124,16 +102,6 @@
       }
     ],
     "commands": [
-      {
-        "command": "readable.stopResync",
-        "title": "Readable: Stop Resync",
-        "icon": "$(close)"
-      },
-      {
-        "command": "readable.refreshResync",
-        "title": "Readable: Refresh Resync",
-        "icon": "$(refresh)"
-      },
       {
         "command": "readable.regenerateComment",
         "title": "Readable: Regenerate Comment",
@@ -191,11 +159,7 @@
     "viewsWelcome": [
       {
         "view": "account",
-        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
-      },
-      {
-        "view": "resync",
-        "contents": "Resync detects and shows out of sync comments in your source code. Any out of sync comments will show up here. \n [Learn More](https://github.com/ReadableLabs/resync) or [Open an Issue](https://github.com/ReadableLabs/readable-vscode/issues) if your language isn't supported."
+        "contents": "Place your cursor over a function, then click the button \n [ Generate Docstring ](command:readable.insertDocstringComment) \n Purchase by clicking the button below \n [ Purchase Readable ](command:readable.purchase) \n "
       }
     ],
     "configuration": {
