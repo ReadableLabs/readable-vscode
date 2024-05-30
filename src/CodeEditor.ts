@@ -104,7 +104,9 @@ export default class CodeEditor {
   ): Promise<vscode.DocumentSymbol | null> {
     let symbols = await this.getAllSymbols();
     if (symbols.length === 0) {
-      throw new Error("Error: No symbols");
+      throw new Error(
+        "Error: Please HIGHLIGHT the snippet of code you want to generate a comment for, and then click 'generate.'"
+      );
     }
     return await CodeEditor.getSymbolFromPosition(symbols, position);
   }
