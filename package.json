@@ -16,7 +16,7 @@
   },
   "badges": [],
   "homepage": "https://readable.so",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -159,7 +159,7 @@
     "viewsWelcome": [
       {
         "view": "account",
-        "contents": "Never write comments again. Use Readable to instantly generate and update comments in your code. [Learn More](https://readable.so) \n [ Log In ](command:readable.login) \n [ Sign Up ](command:readable.register)"
+        "contents": "Place your cursor over a function, then click the button \n [ Generate Docstring ](command:readable.insertDocstringComment) \n Purchase by clicking the button below \n [ Purchase Readable ](command:readable.purchase) \n "
       }
     ],
     "configuration": {

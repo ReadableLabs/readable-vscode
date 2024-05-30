@@ -54,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.authentication.registerAuthenticationProvider(
       ReadableAuthenticationProvider.id,
-      "Readable-Auth",
+      "Readable Trial. (We do not store your email or any personal information. This is just an internal process to activate the trial)",
       authProvider
     )
   );
@@ -70,6 +70,12 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("readable.reportBug", async () => {
       await vscode.env.openExternal(
         vscode.Uri.parse("https://github.com/ReadableLabs/readable/issues")
+      );
+    }),
+
+    vscode.commands.registerCommand("readable.purchase", async () => {
+      await vscode.env.openExternal(
+        vscode.Uri.parse("https://readable.so/pricing")
       );
     }),
 
@@ -116,7 +122,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand("readable.setLoggedIn", () => {
     status.updateStatusBar();
-    view.message = "You have successfully logged in";
+    // view.message = "You have successfully logged in";
   });
 
   vscode.commands.registerCommand("readable.setLoggedOut", () => {
@@ -140,7 +146,7 @@ export async function activate(context: vscode.ExtensionContext) {
   //   resyncOptionsProvider.stopResync();
   // });
 
-  checkAccount();
+  checkAccount(context);
 }
 
 export function deactivate() {} // make sure to log out here, and send an api request to delete the key with the token
